@@ -150,7 +150,7 @@ Available effects:
 
 | Name | Description | Intensity controls |
 |------|-------------|--------------------|
-| typing_effect | Next `text` command renders char-by-char | chars per second |
+| typing_effect | Next `text` command renders char-by-char (see note) | chars per second |
 | screen_flicker | Random character flash across screen | frequency |
 | static_burst | Random chars fill a region briefly | coverage area |
 | text_corrupt | Random char substitution in displayed text | corruption rate |
@@ -165,6 +165,18 @@ Available effects:
 | falling_chars | Characters fall from top of screen | density |
 | progress_bar | Ominous progress bar fills | fill speed |
 | fake_bsod | Fake system crash screen | n/a |
+
+**Note on typing_effect:** This effect applies to the **next single
+`text` command only**, then deactivates. If you want three lines typed
+sequentially, you need three `effect: typing_effect` / `text:` pairs:
+
+```
+effect: typing_effect
+text: "First line typed char by char."
+effect: typing_effect
+text: "Second line also typed."
+text: "Third line appears instantly (no effect active)."
+```
 
 ### Text Tagging (for text_rewrite)
 
