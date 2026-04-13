@@ -364,6 +364,8 @@ delay: 800
 text: ""
 attr: red
 text: "Perimeter scan confirms: subject {callsign} is the vector."
+text: "A compromised operator and an intruder wearing credentials"
+text: "are indistinguishable. Kestrel-9 treats both as hostile."
 text: "Threat score updated: {threat_level}/10"
 delay: 1000
 text: ""
@@ -595,6 +597,7 @@ goto: alert_escalate_check
 
 [state: alert_orange]
 clear: main
+effect: falling_chars 1500 6
 effect: red_alert 500 2
 attr: bright_red
 effect: typing_effect
@@ -923,6 +926,12 @@ text: "Your sophistication is evidence against you."
 inc: threat_level
 tone: 300 300
 delay: 1000
+text: ""
+attr: amber
+text: "PARADOX NOTE: If every response confirms the threat, the"
+text: "classification cannot be falsified. An unfalsifiable threat"
+text: "model has no winning move. Strange game."
+delay: 1200
 goto: final_escalation_check
 
 # ================================================================

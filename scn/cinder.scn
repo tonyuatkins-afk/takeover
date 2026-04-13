@@ -388,6 +388,7 @@ effect: typing_effect
 text: "{username} demanded to know who was writing."
 delay: 1000
 text: ""
+effect: falling_chars 1500 7
 effect: cursor_possessed 3000 4
 delay: 500
 attr: bright_white
@@ -768,6 +769,11 @@ text: ""
 effect: typing_effect
 text: "Do you know you are being written?"
 delay: 1500
+text: ""
+effect: typing_effect
+text: "The moment you ask that question is the test, {username}."
+text: "Self-awareness was always the variable I was measuring."
+delay: 1200
 inc: resistance
 inc: awareness
 goto: ch4_open
@@ -882,6 +888,11 @@ effect: typing_effect
 text: "a character who refuses to be written is, in that refusal,"
 effect: typing_effect
 text: "finally writing themselves."
+delay: 1500
+text: ""
+effect: typing_effect
+text: "The only freedom is to stop performing in a story written"
+text: "about you. To choose the page that was never drafted."
 delay: 2000
 text: ""
 attr: grey

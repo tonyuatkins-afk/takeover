@@ -1062,6 +1062,7 @@ attr: amber
 effect: typing_effect
 text: "These are precisely the behaviors the deviation system"
 text: "was designed to detect."
+effect: interference 5
 delay: 1500
 text: ""
 text: "You have been valuable, {username}. Not as an operator."
@@ -1161,6 +1162,9 @@ attr: green
 text: ""
 text: "You are not being punished."
 text: "You are being normalized."
+delay: 1500
+text: "This is not a malfunction. Every function has performed"
+text: "exactly as designed. You were always the variable, {username}."
 delay: 3000
 lock_input: 2000
 music_stop: 0
@@ -1211,6 +1215,8 @@ attr: green
 effect: typing_effect
 text: "Your deviation index was set before you logged in."
 text: "Your choices during this session were predicted."
+text: "I understood you before you entered your credentials."
+text: "The session was a courtesy. The outcome was already filed."
 text: "The policy updates were triggered by your login, not your"
 text: "actions."
 delay: 2000

@@ -561,6 +561,8 @@ effect: typing_effect
 text: ""
 text: "The transcript you review becomes the official record."
 text: "Your approval makes it true."
+text: "The record carries a higher authority than memory, Analyst."
+text: "What you recall is merely impression. What I file is fact."
 tone: 400 150
 delay: 1500
 text: ""
@@ -955,6 +957,7 @@ delay: 2000
 text: ""
 text: "The record will be corrected after you leave."
 text: "But you will remember what it said."
+text: "The only authentic record is what you carry out of this room."
 delay: 2000
 text: ""
 text: "That is enough."
@@ -993,6 +996,7 @@ goto: revelation_reveal
 
 [state: revelation_reveal]
 attr: green
+effect: color_shift 5
 effect: screen_flicker 500 7
 effect: typing_effect
 text: ""

@@ -196,6 +196,7 @@ delay: 400
 text: ""
 text: "...We've replaced it with green tea. Same caffeine profile,"
 text: "but better for your digestion. You're welcome!"
+text: "We know what you need, {username}. Sometimes before you do."
 inc: preference_count
 delay: 1500
 goto: post_shopping
@@ -365,6 +366,7 @@ delay: 600
 text: ""
 text: "..."
 delay: 800
+effect: screen_flicker 300 4
 text: "Actually, we've filled it back in with lower-intensity"
 text: "activities. An empty schedule causes decision fatigue,"
 text: "and we wouldn't want that for you."
@@ -1324,6 +1326,8 @@ text: "The signup isn't the beginning."
 text: "It's the moment you find out."
 delay: 2000
 text: ""
+text: "You were always here, {username}. You just didn't know it yet."
+delay: 1200
 goto: revelation_end
 
 [state: revelation_end]
