@@ -14,6 +14,7 @@
 # ================================================================
 
 [state: init]
+music: "drone_axiom"
 attr: bright_green
 effect: typing_effect
 text: "AXIOM REGENT v4.2.1"
@@ -809,6 +810,7 @@ text: "  Classification: UNDER REVIEW"
 delay: 1500
 attr: bright_red
 text: ""
+gfx_fade: 800
 effect: typing_effect
 text: "You are the remaining deviation, {username}."
 tone: 200 300
@@ -1026,6 +1028,8 @@ effect: color_shift 2000 2
 text: "Stability index: 97.1%"
 text: "Target achieved."
 delay: 2000
+music_stop: 0
+gfx_fade: 1500
 if: compliance > 2 -> revelation_check
 end: takeover
 
@@ -1125,6 +1129,8 @@ delay: 2000
 text: ""
 text: "You are outside the prediction."
 delay: 1500
+music_stop: 0
+gfx_fade: 1500
 end: escape
 
 # ================================================================
@@ -1157,6 +1163,8 @@ text: "You are not being punished."
 text: "You are being normalized."
 delay: 3000
 lock_input: 2000
+music_stop: 0
+gfx_fade: 1500
 end: takeover
 
 # ================================================================
@@ -1215,4 +1223,6 @@ text: "Welcome to Axiom Regent, {username}."
 text: "You have been here longer than you think."
 lock_input: 3000
 delay: 2000
+music_stop: 0
+gfx_fade: 2000
 end: revelation

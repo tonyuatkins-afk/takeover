@@ -40,7 +40,7 @@ src\main.obj: src\main.c src\engine.h src\effects.h src\menu.h src\hwdetect.h sr
 src\engine.obj: src\engine.c src\engine.h src\effects.h src\audio.h src\adlib.h src\hwdetect.h lib\screen.h
 	$(CC) $(CFLAGS) -fo=$^@ src\engine.c
 
-src\effects.obj: src\effects.c src\effects.h src\engine.h lib\screen.h
+src\effects.obj: src\effects.c src\effects.h src\engine.h src\hwdetect.h src\audio.h lib\screen.h
 	$(CC) $(CFLAGS) -fo=$^@ src\effects.c
 
 src\audio.obj: src\audio.c src\audio.h src\engine.h

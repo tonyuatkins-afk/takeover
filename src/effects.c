@@ -10,6 +10,8 @@
 
 #include "effects.h"
 #include "engine.h"     /* engine_delay */
+#include "hwdetect.h"   /* g_hw for FPU detection */
+#include "audio.h"      /* audio_tone for interference */
 #include "screen.h"
 #include <dos.h>
 #include <string.h>
@@ -549,6 +551,101 @@ void fx_fake_bsod(int duration, int intensity)
     }
 
     scr_restore_region(0, 0, SCR_WIDTH, SCR_HEIGHT, fx_save_buf);
+}
+
+/* ------------------------------------------------------------------ */
+/* Sine table for FPU-enhanced effects (shared with title.c)           */
+/* Duplicated here to avoid cross-module far data linking issues.       */
+/* 256 bytes, const __far, zero DGROUP.                                */
+/* ------------------------------------------------------------------ */
+
+static const unsigned char __far fx_sin[256] = {
+    128,131,134,137,140,143,146,149,152,155,158,162,165,167,170,173,
+    176,179,182,185,188,190,193,196,198,201,203,206,208,211,213,215,
+    218,220,222,224,226,228,230,232,234,235,237,238,240,241,243,244,
+    245,246,248,249,250,250,251,252,253,253,254,254,254,255,255,255,
+    255,255,255,255,254,254,254,253,253,252,251,250,250,249,248,246,
+    245,244,243,241,240,238,237,235,234,232,230,228,226,224,222,220,
+    218,215,213,211,208,206,203,201,198,196,193,190,188,185,182,179,
+    176,173,170,167,165,162,158,155,152,149,146,143,140,137,134,131,
+    128,125,122,119,116,113,110,107,104,101, 98, 94, 91, 89, 86, 83,
+     80, 77, 74, 71, 68, 66, 63, 60, 58, 55, 53, 50, 48, 45, 43, 41,
+     38, 36, 34, 32, 30, 28, 26, 24, 22, 21, 19, 18, 16, 15, 13, 12,
+     11, 10,  8,  7,  6,  6,  5,  4,  3,  3,  2,  2,  2,  1,  1,  1,
+      1,  1,  1,  1,  2,  2,  2,  3,  3,  4,  5,  6,  6,  7,  8, 10,
+     11, 12, 13, 15, 16, 18, 19, 21, 22, 24, 26, 28, 30, 32, 34, 36,
+     38, 41, 43, 45, 48, 50, 53, 55, 58, 60, 63, 66, 68, 71, 74, 77,
+     80, 83, 86, 89, 91, 94, 98,101,104,107,110,113,116,119,122,125
+};
+
+/* ------------------------------------------------------------------ */
+/* pulse_border: sine-timed border color alternation                    */
+/* ------------------------------------------------------------------ */
+
+void fx_pulse_border(int duration, int intensity)
+{
+    int elapsed, tick_ms;
+    unsigned char phase = 0;
+
+    if (intensity < 1) intensity = 1;
+    tick_ms = 55;
+
+    for (elapsed = 0; elapsed < duration; elapsed += tick_ms) {
+        unsigned char fg;
+        unsigned char sin_val = fx_sin[phase];
+
+        /* Map sine (0-255) to a color index */
+        if (sin_val > 200)
+            fg = SCR_LIGHTGREEN;
+        else if (sin_val > 150)
+            fg = SCR_GREEN;
+        else if (sin_val > 100)
+            fg = SCR_CYAN;
+        else if (sin_val > 50)
+            fg = SCR_DARKGRAY;
+        else
+            fg = SCR_GREEN;
+
+        scr_box(0, 0, SCR_WIDTH, SCR_HEIGHT - 1,
+                SCR_ATTR(fg, SCR_BLACK));
+        phase += (unsigned char)intensity * 3;
+        engine_delay(tick_ms);
+    }
+    /* Restore normal border */
+    scr_box(0, 0, SCR_WIDTH, SCR_HEIGHT - 1, ATTR_BORDER);
+}
+
+/* ------------------------------------------------------------------ */
+/* interference: screen flicker + rapid PC speaker clicks              */
+/* ------------------------------------------------------------------ */
+
+void fx_interference(int duration, int intensity)
+{
+    int elapsed, tick_ms;
+    int r, c;
+
+    if (intensity < 1) intensity = 1;
+    tick_ms = 55;
+
+    scr_save_region(FX_LEFT, FX_TOP, FX_COLS, FX_ROWS, fx_save_buf);
+
+    for (elapsed = 0; elapsed < duration; elapsed += tick_ms) {
+        /* Visual noise */
+        for (r = FX_TOP; r <= FX_BOTTOM; r++) {
+            for (c = FX_LEFT; c <= FX_RIGHT; c++) {
+                if (rng_range(20) < intensity) {
+                    scr_putc(c, r, (char)(rng_range(254) + 1),
+                             (unsigned char)(rng_range(16)));
+                }
+            }
+        }
+        /* Audio click */
+        audio_tone(rng_range(200) + 100, 10);
+        engine_delay(tick_ms / 2);
+        /* Partial restore */
+        scr_restore_region(FX_LEFT, FX_TOP, FX_COLS, FX_ROWS, fx_save_buf);
+        engine_delay(tick_ms / 2);
+    }
 }
 
 /* ------------------------------------------------------------------ */

@@ -31,6 +31,10 @@ void fx_falling_chars(int duration, int intensity);
 void fx_progress_bar(int duration, int intensity);
 void fx_fake_bsod(int duration, int intensity);
 
+/* New enhanced effects */
+void fx_pulse_border(int duration, int intensity);
+void fx_interference(int duration, int intensity);
+
 /* No-op stub for text_rewrite (handled by engine CMD_REWRITE) */
 void fx_text_rewrite_noop(int duration, int intensity);
 

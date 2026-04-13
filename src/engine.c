@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <conio.h>
 #include <dos.h>
 
 /* ------------------------------------------------------------------ */
@@ -71,7 +72,8 @@ enum {
     CMD_NEWS_FALLBACK,
     CMD_NEWS_INJECT,
     CMD_MUSIC,
-    CMD_MUSIC_STOP
+    CMD_MUSIC_STOP,
+    CMD_GFX_FADE
 };
 
 /* Clear regions */
@@ -206,6 +208,8 @@ static effect_entry_t effect_table[] = {
     { "falling_chars",    fx_falling_chars },
     { "progress_bar",     fx_progress_bar },
     { "fake_bsod",        fx_fake_bsod },
+    { "pulse_border",    fx_pulse_border },
+    { "interference",    fx_interference },
     { NULL, NULL }
 };
 
@@ -720,6 +724,10 @@ static int parse_command(char *line, cmd_t *cmd, int line_num)
     }
     else if (strcmp(keyword, "music_stop") == 0) {
         cmd->type = CMD_MUSIC_STOP;
+    }
+    else if (strcmp(keyword, "gfx_fade") == 0) {
+        cmd->type = CMD_GFX_FADE;
+        cmd->num1 = atoi(args); /* duration ms, 0 = default 1000 */
     }
     else {
         printf("Line %d: unknown command '%s'\n", line_num, keyword);
@@ -1339,6 +1347,49 @@ int engine_run(engine_scenario_t *scn)
                 if (g_hw.adlib)
                     adlib_stop_track();
                 break;
+
+            case CMD_GFX_FADE:
+            {
+                /* Text-mode VGA palette fade to black and back.
+                 * Works via DAC palette (ports 3C7/3C8/3C9) which
+                 * works identically in text mode. VGA only. */
+                if (g_hw.display == HW_DISP_VGA) {
+                    unsigned char pal[48]; /* 16 text colors * 3 RGB */
+                    int i, s, dur, steps;
+                    dur = c->num1;
+                    if (dur <= 0) dur = 1000;
+                    steps = 16;
+
+                    /* Read the 16 text-mode palette entries */
+                    outp(0x3C7, 0);
+                    for (i = 0; i < 48; i++)
+                        pal[i] = (unsigned char)inp(0x3C9);
+
+                    /* Fade out */
+                    for (s = steps - 1; s >= 0; s--) {
+                        outp(0x3C8, 0);
+                        for (i = 0; i < 48; i++)
+                            outp(0x3C9, (unsigned char)
+                                 ((unsigned int)pal[i] * (unsigned int)s
+                                  / (unsigned int)steps));
+                        engine_delay(dur / (steps * 2));
+                    }
+
+                    /* Hold black */
+                    engine_delay(dur / 4);
+
+                    /* Fade in */
+                    for (s = 1; s <= steps; s++) {
+                        outp(0x3C8, 0);
+                        for (i = 0; i < 48; i++)
+                            outp(0x3C9, (unsigned char)
+                                 ((unsigned int)pal[i] * (unsigned int)s
+                                  / (unsigned int)steps));
+                        engine_delay(dur / (steps * 2));
+                    }
+                }
+                break;
+            }
 
             } /* switch */
         } /* for commands */
