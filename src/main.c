@@ -14,13 +14,13 @@
 #include <string.h>
 #include <i86.h>
 
-/* Scenario filename table (DOS backslash paths) */
+/* Scenario filename table (DOS 8.3 paths) */
 static const char *scenario_files[MENU_NUM_SCENARIOS] = {
-    "scenarios\\axiom_regent.scn",
+    "scenarios\\axiom.scn",
     "scenarios\\hushline.scn",
     "scenarios\\kestrel9.scn",
-    "scenarios\\orchard_clerk.scn",
-    "scenarios\\cinder_mirror.scn"
+    "scenarios\\orchard.scn",
+    "scenarios\\cinder.scn"
 };
 
 /* Static scenario control block */
