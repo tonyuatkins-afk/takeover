@@ -14,6 +14,7 @@
 #include "audio.h"      /* audio_tone for interference */
 #include "screen.h"
 #include <dos.h>
+#include <conio.h>
 #include <string.h>
 
 /* Main content area (must match engine.c) */
@@ -656,4 +657,103 @@ void fx_text_rewrite_noop(int duration, int intensity)
 {
     (void)duration;
     (void)intensity;
+}
+
+/* ------------------------------------------------------------------ */
+/* sine_wave: text chars ripple horizontally via sine offset per row    */
+/* Buffer manipulation: save, restore, shift. Works on all adapters.   */
+/* ------------------------------------------------------------------ */
+
+void fx_sine_wave(int duration, int intensity)
+{
+    int elapsed, tick_ms = 55;
+    unsigned char phase = 0;
+    int r, c, offset;
+    unsigned short row_buf[80];
+
+    if (intensity < 1) intensity = 1;
+    if (intensity > 10) intensity = 10;
+
+    scr_save_region(FX_LEFT, FX_TOP, FX_COLS, FX_ROWS, fx_save_buf);
+
+    for (elapsed = 0; elapsed < duration; elapsed += tick_ms) {
+        /* Restore clean state each frame */
+        scr_restore_region(FX_LEFT, FX_TOP, FX_COLS, FX_ROWS, fx_save_buf);
+
+        for (r = FX_TOP; r <= FX_BOTTOM; r++) {
+            /* Sine offset: map 0-255 to -amplitude..+amplitude */
+            int sin_val = (int)fx_sin[(unsigned char)(r * 12 + phase)] - 128;
+            offset = sin_val * intensity / 128;
+
+            /* Read original row */
+            for (c = 0; c < FX_COLS; c++)
+                row_buf[c] = scr_read_cell(FX_LEFT + c, r);
+
+            /* Clear the row */
+            scr_hline(FX_LEFT, r, FX_COLS, ' ',
+                      SCR_ATTR(SCR_BLACK, SCR_BLACK));
+
+            /* Write back shifted */
+            for (c = 0; c < FX_COLS; c++) {
+                int dest = c + offset;
+                if (dest >= 0 && dest < FX_COLS) {
+                    scr_putc(FX_LEFT + dest, r,
+                             (char)(row_buf[c] & 0xFF),
+                             (unsigned char)(row_buf[c] >> 8));
+                }
+            }
+        }
+        phase += (unsigned char)(intensity * 4);
+        engine_delay(tick_ms);
+    }
+
+    scr_restore_region(FX_LEFT, FX_TOP, FX_COLS, FX_ROWS, fx_save_buf);
+}
+
+/* ------------------------------------------------------------------ */
+/* palette_pulse: VGA DAC color cycling in text mode                   */
+/* Animates DAC entries for text attributes. VGA only.                 */
+/* ------------------------------------------------------------------ */
+
+void fx_palette_pulse(int duration, int intensity)
+{
+    int elapsed, tick_ms = 55;
+    unsigned char phase = 0;
+    unsigned char orig_pal[48]; /* 16 entries x 3 RGB */
+    int i;
+
+    if (intensity < 1) intensity = 1;
+
+    /* Only works on VGA - check via hwdetect */
+    if (g_hw.display != HW_DISP_VGA) {
+        engine_delay(duration);
+        return;
+    }
+
+    /* Save original 16 text-mode DAC entries */
+    outp(0x3C7, 0);
+    for (i = 0; i < 48; i++)
+        orig_pal[i] = (unsigned char)inp(0x3C9);
+
+    for (elapsed = 0; elapsed < duration; elapsed += tick_ms) {
+        unsigned char sin_val = fx_sin[phase];
+        /* Scale factor: 0.5 to 1.0 based on sine (dim to bright) */
+        unsigned int scale = 128u + (unsigned int)sin_val / 2u;
+
+        outp(0x3C8, 0);
+        for (i = 0; i < 48; i++) {
+            unsigned char v = (unsigned char)(
+                (unsigned int)orig_pal[i] * scale / 256u);
+            if (v > 63) v = 63;
+            outp(0x3C9, v);
+        }
+
+        phase += (unsigned char)(intensity * 6);
+        engine_delay(tick_ms);
+    }
+
+    /* Restore original palette */
+    outp(0x3C8, 0);
+    for (i = 0; i < 48; i++)
+        outp(0x3C9, orig_pal[i]);
 }

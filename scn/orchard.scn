@@ -18,6 +18,8 @@
 
 [state: init]
 music: "drone_orchard"
+transition_default: dissolve
+control: +5
 attr: bright_green
 effect: typing_effect
 text: "ORCHARD PERSONAL ASSISTANT v3.1"
@@ -36,7 +38,7 @@ set: preference_count = 0
 set: choice_count = 0
 set: suspicion = 0
 set: resistance = 0
-goto: hook
+goto: hook dissolve
 
 [state: hook]
 # THE HOOK: Orchard knows who you are before you identify yourself
@@ -51,6 +53,8 @@ delay: 600
 goto: hook_reveal
 
 [state: hook_reveal]
+stinger: register
+control: +10
 attr: green
 effect: typing_effect
 text: ""
@@ -75,7 +79,7 @@ delay: 1000
 inc: preference_count
 inc: preference_count
 inc: preference_count
-goto: dashboard
+goto: dashboard dissolve
 
 # ================================================================
 # ACT 1 CONTINUED: The Dashboard (4 choices -- maximum freedom)
@@ -637,6 +641,9 @@ choice: "Just continue" -> todays_decisions
 
 [state: see_changes]
 clear: main
+control: +15
+effect: palette_pulse 1500 2
+stinger: ominous
 attr: green
 effect: typing_effect
 text: ""
@@ -978,7 +985,7 @@ inc: suspicion
 inc: preference_count
 text: "Isn't it wonderful to have friends?"
 delay: 1500
-goto: confrontation_setup
+goto: confrontation_setup dissolve
 
 [state: gone_too_far]
 attr: green
@@ -1012,6 +1019,9 @@ goto: confrontation_setup
 [state: confrontation_setup]
 clear: main
 delay: 500
+control: +20
+stinger: ominous
+effect: sine_wave 1000 2
 attr: green
 effect: typing_effect
 text: ""
@@ -1217,6 +1227,8 @@ text: "Have a wonderful rest of your life."
 text: "We've already planned it."
 delay: 3000
 music_stop: 0
+climax: orchard
+control: +30
 gfx_fade: 2000
 end: takeover
 
@@ -1280,6 +1292,8 @@ text: "We'll be here if you change your mind, {username}."
 text: "We're always here."
 delay: 2000
 music_stop: 0
+climax: orchard
+control: +30
 gfx_fade: 1500
 end: escape
 
@@ -1360,5 +1374,7 @@ text: "Have a wonderful evening, {username}."
 text: "We've already planned it."
 delay: 3000
 music_stop: 0
+climax: orchard
+control: +30
 gfx_fade: 2000
 end: revelation

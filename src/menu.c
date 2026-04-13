@@ -10,6 +10,7 @@
 #include "adlib.h"
 #include "audio.h"
 #include "hwdetect.h"
+#include "cracktro.h"
 #include "screen.h"
 #include <stdio.h>
 #include <string.h>
@@ -290,6 +291,23 @@ int menu_run(const takeover_save_t *save)
         }
         else if (key == KEY_ESC) {
             return -1;
+        }
+        else if ((key & 0xFF) == 'c' || (key & 0xFF) == 'C') {
+            /* Hidden cracktro: available when all 5 complete + VGA */
+            int all_done = 1, ci;
+            for (ci = 0; ci < MENU_NUM_SCENARIOS; ci++) {
+                if (save->completed[ci] == 0) {
+                    all_done = 0;
+                    break;
+                }
+            }
+            if (all_done && g_hw.display == HW_DISP_VGA) {
+                cracktro_run();
+                /* Redraw menu after returning */
+                draw_frame();
+                draw_character_list(sel, save);
+                draw_description(sel);
+            }
         }
         else if ((key & 0xFF) == 0x0D) {
             return sel;

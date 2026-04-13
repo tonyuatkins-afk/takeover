@@ -268,6 +268,132 @@ static const adlib_track_t __far tracks[] = {
 };
 
 /* ------------------------------------------------------------------ */
+/* Stinger patches (const __far, zero DGROUP)                          */
+/* ------------------------------------------------------------------ */
+
+/* Alarm klaxon: bright, nasal, cuts through */
+static const adlib_patch_t __far patch_alarm = {
+    0x03, 0x01,   /* mod: mult 3, car: mult 1 */
+    0x18, 0x00,   /* mod attenuated, car full */
+    0xF4, 0xF6,   /* fast attack, some decay */
+    0x28, 0x3A,   /* moderate sustain/release */
+    0x00, 0x00,   /* sine */
+    0x06          /* feedback 3, additive */
+};
+
+/* Bureau stamp: thudy percussive hit */
+static const adlib_patch_t __far patch_stamp = {
+    0x01, 0x01,   /* mult 1 both */
+    0x10, 0x00,   /* mod attenuated */
+    0xFC, 0xFA,   /* very fast attack, fast decay */
+    0xFF, 0xFF,   /* minimal sustain, fast release */
+    0x00, 0x00,   /* sine */
+    0x07          /* max feedback, FM */
+};
+
+/* Typewriter click: tiny bright click */
+static const adlib_patch_t __far patch_click = {
+    0x04, 0x02,   /* mod: mult 4, car: mult 2 */
+    0x20, 0x00,   /* mod quiet */
+    0xFF, 0xFE,   /* instant attack, max decay */
+    0xFF, 0xFF,   /* instant release */
+    0x01, 0x01,   /* half-sine */
+    0x00          /* no feedback, FM */
+};
+
+/* Error buzz: harsh, dissonant */
+static const adlib_patch_t __far patch_errbuzz = {
+    0x01, 0x01,   /* mult 1 both */
+    0x08, 0x00,   /* heavy modulation */
+    0xF6, 0xF8,   /* fast attack */
+    0x48, 0x6A,   /* moderate sustain/release */
+    0x03, 0x00,   /* mod: half-sine-rect, car: sine */
+    0x07          /* max feedback, FM */
+};
+
+/* Ominous chord: slow swelling dark tone */
+static const adlib_patch_t __far patch_ominous = {
+    0x02, 0x01,   /* mod: mult 2, car: mult 1 */
+    0x14, 0x00,   /* mod attenuated */
+    0xA3, 0x84,   /* slow attack */
+    0x26, 0x48,   /* moderate sustain */
+    0x00, 0x00,   /* sine */
+    0x04          /* feedback 2, FM */
+};
+
+/* Cash register: metallic ping */
+static const adlib_patch_t __far patch_ching = {
+    0x04, 0x03,   /* mod: mult 4, car: mult 3 */
+    0x0C, 0x00,   /* mod slightly attenuated */
+    0xF8, 0xF6,   /* fast attack, some decay */
+    0x66, 0x88,   /* moderate sustain/release */
+    0x00, 0x00,   /* sine */
+    0x03          /* feedback 1, additive */
+};
+
+/* Stinger patch table */
+static const adlib_patch_t __far * const __far stinger_patches[STINGER_COUNT] = {
+    &patch_alarm,
+    &patch_stamp,
+    &patch_click,
+    &patch_errbuzz,
+    &patch_ominous,
+    &patch_ching
+};
+
+/* Stinger definitions: what notes to play */
+typedef struct {
+    unsigned char note;       /* 0-11 */
+    unsigned char octave;     /* 0-7 */
+    unsigned char duration;   /* ticks */
+} stinger_note_t;
+
+typedef struct {
+    unsigned char patch_idx;   /* index into stinger_patches */
+    unsigned char num_notes;   /* 1-3 */
+    unsigned char num_channels; /* channels needed simultaneously */
+    stinger_note_t notes[3];
+} stinger_def_t;
+
+static const stinger_def_t __far stinger_defs[STINGER_COUNT] = {
+    /* ALARM: alternating C5/G5 */
+    { 0, 3, 1, {{ 0, 5, 4 }, { 7, 5, 4 }, { 0, 5, 4 }} },
+    /* STAMP: single low thud D2 */
+    { 1, 1, 1, {{ 2, 2, 3 }, { 0, 0, 0 }, { 0, 0, 0 }} },
+    /* CLICK: rapid triple tap C6 */
+    { 2, 3, 1, {{ 0, 6, 2 }, { 0, 6, 2 }, { 0, 6, 2 }} },
+    /* BUZZ: two dissonant notes C3+C#3 */
+    { 3, 2, 2, {{ 0, 3, 6 }, { 1, 3, 6 }, { 0, 0, 0 }} },
+    /* OMINOUS: diminished triad C3 Eb3 Gb3 */
+    { 4, 3, 3, {{ 0, 3, 18 }, { 3, 3, 18 }, { 6, 3, 18 }} },
+    /* REGISTER: descending G5 E5 */
+    { 5, 2, 1, {{ 7, 5, 3 }, { 4, 5, 5 }, { 0, 0, 0 }} }
+};
+
+/* ------------------------------------------------------------------ */
+/* Stinger playback state (DGROUP: ~38 bytes)                          */
+/* ------------------------------------------------------------------ */
+
+#define STINGER_CHANNELS 6   /* channels 3-8 */
+
+typedef struct {
+    unsigned char active;     /* 1 if channel in use */
+    unsigned char stinger_id; /* which stinger owns this */
+    unsigned char note_idx;   /* current note in sequence */
+    unsigned char num_notes;  /* total notes for this voice */
+    unsigned long next_tick;  /* when to advance */
+} stinger_ch_t;
+
+static stinger_ch_t stinger_state[STINGER_CHANNELS]; /* channels 3-8 */
+
+/* ------------------------------------------------------------------ */
+/* Beat sync state (DGROUP: 2 bytes)                                   */
+/* ------------------------------------------------------------------ */
+
+unsigned char adlib_beat = 0;
+unsigned char adlib_last_ch = 0;
+
+/* ------------------------------------------------------------------ */
 /* Playback state (DGROUP: ~12 bytes)                                  */
 /* ------------------------------------------------------------------ */
 
@@ -300,6 +426,11 @@ void adlib_init(void)
 
     playing = 0;
     cur_events = NULL;
+
+    /* Clear stinger state */
+    memset(stinger_state, 0, sizeof(stinger_state));
+    adlib_beat = 0;
+    adlib_last_ch = 0;
 }
 
 void adlib_shutdown(void)
@@ -387,6 +518,8 @@ void adlib_tick(void)
         note_off(evt->channel);
     } else {
         note_on(evt->channel, evt->note, evt->octave);
+        adlib_beat++;
+        adlib_last_ch = evt->channel;
     }
 
     /* Schedule next event */
@@ -405,3 +538,98 @@ void adlib_set_mute(int m)
 }
 
 int adlib_get_mute(void) { return muted; }
+
+/* ------------------------------------------------------------------ */
+/* Stinger API                                                         */
+/* ------------------------------------------------------------------ */
+
+void adlib_play_stinger(int id)
+{
+    unsigned long far *tick;
+    unsigned long now;
+    const stinger_def_t __far *def;
+    int ch_base;
+    int i;
+
+    if (id < 0 || id >= STINGER_COUNT) return;
+    if (muted) return;
+
+    tick = (unsigned long far *)MK_FP(0x0040, 0x006C);
+    now = *tick;
+    def = &stinger_defs[id];
+
+    if (def->num_channels > 1) {
+        /* Chord: play all notes simultaneously on separate channels */
+        ch_base = -1;
+        /* Find num_channels consecutive free stinger channels */
+        for (i = 0; i <= STINGER_CHANNELS - def->num_channels; i++) {
+            int ok = 1, j;
+            for (j = 0; j < def->num_channels; j++) {
+                if (stinger_state[i + j].active) { ok = 0; break; }
+            }
+            if (ok) { ch_base = i; break; }
+        }
+        if (ch_base < 0) return; /* no room */
+
+        for (i = 0; i < def->num_channels && i < def->num_notes; i++) {
+            int hw_ch = ch_base + 3; /* map to OPL2 channels 3-8 */
+            stinger_ch_t *sc = &stinger_state[ch_base + i];
+            load_patch(hw_ch + i, stinger_patches[def->patch_idx]);
+            note_on(hw_ch + i, def->notes[i].note, def->notes[i].octave);
+            sc->active = 1;
+            sc->stinger_id = (unsigned char)id;
+            sc->note_idx = 0;
+            sc->num_notes = 1; /* chord: one note per channel */
+            sc->next_tick = now + (unsigned long)def->notes[i].duration;
+        }
+    } else {
+        /* Sequence: play notes one after another on a single channel */
+        int slot = -1;
+        for (i = 0; i < STINGER_CHANNELS; i++) {
+            if (!stinger_state[i].active) { slot = i; break; }
+        }
+        if (slot < 0) return;
+
+        {
+            int hw_ch = slot + 3;
+            stinger_ch_t *sc = &stinger_state[slot];
+            load_patch(hw_ch, stinger_patches[def->patch_idx]);
+            note_on(hw_ch, def->notes[0].note, def->notes[0].octave);
+            sc->active = 1;
+            sc->stinger_id = (unsigned char)id;
+            sc->note_idx = 0;
+            sc->num_notes = def->num_notes;
+            sc->next_tick = now + (unsigned long)def->notes[0].duration;
+        }
+    }
+}
+
+void adlib_stinger_tick(void)
+{
+    unsigned long far *tick = (unsigned long far *)MK_FP(0x0040, 0x006C);
+    unsigned long now = *tick;
+    int i;
+
+    for (i = 0; i < STINGER_CHANNELS; i++) {
+        stinger_ch_t *sc = &stinger_state[i];
+        int hw_ch = i + 3;
+
+        if (!sc->active) continue;
+        if (now < sc->next_tick) continue;
+
+        sc->note_idx++;
+        if (sc->note_idx >= sc->num_notes) {
+            /* Stinger complete */
+            note_off(hw_ch);
+            sc->active = 0;
+        } else {
+            /* Advance to next note in sequence */
+            const stinger_def_t __far *def = &stinger_defs[sc->stinger_id];
+            note_off(hw_ch);
+            note_on(hw_ch, def->notes[sc->note_idx].note,
+                    def->notes[sc->note_idx].octave);
+            sc->next_tick = now +
+                (unsigned long)def->notes[sc->note_idx].duration;
+        }
+    }
+}

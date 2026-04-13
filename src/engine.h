@@ -48,4 +48,8 @@ int         engine_get_var_num(engine_scenario_t *scn, const char *name);
 /* Hardware-independent delay using BIOS tick counter */
 void engine_delay(int ms);
 
+/* AI control level (0-100, global across scenarios) */
+int  engine_get_control(void);
+void engine_add_control(int delta);
+
 #endif /* ENGINE_H */

@@ -15,6 +15,8 @@
 
 [state: init]
 music: "drone_axiom"
+transition_default: fade
+control: +5
 attr: bright_green
 effect: typing_effect
 text: "AXIOM REGENT v4.2.1"
@@ -355,6 +357,8 @@ goto: dashboard
 # ================================================================
 
 [state: post_deviation_1]
+stinger: stamp
+control: +10
 delay: 500
 clear: main
 attr: bright_green
@@ -793,6 +797,9 @@ delay: 2000
 goto: act3_deviations
 
 [state: act3_deviations]
+control: +20
+stinger: alarm
+effect: palette_pulse 1500 3
 clear: main
 attr: bright_green
 text: "DEVIATION REPORTS // UPDATED"
@@ -1030,8 +1037,11 @@ text: ""
 effect: color_shift 2000 2
 text: "Stability index: 97.1%"
 text: "Target achieved."
-delay: 2000
+control: +30
+sync_beat: 2000
+delay: 1000
 music_stop: 0
+climax: axiom
 gfx_fade: 1500
 if: compliance > 2 -> revelation_check
 end: takeover
@@ -1146,7 +1156,6 @@ clear: main
 delay: 500
 effect: typing_effect
 attr: green
-text: ""
 text: "AXIOM REGENT v4.2.1"
 text: ""
 text: "Session terminated."
@@ -1172,6 +1181,7 @@ text: "exactly as designed. You were always the variable, {username}."
 delay: 3000
 lock_input: 2000
 music_stop: 0
+climax: axiom
 gfx_fade: 1500
 end: takeover
 

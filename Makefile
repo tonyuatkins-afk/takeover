@@ -26,7 +26,8 @@ CFLAGS += -i=src -i=lib
 # Object files (explicit list for wmake compatibility)
 OBJS = src\main.obj src\engine.obj src\effects.obj src\audio.obj &
        src\menu.obj src\news.obj src\display.obj src\hwdetect.obj &
-       src\vga13h.obj src\title.obj src\adlib.obj lib\screen.obj
+       src\vga13h.obj src\title.obj src\adlib.obj src\climax.obj &
+       src\cracktro.obj lib\screen.obj
 
 # Target
 TARGET = TAKEOVER.EXE
@@ -34,7 +35,7 @@ TARGET = TAKEOVER.EXE
 all: $(TARGET) .SYMBOLIC
 
 # Explicit compilation rules (wmake inference rules are fragile across dirs)
-src\main.obj: src\main.c src\engine.h src\effects.h src\menu.h src\hwdetect.h src\title.h lib\screen.h
+src\main.obj: src\main.c src\engine.h src\effects.h src\menu.h src\hwdetect.h src\title.h src\cracktro.h lib\screen.h
 	$(CC) $(CFLAGS) -fo=$^@ src\main.c
 
 src\engine.obj: src\engine.c src\engine.h src\effects.h src\audio.h src\adlib.h src\hwdetect.h lib\screen.h
@@ -46,7 +47,7 @@ src\effects.obj: src\effects.c src\effects.h src\engine.h src\hwdetect.h src\aud
 src\audio.obj: src\audio.c src\audio.h src\engine.h
 	$(CC) $(CFLAGS) -fo=$^@ src\audio.c
 
-src\menu.obj: src\menu.c src\menu.h src\engine.h lib\screen.h
+src\menu.obj: src\menu.c src\menu.h src\engine.h src\cracktro.h src\hwdetect.h lib\screen.h
 	$(CC) $(CFLAGS) -fo=$^@ src\menu.c
 
 src\news.obj: src\news.c src\news.h
@@ -66,6 +67,12 @@ src\title.obj: src\title.c src\title.h src\vga13h.h src\hwdetect.h src\engine.h 
 
 src\adlib.obj: src\adlib.c src\adlib.h
 	$(CC) $(CFLAGS) -fo=$^@ src\adlib.c
+
+src\climax.obj: src\climax.c src\climax.h src\vga13h.h src\engine.h lib\screen.h
+	$(CC) $(CFLAGS) -fo=$^@ src\climax.c
+
+src\cracktro.obj: src\cracktro.c src\cracktro.h src\vga13h.h src\adlib.h src\engine.h src\hwdetect.h lib\screen.h
+	$(CC) $(CFLAGS) -fo=$^@ src\cracktro.c
 
 lib\screen.obj: lib\screen.c lib\screen.h
 	$(CC) $(CFLAGS) -fo=$^@ lib\screen.c

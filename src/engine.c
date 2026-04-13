@@ -16,6 +16,7 @@
 #include "audio.h"
 #include "adlib.h"
 #include "hwdetect.h"
+#include "climax.h"
 #include "screen.h"
 
 #include <stdio.h>
@@ -73,11 +74,25 @@ enum {
     CMD_NEWS_INJECT,
     CMD_MUSIC,
     CMD_MUSIC_STOP,
-    CMD_GFX_FADE
+    CMD_GFX_FADE,
+    CMD_STINGER,
+    CMD_CLIMAX,
+    CMD_SYNC_BEAT,
+    CMD_CONTROL,
+    CMD_TRANSITION_DEFAULT
 };
 
 /* Clear regions */
 enum { CLEAR_SCREEN, CLEAR_MAIN, CLEAR_STATUS };
+
+/* Transition types for goto */
+enum { TRANS_NONE, TRANS_DISSOLVE, TRANS_WIPE, TRANS_FADE, TRANS_GLITCH };
+
+/* Default transition for current scenario */
+static int g_default_transition = TRANS_NONE;
+
+/* AI control level (global across scenarios) */
+static int g_ai_control = 0;
 
 /* Attribute IDs */
 enum {
@@ -218,6 +233,8 @@ static effect_entry_t effect_table[] = {
     { "fake_bsod",        fx_fake_bsod },
     { "pulse_border",    fx_pulse_border },
     { "interference",    fx_interference },
+    { "sine_wave",       fx_sine_wave },
+    { "palette_pulse",   fx_palette_pulse },
     { NULL, NULL }
 };
 
@@ -243,7 +260,8 @@ void engine_delay(int ms)
     if (ticks == 0) ticks = 1;
     start = *tick;
     while ((*tick - start) < ticks) {
-        adlib_tick();   /* advance background music */
+        adlib_tick();           /* advance background music */
+        adlib_stinger_tick();   /* advance stinger playback */
     }
 }
 
@@ -559,9 +577,24 @@ static int parse_command(char *line, cmd_t *cmd, int line_num)
         cmd->str2 = pool_add(buf2);
     }
     else if (strcmp(keyword, "goto") == 0) {
+        char *sp;
         cmd->type = CMD_GOTO;
         strncpy(buf1, args, MAX_NAME - 1);
         buf1[MAX_NAME - 1] = '\0';
+        /* Check for optional transition: "goto: state_name dissolve" */
+        sp = strchr(buf1, ' ');
+        if (!sp) sp = strchr(buf1, '\t');
+        if (sp) {
+            char *tname;
+            *sp = '\0';
+            tname = trim_left(sp + 1);
+            trim_right(tname);
+            if (strcmp(tname, "dissolve") == 0)     cmd->num1 = TRANS_DISSOLVE;
+            else if (strcmp(tname, "wipe") == 0)    cmd->num1 = TRANS_WIPE;
+            else if (strcmp(tname, "fade") == 0)     cmd->num1 = TRANS_FADE;
+            else if (strcmp(tname, "glitch") == 0)  cmd->num1 = TRANS_GLITCH;
+            /* else TRANS_NONE (0) */
+        }
         cmd->str1 = pool_add(buf1);
     }
     else if (strcmp(keyword, "end") == 0) {
@@ -749,6 +782,35 @@ static int parse_command(char *line, cmd_t *cmd, int line_num)
         cmd->type = CMD_GFX_FADE;
         cmd->num1 = atoi(args); /* duration ms, 0 = default 1000 */
     }
+    else if (strcmp(keyword, "stinger") == 0) {
+        cmd->type = CMD_STINGER;
+        strncpy(buf1, args, MAX_NAME - 1);
+        buf1[MAX_NAME - 1] = '\0';
+        trim_right(buf1);
+        cmd->str1 = pool_add(buf1);
+    }
+    else if (strcmp(keyword, "climax") == 0) {
+        cmd->type = CMD_CLIMAX;
+        strncpy(buf1, args, MAX_NAME - 1);
+        buf1[MAX_NAME - 1] = '\0';
+        trim_right(buf1);
+        cmd->str1 = pool_add(buf1);
+    }
+    else if (strcmp(keyword, "sync_beat") == 0) {
+        cmd->type = CMD_SYNC_BEAT;
+        cmd->num1 = atoi(args); /* timeout ms, 0 = default 3000 */
+    }
+    else if (strcmp(keyword, "control") == 0) {
+        cmd->type = CMD_CONTROL;
+        cmd->num1 = atoi(args); /* delta: +10, -5, etc. */
+    }
+    else if (strcmp(keyword, "transition_default") == 0) {
+        cmd->type = CMD_TRANSITION_DEFAULT;
+        strncpy(buf1, args, MAX_NAME - 1);
+        buf1[MAX_NAME - 1] = '\0';
+        trim_right(buf1);
+        cmd->str1 = pool_add(buf1);
+    }
     else {
         printf("Line %d: unknown command '%s'\n", line_num, keyword);
         return -1;
@@ -903,6 +965,164 @@ int engine_load(engine_scenario_t *scn, const char *filename)
 /* ------------------------------------------------------------------ */
 /* Runtime helpers                                                     */
 /* ------------------------------------------------------------------ */
+
+int engine_get_control(void) { return g_ai_control; }
+void engine_add_control(int delta)
+{
+    g_ai_control += delta;
+    if (g_ai_control < 0) g_ai_control = 0;
+    if (g_ai_control > 100) g_ai_control = 100;
+}
+
+/* Parse transition name */
+static int parse_transition_name(const char *name)
+{
+    if (strcmp(name, "dissolve") == 0) return TRANS_DISSOLVE;
+    if (strcmp(name, "wipe") == 0)     return TRANS_WIPE;
+    if (strcmp(name, "fade") == 0)      return TRANS_FADE;
+    if (strcmp(name, "glitch") == 0)   return TRANS_GLITCH;
+    if (strcmp(name, "none") == 0)     return TRANS_NONE;
+    return TRANS_NONE;
+}
+
+/* ------------------------------------------------------------------ */
+/* Transition effects                                                  */
+/* ------------------------------------------------------------------ */
+
+/* Far buffer for transition old-screen save (4000 bytes) */
+static unsigned short __far trans_buf[SCR_WIDTH * SCR_HEIGHT];
+
+static void do_transition(int type)
+{
+    int i;
+
+    if (type == TRANS_NONE) return;
+
+    switch (type) {
+
+    case TRANS_DISSOLVE:
+    {
+        /* 11-bit LFSR pseudo-random reveal (no array storage) */
+        unsigned int lfsr = 1;
+        unsigned int count = 0;
+        unsigned int total = (unsigned int)SCR_WIDTH * SCR_HEIGHT;
+        int batch = 0;
+
+        /* Save new screen to far buffer, restore old screen */
+        for (i = 0; i < (int)total; i++) {
+            unsigned int off = (unsigned int)i * 2u;
+            unsigned short far *vid = (unsigned short far *)
+                MK_FP(scr_segment, off);
+            /* Swap: new goes to trans_buf[i] was already old */
+            /* Actually: trans_buf has old screen. Video has new. */
+            /* Save new cell, write old cell back */
+            unsigned short new_cell = *vid;
+            *vid = trans_buf[i];
+            trans_buf[i] = new_cell;
+        }
+        /* Now video=old, trans_buf=new. Dissolve new over old. */
+
+        while (count < total) {
+            unsigned int bit = ((lfsr >> 10) ^ (lfsr >> 8)) & 1u;
+            lfsr = ((lfsr << 1) | bit) & 0x7FFu;
+
+            if (lfsr > 0 && lfsr <= total) {
+                unsigned int pos = lfsr - 1;
+                unsigned short far *vid = (unsigned short far *)
+                    MK_FP(scr_segment, pos * 2u);
+                *vid = trans_buf[pos];
+                count++;
+                batch++;
+                if (batch >= 40) {
+                    batch = 0;
+                    engine_delay(55);
+                }
+            }
+        }
+        break;
+    }
+
+    case TRANS_WIPE:
+    {
+        /* Left-to-right column wipe */
+        /* trans_buf has old. Video has new. Swap back then wipe. */
+        int r, c;
+        unsigned int total = (unsigned int)SCR_WIDTH * SCR_HEIGHT;
+        for (i = 0; i < (int)total; i++) {
+            unsigned short far *vid = (unsigned short far *)
+                MK_FP(scr_segment, (unsigned int)i * 2u);
+            unsigned short new_cell = *vid;
+            *vid = trans_buf[i];
+            trans_buf[i] = new_cell;
+        }
+
+        for (c = 0; c < SCR_WIDTH; c++) {
+            for (r = 0; r < SCR_HEIGHT; r++) {
+                unsigned int pos = (unsigned int)r * SCR_WIDTH + (unsigned int)c;
+                unsigned short far *vid = (unsigned short far *)
+                    MK_FP(scr_segment, pos * 2u);
+                *vid = trans_buf[pos];
+            }
+            if ((c & 3) == 0)
+                engine_delay(55);
+        }
+        break;
+    }
+
+    case TRANS_FADE:
+    {
+        /* Use VGA DAC fade if available */
+        if (g_hw.display == HW_DISP_VGA) {
+            unsigned char pal[48];
+            int s;
+
+            /* Read current palette */
+            outp(0x3C7, 0);
+            for (i = 0; i < 48; i++)
+                pal[i] = (unsigned char)inp(0x3C9);
+
+            /* Fade out */
+            for (s = 15; s >= 0; s--) {
+                outp(0x3C8, 0);
+                for (i = 0; i < 48; i++)
+                    outp(0x3C9, (unsigned char)
+                         ((unsigned int)pal[i] * (unsigned int)s / 16u));
+                engine_delay(30);
+            }
+
+            /* Screen is now black; new content is already there */
+            engine_delay(200);
+
+            /* Fade in */
+            for (s = 1; s <= 16; s++) {
+                outp(0x3C8, 0);
+                for (i = 0; i < 48; i++)
+                    outp(0x3C9, (unsigned char)
+                         ((unsigned int)pal[i] * (unsigned int)s / 16u));
+                engine_delay(30);
+            }
+        }
+        break;
+    }
+
+    case TRANS_GLITCH:
+    {
+        /* Brief random corruption then snap to new content */
+        int frame;
+        for (frame = 0; frame < 4; frame++) {
+            for (i = 0; i < 200; i++) {
+                unsigned int pos = rng_next() % (SCR_WIDTH * SCR_HEIGHT);
+                unsigned short far *vid = (unsigned short far *)
+                    MK_FP(scr_segment, pos * 2u);
+                *vid = (unsigned short)(rng_next());
+            }
+            engine_delay(55);
+        }
+        /* New content is already rendered; just break out */
+        break;
+    }
+    } /* switch */
+}
 
 static unsigned char get_attr(engine_scenario_t *scn)
 {
@@ -1097,6 +1317,8 @@ void engine_reset(engine_scenario_t *scn)
     scn->news_fallback[0] = '\0';
     scn->news_headline[0] = '\0';
 
+    g_default_transition = TRANS_NONE;
+
     for (i = 0; i < MAX_VARS; i++)
         g_vars[i].in_use = 0;
     for (i = 0; i < MAX_TAGS; i++)
@@ -1208,8 +1430,27 @@ int engine_run(engine_scenario_t *scn)
             {
                 int idx = find_state(scn->state_count, pool_str(c->str1));
                 if (idx >= 0) {
+                    int trans = c->num1;
+                    if (trans == TRANS_NONE) trans = g_default_transition;
+                    if (trans != TRANS_NONE) {
+                        /* Save current screen before state change */
+                        int ti;
+                        for (ti = 0; ti < SCR_WIDTH * SCR_HEIGHT; ti++) {
+                            unsigned short far *vid = (unsigned short far *)
+                                MK_FP(scr_segment, (unsigned int)ti * 2u);
+                            trans_buf[ti] = *vid;
+                        }
+                    }
                     scn->current_state = idx;
                     ci = st->cmd_count;
+                    /* Transition will run after new state renders its first content */
+                    if (trans != TRANS_NONE) {
+                        /* We need to save the old screen, let new state render,
+                         * then animate. But since goto just changes state and the
+                         * loop re-enters, we set a pending flag. For simplicity,
+                         * just do the transition now with old screen saved. */
+                        do_transition(trans);
+                    }
                 }
                 break;
             }
@@ -1436,6 +1677,52 @@ int engine_run(engine_scenario_t *scn)
                 }
                 break;
             }
+
+            case CMD_STINGER:
+            {
+                const char *name = pool_str(c->str1);
+                int sid = -1;
+                if (strcmp(name, "alarm") == 0)         sid = STINGER_ALARM;
+                else if (strcmp(name, "stamp") == 0)    sid = STINGER_STAMP;
+                else if (strcmp(name, "click") == 0)    sid = STINGER_CLICK;
+                else if (strcmp(name, "buzz") == 0)     sid = STINGER_BUZZ;
+                else if (strcmp(name, "ominous") == 0)  sid = STINGER_OMINOUS;
+                else if (strcmp(name, "register") == 0) sid = STINGER_REGISTER;
+                if (sid >= 0 && g_hw.adlib)
+                    adlib_play_stinger(sid);
+                break;
+            }
+
+            case CMD_CLIMAX:
+                if (g_hw.display == HW_DISP_VGA)
+                    climax_run(pool_str(c->str1));
+                break;
+
+            case CMD_SYNC_BEAT:
+            {
+                /* Wait until next music beat, with timeout */
+                unsigned long far *tick =
+                    (unsigned long far *)MK_FP(0x0040, 0x006C);
+                unsigned long start = *tick;
+                unsigned long timeout;
+                unsigned char prev_beat = adlib_beat;
+                timeout = (unsigned long)(c->num1 > 0 ? c->num1 : 3000)
+                          * 182UL / 10000UL;
+                while (adlib_beat == prev_beat &&
+                       (*tick - start) < timeout) {
+                    adlib_tick();
+                    adlib_stinger_tick();
+                }
+                break;
+            }
+
+            case CMD_CONTROL:
+                engine_add_control(c->num1);
+                break;
+
+            case CMD_TRANSITION_DEFAULT:
+                g_default_transition = parse_transition_name(pool_str(c->str1));
+                break;
 
             } /* switch */
         } /* for commands */

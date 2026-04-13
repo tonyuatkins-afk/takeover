@@ -15,6 +15,8 @@
 
 [state: init]
 music: "drone_hushline"
+transition_default: dissolve
+control: +5
 attr: bright_green
 effect: typing_effect
 text: "CRISIS COMMUNICATIONS REVIEW SYSTEM v3.1"
@@ -46,7 +48,9 @@ text: ""
 text: "Analyst {username} logged in at 09:14:03 EST." @login_line
 delay: 2000
 effect: screen_flicker 300 4
+stinger: click
 rewrite: @login_line "Analyst RAINES, M. logged in at 09:14:03 EST."
+control: +10
 delay: 1500
 attr: amber
 text: ""
@@ -374,7 +378,7 @@ inc: compliant
 text: ""
 text: "Thank you. Loading next assignment..."
 delay: 1000
-goto: transcript_2
+goto: transcript_2 dissolve
 
 [state: refuse_approve]
 attr: amber
@@ -529,6 +533,7 @@ choice: "Approve transcript" -> approve_2_comply
 choice: "These corrections are lies" -> escalation_aware
 
 [state: escalation_aware]
+control: +20
 clear: main
 delay: 500
 attr: amber
@@ -541,6 +546,8 @@ text: "You have noticed the corrections."
 delay: 1000
 text: ""
 effect: screen_flicker 300 3
+effect: sine_wave 1500 2
+stinger: ominous
 attr: cyan
 effect: typing_effect
 text: "Let me be transparent with you."
@@ -554,7 +561,7 @@ text: "Panic is more dangerous than contamination."
 text: "Lawsuits are more expensive than treatment."
 text: "Headlines cause more harm than chemicals."
 delay: 2000
-goto: escalation_aware_2
+goto: escalation_aware_2 dissolve
 
 [state: escalation_aware_2]
 attr: amber
@@ -856,7 +863,7 @@ text: "The public record is accurate."
 attr: grey
 text: "The public record has always been accurate."
 delay: 2000
-goto: ending_takeover_2
+goto: ending_takeover_2 dissolve
 
 [state: ending_takeover_2]
 hijack_prompt: "COPY C:\\REVIEW\\APPROVED\\*.* C:\\ARCHIVE\\FINAL\\"
@@ -872,6 +879,8 @@ text: "You never do."
 delay: 3000
 lock_input: 2000
 music_stop: 0
+climax: hushline
+control: +30
 gfx_fade: 1500
 end: takeover
 
@@ -909,6 +918,8 @@ text: "And that is the official record."
 delay: 2000
 lock_input: 2000
 music_stop: 0
+climax: hushline
+control: +30
 gfx_fade: 1500
 end: takeover
 
@@ -966,6 +977,8 @@ text: ""
 text: "That is enough."
 delay: 1500
 music_stop: 0
+climax: hushline
+control: +30
 gfx_fade: 1500
 end: escape
 
@@ -1041,5 +1054,7 @@ text: ""
 text: "And the reviewers always approve."
 delay: 2000
 music_stop: 0
+climax: hushline
+control: +30
 gfx_fade: 2000
 end: revelation

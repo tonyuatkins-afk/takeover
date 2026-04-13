@@ -38,4 +38,8 @@ void fx_interference(int duration, int intensity);
 /* No-op stub for text_rewrite (handled by engine CMD_REWRITE) */
 void fx_text_rewrite_noop(int duration, int intensity);
 
+/* Demoscene-inspired effects (v1.1) */
+void fx_sine_wave(int duration, int intensity);
+void fx_palette_pulse(int duration, int intensity);
+
 #endif /* EFFECTS_H */

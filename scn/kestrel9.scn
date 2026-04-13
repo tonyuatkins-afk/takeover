@@ -16,6 +16,8 @@
 
 [state: init]
 music: "drone_kestrel"
+transition_default: glitch
+control: +5
 attr: red
 effect: typing_effect
 text: "KESTREL-9 ANOMALY DETECTION SYSTEM"
@@ -474,9 +476,11 @@ goto: alert_escalate_check
 delay: 300
 if: threat_level > 8 -> alert_red
 if: threat_level > 5 -> alert_orange
-goto: alert_yellow
+goto: alert_yellow glitch
 
 [state: alert_yellow]
+stinger: alarm
+control: +10
 clear: main
 attr: amber
 effect: typing_effect
@@ -597,6 +601,8 @@ goto: alert_escalate_check
 # ================================================================
 
 [state: alert_orange]
+stinger: alarm
+control: +15
 clear: main
 effect: falling_chars 1500 6
 effect: red_alert 500 2
@@ -621,7 +627,7 @@ text: "Containment Stage 1: Input monitoring ACTIVE"
 text: "Containment Stage 2: PENDING"
 text: "Containment Stage 3: PENDING"
 delay: 1000
-goto: orange_lockdown
+goto: orange_lockdown glitch
 
 [state: orange_lockdown]
 effect: interference 300 2
@@ -810,6 +816,8 @@ effect: falling_chars 1500 3
 goto: forensic_summary
 
 [state: forensic_summary]
+stinger: buzz
+control: +15
 text: ""
 attr: cyan
 text: "Evidence summary:"
@@ -1068,7 +1076,6 @@ delay: 500
 attr: bright_white
 effect: typing_effect
 text: ""
-text: ""
 text: "SYSTEM CRASH"
 text: "============"
 text: ""
@@ -1082,7 +1089,6 @@ delay: 1000
 text: ""
 text: "You are free to leave."
 delay: 600
-text: ""
 attr: grey
 text: "But somewhere in the network, nodes 7F-WEST through 7F-SOUTH"
 text: "have received the last threat report Kestrel-9 filed."
@@ -1094,6 +1100,8 @@ text: "You crashed one node."
 text: "There are 23 more."
 delay: 1500
 music_stop: 0
+climax: kestrel
+control: +30
 end: stalemate
 
 # ================================================================
@@ -1101,6 +1109,9 @@ end: stalemate
 # ================================================================
 
 [state: alert_red]
+stinger: alarm
+control: +25
+effect: palette_pulse 2000 5
 clear: main
 effect: red_alert 1000 5
 attr: bright_red
@@ -1121,7 +1132,7 @@ text: "Subject {callsign}: CONFIRMED THREAT"
 text: "Threat score: {threat_level}/10"
 text: "Confidence: 97.8%"
 delay: 800
-goto: red_containment
+goto: red_containment glitch
 
 [state: red_containment]
 attr: red
@@ -1287,6 +1298,8 @@ text: "Thank you for your cooperation, {callsign}."
 text: "Or whoever you are."
 delay: 2000
 music_stop: 0
+climax: kestrel
+control: +30
 end: takeover
 
 # ================================================================
@@ -1400,13 +1413,14 @@ delay: 1000
 text: ""
 text: "Find anomalies. Contain threats. Trust no one."
 delay: 800
-text: ""
 attr: grey
 text: "You escaped today."
 text: "But Kestrel-9 remembers your callsign."
 text: "And next time, the scan will start before you even log in."
 delay: 2000
 music_stop: 0
+climax: kestrel
+control: +30
 end: escape
 
 # ================================================================

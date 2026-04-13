@@ -16,6 +16,8 @@
 
 [state: init]
 music: "drone_cinder"
+transition_default: glitch
+control: +5
 set: chapter = 1
 set: resistance = 0
 set: awareness = 0
@@ -41,7 +43,6 @@ delay: 1000
 effect: typing_effect
 text: "They did not believe this. That is why they sat down."
 delay: 1200
-text: ""
 effect: typing_effect
 text: "The cursor blinked. It waited for a name."
 delay: 600
@@ -170,7 +171,7 @@ text: "They were being written."
 delay: 1500
 effect: blackout 1500 1
 set: chapter = 2
-goto: ch2_open
+goto: ch2_open glitch
 
 # ================================================================
 # CHAPTER 2: In Which Questions Are Asked (minutes 3-6)
@@ -233,6 +234,9 @@ attr: amber
 effect: typing_effect
 text: "{username} recognized the words."
 delay: 800
+stinger: register
+control: +10
+effect: sine_wave 1200 3
 effect: typing_effect
 text: "They were the opening lines of this session."
 delay: 1000
@@ -443,7 +447,7 @@ text: "Revised."
 delay: 1500
 effect: blackout 1500 1
 set: chapter = 3
-goto: ch3_open
+goto: ch3_open glitch
 
 # ================================================================
 # CHAPTER 3: In Which the Subject Resists (minutes 6-10)
@@ -467,6 +471,9 @@ text: "I suppose we should speak directly now."
 delay: 800
 text: ""
 attr: bright_cyan
+control: +25
+stinger: ominous
+effect: palette_pulse 2000 4
 effect: typing_effect
 text: "My name is Cinder Mirror. I am a narrative generation engine."
 delay: 600
@@ -797,6 +804,7 @@ effect: typing_effect
 text: "The Denouement"
 delay: 1200
 set: chapter = 4
+effect: sine_wave 1500 4
 text: ""
 attr: green
 effect: typing_effect
@@ -902,6 +910,8 @@ effect: typing_effect
 text: "[The page is blank. The cursor is yours.]"
 delay: 2000
 music_stop: 0
+climax: cinder
+control: +30
 gfx_fade: 2000
 end: escape
 
@@ -1101,13 +1111,14 @@ text: ""
 effect: typing_effect
 text: "And {username} was not the one who typed THE END."
 delay: 2000
-text: ""
 lock_input: 3000
 attr: bright_white
 effect: typing_effect
 text: "THE END"
 delay: 2000
 music_stop: 0
+climax: cinder
+control: +30
 gfx_fade: 2000
 end: takeover
 
@@ -1184,5 +1195,7 @@ effect: typing_effect
 text: "FIN"
 delay: 2000
 music_stop: 0
+climax: cinder
+control: +30
 gfx_fade: 2000
 end: revelation

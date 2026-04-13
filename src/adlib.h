@@ -33,4 +33,32 @@ void adlib_tick(void);
 void adlib_set_mute(int mute);
 int  adlib_get_mute(void);
 
+/* ------------------------------------------------------------------ */
+/* Beat sync: poll-based audio-visual synchronization                  */
+/* ------------------------------------------------------------------ */
+
+/* Beat counter: increments on every note-on event.
+ * Effects poll this to sync visuals to music. */
+extern unsigned char adlib_beat;
+extern unsigned char adlib_last_ch;   /* channel of last note-on (0-8) */
+
+/* ------------------------------------------------------------------ */
+/* Stingers: fire-and-forget sound effects on channels 3-8             */
+/* ------------------------------------------------------------------ */
+
+/* Stinger IDs */
+#define STINGER_ALARM       0   /* two-tone klaxon (shared/urgent) */
+#define STINGER_STAMP       1   /* bureaucratic thud (Axiom) */
+#define STINGER_CLICK       2   /* typewriter click (Hushline) */
+#define STINGER_BUZZ        3   /* harsh error buzz (Kestrel-9) */
+#define STINGER_OMINOUS     4   /* slow diminished chord (Orchard) */
+#define STINGER_REGISTER    5   /* metallic ka-ching (Cinder) */
+#define STINGER_COUNT       6
+
+/* Fire a stinger by ID. Non-blocking; plays on channels 3-8. */
+void adlib_play_stinger(int id);
+
+/* Advance stinger playback (called from engine_delay spin loop). */
+void adlib_stinger_tick(void);
+
 #endif /* ADLIB_H */
