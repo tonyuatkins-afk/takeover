@@ -1,5 +1,9 @@
 # TAKEOVER - AI Takeover Simulator for DOS
 # Build with OpenWatcom 2.0: wmake
+#
+# Prerequisites:
+#   - OpenWatcom 2.0 installed (WATCOM env var set)
+#   - NASM (optional, for future assembly modules)
 
 CC = wcc
 LD = wlink
@@ -19,26 +23,44 @@ CFLAGS = -0 -fpi -ms -s -ox -w4 -zq -bt=dos
 # Include paths
 CFLAGS += -i=src -i=lib
 
-# Source files
-SRC_FILES = src/main.c src/engine.c src/effects.c src/audio.c &
-            src/menu.c src/news.c src/display.c
-LIB_FILES = lib/screen.c
-
-# Object files
-OBJ_FILES = $(SRC_FILES:.c=.obj) $(LIB_FILES:.c=.obj)
+# Object files (explicit list for wmake compatibility)
+OBJS = src\main.obj src\engine.obj src\effects.obj src\audio.obj &
+       src\menu.obj src\news.obj src\display.obj lib\screen.obj
 
 # Target
 TARGET = TAKEOVER.EXE
 
-all: $(TARGET)
+all: $(TARGET) .SYMBOLIC
 
-.c.obj:
-	$(CC) $(CFLAGS) -fo=$@ $<
+# Explicit compilation rules (wmake inference rules are fragile across dirs)
+src\main.obj: src\main.c src\engine.h lib\screen.h
+	$(CC) $(CFLAGS) -fo=$^@ src\main.c
 
-$(TARGET): $(OBJ_FILES)
-	$(LD) system dos file { $(OBJ_FILES) } name $(TARGET)
+src\engine.obj: src\engine.c src\engine.h src\effects.h src\audio.h lib\screen.h
+	$(CC) $(CFLAGS) -fo=$^@ src\engine.c
+
+src\effects.obj: src\effects.c src\effects.h
+	$(CC) $(CFLAGS) -fo=$^@ src\effects.c
+
+src\audio.obj: src\audio.c src\audio.h src\engine.h
+	$(CC) $(CFLAGS) -fo=$^@ src\audio.c
+
+src\menu.obj: src\menu.c src\menu.h
+	$(CC) $(CFLAGS) -fo=$^@ src\menu.c
+
+src\news.obj: src\news.c src\news.h
+	$(CC) $(CFLAGS) -fo=$^@ src\news.c
+
+src\display.obj: src\display.c src\display.h lib\screen.h
+	$(CC) $(CFLAGS) -fo=$^@ src\display.c
+
+lib\screen.obj: lib\screen.c lib\screen.h
+	$(CC) $(CFLAGS) -fo=$^@ lib\screen.c
+
+$(TARGET): $(OBJS)
+	$(LD) system dos name $(TARGET) file { $(OBJS) }
 
 clean: .SYMBOLIC
-	del src\*.obj
-	del lib\*.obj
-	del $(TARGET)
+	-del src\*.obj
+	-del lib\*.obj
+	-del $(TARGET)

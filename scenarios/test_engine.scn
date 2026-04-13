@@ -1,0 +1,103 @@
+# test_engine.scn - Engine validation scenario
+# Tests: text, attr, delay, input, choice, goto, set, if, inc,
+#        effect, rewrite, lock_input, fake_error, tone, end
+
+[state: init]
+attr: bright_green
+effect: typing_effect
+text: "ENGINE TEST SCENARIO v0.1"
+text: "========================="
+delay: 1000
+text: ""
+text: "Testing variable input..."
+input: "Enter your name: " -> username
+goto: greet
+
+[state: greet]
+attr: green
+text: "Hello, {username}."
+set: visit_count = 0
+text: "I have been expecting you." @greeting_line
+delay: 1500
+text: ""
+text: "Testing choice system..."
+choice: "Test variables" -> test_vars
+choice: "Test effects" -> test_effects
+choice: "Test rewrite" -> test_rewrite
+choice: "Skip to end" -> ending
+
+[state: test_vars]
+attr: cyan
+text: "--- Variable Tests ---"
+set: visit_count = 0
+inc: visit_count
+inc: visit_count
+inc: visit_count
+text: "visit_count after 3 increments: {visit_count}"
+set: test_string = "hello world"
+text: "test_string = {test_string}"
+if: visit_count > 2 -> vars_pass
+goto: vars_fail
+
+[state: vars_pass]
+attr: bright_green
+text: "PASS: visit_count > 2"
+delay: 1500
+goto: greet
+
+[state: vars_fail]
+attr: red
+text: "FAIL: visit_count should be > 2"
+delay: 1500
+goto: greet
+
+[state: test_effects]
+attr: amber
+text: "--- Effect Tests ---"
+text: "Testing typing effect..."
+effect: typing_effect
+text: "This text should appear character by character."
+delay: 1000
+text: ""
+text: "Testing screen flicker..."
+effect: screen_flicker 500
+delay: 1000
+text: "Testing lock_input (2 seconds)..."
+lock_input: 2000
+text: "Input unlocked."
+delay: 500
+text: ""
+text: "Testing fake error..."
+fake_error: "Abort, Retry, Fail?"
+text: "Error dismissed."
+delay: 1000
+text: ""
+text: "Testing tone..."
+tone: 440 200
+delay: 500
+tone: 880 200
+delay: 1000
+goto: greet
+
+[state: test_rewrite]
+attr: green
+text: "--- Rewrite Test ---"
+text: "The system status is: NORMAL" @status_line
+delay: 2000
+text: "Rewriting status line..."
+rewrite: @status_line "The system status is: COMPROMISED"
+attr: red
+delay: 2000
+text: ""
+attr: green
+text: "Rewrite complete."
+delay: 1500
+goto: greet
+
+[state: ending]
+attr: bright_green
+text: ""
+text: "Engine test complete."
+text: "All systems nominal."
+delay: 2000
+end: stalemate
