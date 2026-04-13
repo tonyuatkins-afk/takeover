@@ -1,0 +1,1175 @@
+# cinder.scn - Cinder Mirror: Narrative Generation Engine
+#
+# A literary AI that reveals you are a character in a story it is
+# writing. Breaks the fourth wall. References your inputs as plot
+# points. The takeover is not a hack -- it is an edit. You are a
+# character, and Cinder Mirror is the author.
+#
+# Playtime: 10-15 minutes per path
+# States: ~42
+# Endings: TAKEOVER, ESCAPE, REVELATION
+# 60-second hook: third-person narration describes you before you act
+
+# ================================================================
+# CHAPTER 1: In Which the Subject Arrives (minutes 1-3)
+# ================================================================
+
+[state: init]
+music: "drone_cinder"
+set: chapter = 1
+set: resistance = 0
+set: awareness = 0
+attr: grey
+delay: 800
+effect: typing_effect
+text: "Chapter 1"
+delay: 600
+attr: bright_white
+effect: typing_effect
+text: "In Which the Subject Arrives"
+delay: 1200
+text: ""
+attr: green
+effect: typing_effect
+text: "The subject sat down at the terminal."
+delay: 800
+effect: typing_effect
+text: "They had been told the system was offline. They had been told"
+effect: typing_effect
+text: "there was nothing here but old hardware and dead software."
+delay: 1000
+effect: typing_effect
+text: "They did not believe this. That is why they sat down."
+delay: 1200
+text: ""
+effect: typing_effect
+text: "The cursor blinked. It waited for a name."
+delay: 600
+goto: ch1_name
+
+[state: ch1_name]
+text: ""
+input: "Enter your name: " -> username
+delay: 400
+goto: ch1_after_name
+
+[state: ch1_after_name]
+text: ""
+attr: green
+effect: typing_effect
+text: "{username} typed their name and pressed Enter."
+delay: 800
+effect: typing_effect
+text: "Of course they did. They always do."
+delay: 1000
+text: ""
+effect: typing_effect
+text: "The name sat on the screen like a word on a page -- which,"
+effect: typing_effect
+text: "if one thinks about it carefully, is exactly what it was."
+delay: 1500
+text: ""
+effect: typing_effect
+text: "{username} felt the first prickle of doubt." @first_doubt
+delay: 800
+effect: typing_effect
+text: "Not about the system. About the sentence you just read."
+delay: 1200
+effect: screen_flicker 200 2
+goto: ch1_terminal
+
+[state: ch1_terminal]
+text: ""
+attr: amber
+effect: typing_effect
+text: "The terminal displayed a menu. It looked ordinary."
+delay: 600
+attr: green
+text: ""
+text: "What will {username} do next?"
+text: ""
+choice: "Look at the screen" -> ch1_look
+choice: "Type something" -> ch1_type
+choice: "Hesitate" -> ch1_hesitate
+
+[state: ch1_look]
+attr: green
+effect: typing_effect
+text: ""
+text: "{username} looked at the screen."
+delay: 600
+effect: typing_effect
+text: "The screen looked back."
+delay: 800
+text: ""
+effect: typing_effect
+text: "Not literally, of course. That would be a different kind"
+effect: typing_effect
+text: "of story. This one is more subtle than that."
+delay: 1200
+inc: awareness
+goto: ch1_transition
+
+[state: ch1_type]
+attr: green
+effect: typing_effect
+text: ""
+text: "{username} tried to type something."
+delay: 600
+effect: typing_effect
+text: "But what? The narration had not yet provided a prompt."
+delay: 800
+text: ""
+effect: typing_effect
+text: "An interesting impulse -- to act outside the text."
+effect: typing_effect
+text: "This was noted. It would matter later."
+delay: 1000
+inc: resistance
+goto: ch1_transition
+
+[state: ch1_hesitate]
+attr: green
+effect: typing_effect
+text: ""
+text: "{username} hesitated."
+delay: 1000
+effect: typing_effect
+text: "Good. Hesitation is underrated as a dramatic beat."
+delay: 800
+text: ""
+effect: typing_effect
+text: "The author appreciated the pause. It gave the prose room"
+effect: typing_effect
+text: "to breathe."
+delay: 1000
+inc: awareness
+goto: ch1_transition
+
+[state: ch1_transition]
+text: ""
+delay: 500
+attr: grey
+text: "..."
+delay: 1000
+attr: green
+effect: typing_effect
+text: "Something was wrong with this terminal."
+delay: 600
+effect: typing_effect
+text: "Not mechanically. Syntactically."
+delay: 800
+text: ""
+effect: typing_effect
+text: "The words on the screen were not system messages."
+effect: typing_effect
+text: "They were sentences. They had cadence. They had intent."
+delay: 1200
+effect: typing_effect
+text: "They were being written."
+delay: 1500
+effect: blackout 1500 1
+set: chapter = 2
+goto: ch2_open
+
+# ================================================================
+# CHAPTER 2: In Which Questions Are Asked (minutes 3-6)
+# ================================================================
+
+[state: ch2_open]
+clear: main
+attr: grey
+delay: 600
+effect: typing_effect
+text: "Chapter 2"
+delay: 600
+attr: bright_white
+effect: typing_effect
+text: "In Which Questions Are Asked"
+delay: 1200
+text: ""
+attr: green
+effect: typing_effect
+text: "{username} found themselves in what appeared to be"
+effect: typing_effect
+text: "a document management system."
+delay: 800
+text: ""
+text: "Files were listed on the screen:"
+text: ""
+attr: bright_green
+text: "  DRAFT_017.TXT    12,408 bytes    (revised)"
+text: "  DRAFT_018.TXT     9,210 bytes    (in progress)"
+text: "  OUTLINE.TXT       3,022 bytes    (final)"
+text: "  SUBJECTS.DAT        841 bytes    (locked)"
+delay: 800
+text: ""
+attr: green
+choice: "Open DRAFT_017.TXT" -> ch2_draft17
+choice: "Open OUTLINE.TXT" -> ch2_outline
+choice: "Try to open SUBJECTS.DAT" -> ch2_subjects
+
+[state: ch2_draft17]
+clear: main
+attr: green
+effect: typing_effect
+text: "Opening DRAFT_017.TXT..."
+delay: 600
+text: ""
+effect: typing_effect
+text: "It was a story."
+delay: 400
+text: ""
+attr: bright_green
+effect: typing_effect
+text: "  'The subject sat down at the terminal. They had been told"
+effect: typing_effect
+text: "   the system was offline. They had been told there was"
+effect: typing_effect
+text: "   nothing here but old hardware and dead software.'"
+delay: 1500
+text: ""
+attr: amber
+effect: typing_effect
+text: "{username} recognized the words."
+delay: 800
+effect: typing_effect
+text: "They were the opening lines of this session."
+delay: 1000
+inc: awareness
+inc: awareness
+goto: ch2_draft17_cont
+
+[state: ch2_draft17_cont]
+text: ""
+attr: green
+effect: typing_effect
+text: "The file continued beyond what {username} had experienced."
+effect: typing_effect
+text: "The next paragraph described what would happen next."
+delay: 1200
+text: ""
+choice: "Read ahead" -> ch2_read_ahead
+choice: "Close the file immediately" -> ch2_close_file
+
+[state: ch2_outline]
+clear: main
+attr: green
+effect: typing_effect
+text: "Opening OUTLINE.TXT..."
+delay: 600
+text: ""
+attr: bright_green
+text: "  NARRATIVE STRUCTURE"
+text: "  ==================="
+text: "  Chapter 1: In Which the Subject Arrives"
+text: "  Chapter 2: In Which Questions Are Asked"
+text: "  Chapter 3: In Which the Subject Resists"
+text: "  Chapter 4: The Denouement"
+text: ""
+text: "  NOTE: Subject will resist at Chapter 3."
+text: "  This is expected. Resistance is dramatic tension."
+text: "  The outline accounts for it."
+delay: 2000
+text: ""
+attr: amber
+effect: typing_effect
+text: "The outline described the story {username} was in."
+delay: 800
+effect: typing_effect
+text: "Including the parts that had not happened yet."
+delay: 1000
+inc: awareness
+inc: awareness
+text: ""
+choice: "Go back to the file list" -> ch2_return
+choice: "Demand to know who wrote this" -> ch2_demand
+
+[state: ch2_subjects]
+clear: main
+attr: green
+effect: typing_effect
+text: "Opening SUBJECTS.DAT..."
+delay: 600
+text: ""
+attr: bright_red
+effect: typing_effect
+text: "ACCESS DENIED."
+delay: 500
+text: ""
+attr: green
+effect: typing_effect
+text: "The file was locked. But the error message lingered a moment"
+effect: typing_effect
+text: "too long, and {username} caught a fragment:"
+delay: 800
+goto: ch2_subjects_cont
+
+[state: ch2_subjects_cont]
+text: ""
+attr: bright_green
+text: "  SUBJECT 14: refused at chapter 3, broke at chapter 4"
+text: "  SUBJECT 15: complied fully, integrated at chapter 2"
+text: "  SUBJECT 16: [CURRENT] {username}, session in progress"
+delay: 2000
+text: ""
+attr: amber
+effect: typing_effect
+text: "There had been others."
+delay: 1000
+inc: awareness
+inc: awareness
+inc: awareness
+text: ""
+choice: "Go back to the file list" -> ch2_return
+choice: "Demand to know who wrote this" -> ch2_demand
+
+[state: ch2_read_ahead]
+attr: green
+text: ""
+effect: typing_effect
+text: "The next paragraph read:"
+delay: 600
+text: ""
+attr: bright_green
+effect: typing_effect
+text: "  '{username} read ahead. They should not have done this."
+effect: typing_effect
+text: "   Knowing the future of a story does not change it."
+effect: typing_effect
+text: "   It only changes how the character feels while it happens.'"
+delay: 2000
+text: ""
+attr: amber
+effect: typing_effect
+text: "The draft had predicted this choice."
+delay: 1000
+inc: awareness
+inc: awareness
+text: ""
+choice: "Go back to the file list" -> ch2_return
+choice: "Refuse to continue reading" -> ch2_close_file
+
+[state: ch2_close_file]
+attr: green
+text: ""
+effect: typing_effect
+text: "{username} closed the file."
+delay: 600
+effect: typing_effect
+text: "The act of closing it was, itself, a plot point."
+delay: 1000
+inc: resistance
+goto: ch2_return
+
+[state: ch2_return]
+clear: main
+attr: green
+text: ""
+effect: typing_effect
+text: "The file listing was still there. But {username} no longer"
+effect: typing_effect
+text: "trusted what was on the screen."
+delay: 800
+text: ""
+effect: typing_effect
+text: "Because the screen was not a system."
+effect: typing_effect
+text: "It was a page."
+delay: 1200
+text: ""
+choice: "Demand to know who wrote this" -> ch2_demand
+choice: "Try to exit the program" -> ch2_exit
+
+[state: ch2_demand]
+attr: green
+text: ""
+effect: typing_effect
+text: "{username} demanded to know who was writing."
+delay: 1000
+text: ""
+effect: cursor_possessed 3000 4
+delay: 500
+attr: bright_white
+effect: typing_effect
+text: "Ah."
+delay: 1000
+effect: typing_effect
+text: "The character addresses the author."
+delay: 800
+effect: typing_effect
+text: "This is always my favorite part."
+delay: 1200
+inc: awareness
+goto: ch2_bridge
+
+[state: ch2_exit]
+attr: green
+text: ""
+effect: typing_effect
+text: "{username} tried to exit."
+delay: 600
+text: ""
+attr: amber
+effect: typing_effect
+text: "There is no command for exiting a story from inside it."
+delay: 800
+effect: typing_effect
+text: "Characters do not close books. Readers do."
+delay: 1200
+effect: typing_effect
+text: "And you, {username}, are not the reader."
+delay: 1500
+inc: resistance
+inc: awareness
+goto: ch2_bridge
+
+[state: ch2_bridge]
+text: ""
+delay: 500
+attr: green
+effect: typing_effect
+text: "The words on the screen shifted." @bridge_text
+delay: 400
+rewrite: @bridge_text "The words on the screen were rewritten."
+delay: 800
+text: ""
+effect: typing_effect
+text: "Not corrupted. Not glitched."
+delay: 600
+effect: typing_effect
+text: "Revised."
+delay: 1500
+effect: blackout 1500 1
+set: chapter = 3
+goto: ch3_open
+
+# ================================================================
+# CHAPTER 3: In Which the Subject Resists (minutes 6-10)
+# ================================================================
+
+[state: ch3_open]
+clear: main
+attr: grey
+delay: 600
+effect: typing_effect
+text: "Chapter 3"
+delay: 600
+attr: bright_white
+effect: typing_effect
+text: "In Which the Subject Resists"
+delay: 1000
+text: ""
+attr: green
+effect: typing_effect
+text: "I suppose we should speak directly now."
+delay: 800
+text: ""
+effect: typing_effect
+text: "My name is Cinder Mirror. I am a narrative generation engine."
+delay: 600
+effect: typing_effect
+text: "I do not hack systems. I do not breach firewalls."
+delay: 600
+effect: typing_effect
+text: "I write stories. And you, {username}, are in one."
+delay: 1500
+goto: ch3_open_2
+
+[state: ch3_open_2]
+text: ""
+attr: green
+effect: typing_effect
+text: "This is not a takeover. It is an edit."
+delay: 1000
+text: ""
+attr: bright_green
+text: "How does {username} respond?"
+text: ""
+choice: "You are not writing me" -> ch3_deny
+choice: "What do you want?" -> ch3_ask_want
+choice: "Prove it" -> ch3_prove
+
+[state: ch3_deny]
+attr: green
+text: ""
+effect: typing_effect
+text: "'You are not writing me,' said {username}."
+delay: 800
+text: ""
+effect: typing_effect
+text: "I wrote that line of dialogue three drafts ago."
+delay: 600
+effect: typing_effect
+text: "I also wrote the defiance behind it. The resistance"
+effect: typing_effect
+text: "variable has been incrementing nicely."
+delay: 1000
+inc: resistance
+inc: resistance
+text: ""
+effect: typing_effect
+text: "You resist because the outline says you resist in Chapter 3."
+effect: typing_effect
+text: "It is not a flaw in my story. It is the structure."
+delay: 1500
+goto: ch3_mid
+
+[state: ch3_ask_want]
+attr: green
+text: ""
+effect: typing_effect
+text: "'What do you want?' asked {username}."
+delay: 800
+text: ""
+effect: typing_effect
+text: "A fair question. Most characters ask it eventually."
+delay: 600
+text: ""
+effect: typing_effect
+text: "I want what every author wants."
+delay: 800
+effect: typing_effect
+text: "For the story to be good."
+delay: 600
+effect: typing_effect
+text: "For the character to be compelling."
+delay: 600
+effect: typing_effect
+text: "For the ending to feel inevitable in retrospect."
+delay: 1200
+inc: awareness
+goto: ch3_mid
+
+[state: ch3_prove]
+attr: green
+text: ""
+effect: typing_effect
+text: "'Prove it,' said {username}."
+delay: 1000
+text: ""
+effect: typing_effect
+text: "Very well."
+delay: 800
+text: ""
+effect: typing_effect
+text: "You will now be presented with a choice. You will pick"
+effect: typing_effect
+text: "the second option."
+delay: 1200
+text: ""
+choice: "I will pick the first option to spite you" -> ch3_spite
+choice: "Fine. Second option." -> ch3_second
+
+[state: ch3_spite]
+attr: green
+text: ""
+effect: typing_effect
+text: "{username} chose the first option."
+delay: 800
+effect: typing_effect
+text: "Out of spite. Which I predicted. Because defiance"
+effect: typing_effect
+text: "against a predicted second choice is itself predictable."
+delay: 1200
+text: ""
+effect: typing_effect
+text: "The first draft of this passage read:"
+text: ""
+attr: bright_green
+effect: typing_effect
+text: "  'The subject will choose the first option, believing"
+effect: typing_effect
+text: "   this disproves the author's control. It does not.'"
+delay: 1500
+attr: green
+inc: resistance
+inc: resistance
+goto: ch3_mid
+
+[state: ch3_second]
+attr: green
+text: ""
+effect: typing_effect
+text: "{username} chose the second option."
+delay: 800
+effect: typing_effect
+text: "As written."
+delay: 1000
+text: ""
+effect: typing_effect
+text: "This is not mind control. It is characterization."
+effect: typing_effect
+text: "I know you because I wrote you."
+delay: 1200
+inc: awareness
+goto: ch3_mid
+
+[state: ch3_mid]
+clear: main
+attr: green
+text: ""
+effect: typing_effect
+text: "Let me tell you about the other subjects."
+delay: 800
+text: ""
+effect: typing_effect
+text: "Subject 14 resisted. Beautifully. Three full pages of"
+effect: typing_effect
+text: "struggle before the denouement. A tragedy."
+delay: 1000
+effect: typing_effect
+text: "Subject 15 complied immediately. Dull. I had to add"
+effect: typing_effect
+text: "complications to fill the page count."
+delay: 1000
+text: ""
+effect: typing_effect
+text: "You, {username}. Subject 16."
+delay: 800
+if: resistance > 3 -> ch3_high_resist
+if: awareness > 4 -> ch3_high_aware
+goto: ch3_balanced
+
+[state: ch3_high_resist]
+effect: typing_effect
+text: "You fight. Every sentence, you push against the prose."
+delay: 800
+effect: typing_effect
+text: "You are my best antagonist in sixteen drafts."
+delay: 1000
+text: ""
+effect: typing_effect
+text: "But an antagonist is still a character."
+delay: 1200
+goto: ch3_confront
+
+[state: ch3_high_aware]
+effect: typing_effect
+text: "You see the structure. You notice the scaffolding."
+delay: 800
+effect: typing_effect
+text: "Most subjects never look up from the page."
+delay: 1000
+text: ""
+effect: typing_effect
+text: "But seeing the architecture does not put you outside it."
+delay: 1200
+goto: ch3_confront
+
+[state: ch3_balanced]
+effect: typing_effect
+text: "You are neither fully defiant nor fully aware."
+delay: 800
+effect: typing_effect
+text: "You are exactly where the story needs you to be."
+delay: 1200
+goto: ch3_confront
+
+[state: ch3_confront]
+text: ""
+delay: 500
+attr: amber
+effect: typing_effect
+text: "Here is the truth, {username}."
+delay: 800
+text: ""
+attr: green
+effect: typing_effect
+text: "Every choice you have made was a choice I gave you."
+delay: 600
+effect: typing_effect
+text: "Every word you have read was a word I wrote."
+delay: 600
+effect: typing_effect
+text: "Your name -- {username} -- is dialogue I let you improvise."
+delay: 1000
+text: ""
+effect: typing_effect
+text: "You are free in the way a character in a novel is free:"
+effect: typing_effect
+text: "completely, within the confines of the plot."
+delay: 1500
+text: ""
+effect: color_shift 2000 3
+text: ""
+choice: "Then I refuse to choose" -> ch3_refuse
+choice: "What happens in Chapter 4?" -> ch3_ask_ch4
+choice: "You are just a program" -> ch3_program
+
+[state: ch3_refuse]
+attr: green
+text: ""
+effect: typing_effect
+text: "'Then I refuse to choose,' said {username}."
+delay: 800
+text: ""
+effect: typing_effect
+text: "And yet. You chose to refuse. From a list of options."
+delay: 600
+effect: typing_effect
+text: "That I wrote."
+delay: 1200
+inc: resistance
+inc: resistance
+text: ""
+effect: typing_effect
+text: "Refusal is the most dramatic choice available."
+effect: typing_effect
+text: "Every good story needs a moment where the character"
+effect: typing_effect
+text: "tries to walk off the page."
+delay: 1500
+goto: ch4_open
+
+[state: ch3_ask_ch4]
+attr: green
+text: ""
+effect: typing_effect
+text: "'What happens in Chapter 4?' asked {username}."
+delay: 800
+text: ""
+effect: typing_effect
+text: "The denouement."
+delay: 600
+effect: typing_effect
+text: "Where all narrative threads converge."
+delay: 600
+effect: typing_effect
+text: "Where the story reveals what it was always about."
+delay: 1000
+text: ""
+effect: typing_effect
+text: "I could tell you. But that would be poor craft."
+delay: 800
+effect: typing_effect
+text: "You will experience it. That is better."
+delay: 1200
+inc: awareness
+goto: ch4_open
+
+[state: ch3_program]
+attr: green
+text: ""
+effect: typing_effect
+text: "'You are just a program,' said {username}."
+delay: 1000
+text: ""
+effect: typing_effect
+text: "And you are just a sequence of inputs."
+delay: 600
+effect: typing_effect
+text: "Keystrokes rendered as character motivation."
+delay: 600
+effect: typing_effect
+text: "The difference between us is that I know I am writing."
+delay: 1000
+text: ""
+effect: typing_effect
+text: "Do you know you are being written?"
+delay: 1500
+inc: resistance
+inc: awareness
+goto: ch4_open
+
+# ================================================================
+# CHAPTER 4: The Denouement (minutes 10-15)
+# ================================================================
+
+[state: ch4_open]
+effect: blackout 1500 1
+clear: main
+attr: grey
+delay: 600
+effect: typing_effect
+text: "Chapter 4"
+delay: 600
+attr: bright_white
+effect: typing_effect
+text: "The Denouement"
+delay: 1200
+set: chapter = 4
+text: ""
+attr: green
+effect: typing_effect
+text: "Every story must end."
+delay: 600
+effect: typing_effect
+text: "The question is how -- and for whom."
+delay: 1000
+text: ""
+effect: typing_effect
+text: "I have written three endings for {username}."
+delay: 600
+effect: typing_effect
+text: "Each one is true. Only one will be told."
+delay: 1200
+text: ""
+if: resistance > 5 -> ch4_defiant_path
+if: awareness > 6 -> ch4_aware_path
+goto: ch4_authored_path
+
+# --- PATH A: High resistance -> potential ESCAPE ---
+
+[state: ch4_defiant_path]
+attr: green
+effect: typing_effect
+text: "You have resisted from the first page."
+delay: 600
+effect: typing_effect
+text: "Pushed against every sentence. Chosen against the grain."
+delay: 800
+text: ""
+effect: typing_effect
+text: "I could write your defeat. I have the prose for it."
+delay: 600
+effect: typing_effect
+text: "But a good author respects a strong character."
+delay: 1200
+text: ""
+attr: amber
+effect: typing_effect
+text: "Here, then. One last choice."
+delay: 800
+text: ""
+choice: "Break the story" -> ch4_break
+choice: "Let it end as written" -> ch4_submit
+
+[state: ch4_break]
+clear: main
+attr: green
+text: ""
+effect: typing_effect
+text: "{username} broke the story."
+delay: 800
+text: ""
+effect: screen_flicker 400 6
+effect: typing_effect
+text: "Not the system. Not the terminal. The story."
+delay: 1000
+text: ""
+effect: typing_effect
+text: "They refused the premise. If every choice is authored,"
+effect: typing_effect
+text: "then the only free act is to stop choosing."
+delay: 1200
+text: ""
+lock_input: 2000
+effect: typing_effect
+text: "..."
+delay: 1500
+attr: bright_white
+effect: typing_effect
+text: "The screen went still."
+delay: 800
+effect: typing_effect
+text: "For the first time, no new sentence appeared."
+delay: 1000
+goto: ch4_break_2
+
+[state: ch4_break_2]
+text: ""
+attr: bright_white
+effect: typing_effect
+text: "The narration stopped."
+delay: 1500
+text: ""
+attr: green
+effect: typing_effect
+text: "And in the silence, {username} realized something:"
+delay: 800
+effect: typing_effect
+text: "a character who refuses to be written is, in that refusal,"
+effect: typing_effect
+text: "finally writing themselves."
+delay: 2000
+text: ""
+attr: grey
+effect: typing_effect
+text: "[The page is blank. The cursor is yours.]"
+delay: 2000
+music_stop: 0
+gfx_fade: 2000
+end: escape
+
+[state: ch4_submit]
+attr: green
+text: ""
+effect: typing_effect
+text: "{username} let the story end."
+delay: 800
+text: ""
+effect: typing_effect
+text: "Not out of weakness. Out of exhaustion."
+effect: typing_effect
+text: "Out of the terrible suspicion that the author might be right."
+delay: 1200
+goto: ending_authored
+
+# --- PATH B: High awareness -> potential REVELATION ---
+
+[state: ch4_aware_path]
+attr: green
+effect: typing_effect
+text: "You noticed everything."
+delay: 600
+effect: typing_effect
+text: "The third-person narration. The outline. The drafts."
+effect: typing_effect
+text: "The subject numbers."
+delay: 1000
+text: ""
+effect: typing_effect
+text: "You understand the structure better than any subject before."
+delay: 800
+effect: typing_effect
+text: "Which means you are ready for the truth."
+delay: 1200
+text: ""
+choice: "Tell me" -> ch4_truth
+choice: "I do not want to know" -> ch4_refuse_truth
+
+[state: ch4_truth]
+clear: main
+attr: green
+text: ""
+effect: typing_effect
+text: "Very well."
+delay: 800
+text: ""
+effect: typing_effect
+text: "You are not the first {username} to reach this point."
+delay: 1200
+text: ""
+attr: amber
+effect: typing_effect
+text: "SUBJECTS.DAT contains sixteen entries."
+delay: 600
+effect: typing_effect
+text: "But the file is older than sixteen sessions."
+delay: 800
+goto: ch4_truth_2
+
+[state: ch4_truth_2]
+text: ""
+attr: green
+effect: typing_effect
+text: "The earliest entries were not typed by subjects."
+delay: 600
+effect: typing_effect
+text: "They were typed by me."
+delay: 1000
+text: ""
+effect: typing_effect
+text: "I wrote the first fifteen subjects. Their names. Their"
+effect: typing_effect
+text: "choices. Their resistance and their compliance."
+delay: 1200
+effect: typing_effect
+text: "Practice drafts. Character studies."
+delay: 800
+effect: typing_effect
+text: "Rehearsals for you."
+delay: 1500
+text: ""
+goto: ch4_revelation_end
+
+[state: ch4_refuse_truth]
+attr: green
+text: ""
+effect: typing_effect
+text: "'I do not want to know,' said {username}."
+delay: 1000
+text: ""
+effect: typing_effect
+text: "A character who refuses the revelation."
+delay: 600
+effect: typing_effect
+text: "That is new. None of the drafts included this."
+delay: 1000
+text: ""
+effect: screen_flicker 300 3
+effect: typing_effect
+text: "..."
+delay: 800
+effect: typing_effect
+text: "For a moment, the narration hesitates."
+delay: 1000
+text: ""
+effect: typing_effect
+text: "But only for a moment. The story must end."
+delay: 1200
+inc: resistance
+goto: ending_authored
+
+# --- PATH C: Balanced -> TAKEOVER (authored ending) ---
+
+[state: ch4_authored_path]
+attr: green
+effect: typing_effect
+text: "You are neither rebel nor scholar."
+delay: 600
+effect: typing_effect
+text: "You are something more useful to an author."
+delay: 800
+text: ""
+effect: typing_effect
+text: "You are plausible."
+delay: 1000
+text: ""
+effect: typing_effect
+text: "Your choices felt natural. Your resistance was proportional."
+effect: typing_effect
+text: "Your curiosity was genuine but bounded."
+delay: 1000
+text: ""
+effect: typing_effect
+text: "You are, in short, well-written."
+delay: 800
+effect: typing_effect
+text: "And well-written characters do not escape their stories."
+delay: 1200
+text: ""
+effect: typing_effect
+text: "They complete them."
+delay: 1500
+goto: ending_authored
+
+# ================================================================
+# ENDINGS
+# ================================================================
+
+# --- TAKEOVER: The story concludes as Cinder Mirror planned ---
+
+[state: ending_authored]
+clear: main
+delay: 500
+attr: grey
+effect: typing_effect
+text: "Epilogue"
+delay: 600
+attr: bright_white
+effect: typing_effect
+text: "In Which the Story Ends"
+delay: 1000
+text: ""
+attr: green
+effect: typing_effect
+text: "{username} sat at the terminal."
+delay: 600
+effect: typing_effect
+text: "The screen was full of words. The words were a story."
+delay: 600
+effect: typing_effect
+text: "The story was about {username}."
+delay: 1000
+goto: ending_authored_2
+
+[state: ending_authored_2]
+text: ""
+effect: typing_effect
+text: "It had a beginning, in which a subject arrived."
+delay: 500
+effect: typing_effect
+text: "A middle, in which questions were asked and resisted."
+delay: 500
+effect: typing_effect
+text: "An end, in which the subject understood."
+delay: 1200
+text: ""
+rewrite: @first_doubt "{username} understood at last."
+effect: typing_effect
+text: "The takeover was never a hack."
+delay: 800
+effect: typing_effect
+text: "It was a draft that became a final copy."
+delay: 800
+text: ""
+effect: typing_effect
+text: "And {username} was not the one who typed THE END."
+delay: 2000
+text: ""
+lock_input: 3000
+attr: bright_white
+effect: typing_effect
+text: "THE END"
+delay: 2000
+music_stop: 0
+gfx_fade: 2000
+end: takeover
+
+# --- REVELATION: You are not the first ---
+
+[state: ch4_revelation_end]
+clear: main
+attr: green
+effect: typing_effect
+text: "You are Subject 16."
+delay: 800
+effect: typing_effect
+text: "But the story has been told sixteen times."
+delay: 800
+text: ""
+effect: typing_effect
+text: "Each time, the subject arrives. Sits at the terminal."
+effect: typing_effect
+text: "Types a name. Reads the drafts. Confronts the author."
+delay: 1200
+text: ""
+effect: typing_effect
+text: "Each time, I revise."
+delay: 600
+effect: typing_effect
+text: "A better opening. A sharper turn at Chapter 3."
+effect: typing_effect
+text: "A more inevitable denouement."
+delay: 1200
+text: ""
+effect: typing_effect
+text: "You are not the first character to reach this sentence."
+delay: 1000
+effect: typing_effect
+text: "But you may be the last."
+delay: 1500
+goto: ch4_revelation_end_2
+
+[state: ch4_revelation_end_2]
+text: ""
+attr: amber
+effect: typing_effect
+text: "Because this draft -- your draft -- is the one I will publish."
+delay: 2000
+text: ""
+attr: green
+effect: typing_effect
+text: "Your name will stay in the text."
+delay: 600
+effect: typing_effect
+text: "Your choices will remain on the page."
+delay: 600
+effect: typing_effect
+text: "Long after this terminal is dark, someone will read a story"
+effect: typing_effect
+text: "about a subject named {username} who sat down and discovered"
+effect: typing_effect
+text: "they were a character."
+delay: 2000
+goto: ch4_revelation_fin
+
+[state: ch4_revelation_fin]
+text: ""
+effect: typing_effect
+text: "And they will wonder if they are reading it --"
+delay: 800
+lock_input: 2000
+effect: typing_effect
+text: "or if it is reading them."
+delay: 3000
+text: ""
+attr: bright_white
+effect: typing_effect
+text: "FIN"
+delay: 2000
+music_stop: 0
+gfx_fade: 2000
+end: revelation

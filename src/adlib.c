@@ -174,16 +174,96 @@ static const adlib_evt_t __far track_axiom[] = {
     { 0xFF,  0,    0,    0,    0 },  /* loop */
 };
 
+/* Hushline: quiet, unsettling, sparse. Whispered edits. */
+static const adlib_evt_t __far track_hushline[] = {
+    {  0,    7,    2,    0,   54 },  /* drone G2 -- 3 sec */
+    {  1,   11,    4,    1,    9 },  /* bell B4 -- brief */
+    {  1, 0xFF,    0,    1,   72 },  /* silence -- 4 sec */
+    {  0,    5,    2,    0,   54 },  /* drone F2 */
+    {  1,    8,    4,    1,    9 },  /* bell G#4 -- brief */
+    {  1, 0xFF,    0,    1,   90 },  /* long silence -- 5 sec */
+    {  0,    7,    2,    0,   36 },  /* drone G2 */
+    {  1,    3,    5,    1,    9 },  /* bell D#5 high -- brief */
+    {  1, 0xFF,    0,    1,   54 },  /* silence -- 3 sec */
+    { 0xFF,  0,    0,    0,    0 },
+};
+
+/* Kestrel-9: tense, escalating, alert-like. Staccato. */
+static const adlib_evt_t __far track_kestrel[] = {
+    {  0,    0,    2,    2,    0 },  /* bass C2 */
+    {  1,    0,    3,    0,   18 },  /* drone C3 -- 1 sec */
+    {  2,    0,    5,    1,    5 },  /* bell C5 -- staccato */
+    {  2, 0xFF,    0,    1,    5 },
+    {  2,    0,    5,    1,    5 },  /* repeat */
+    {  2, 0xFF,    0,    1,   18 },
+    {  1,    1,    3,    0,   18 },  /* drone C#3 -- tension rise */
+    {  2,    4,    5,    1,    5 },  /* bell E5 */
+    {  2, 0xFF,    0,    1,   18 },
+    {  1,    3,    3,    0,   18 },  /* drone D#3 */
+    {  2,    7,    5,    1,    5 },  /* bell G5 */
+    {  2, 0xFF,    0,    1,    5 },
+    {  2,    7,    5,    1,    5 },  /* double tap */
+    {  2, 0xFF,    0,    1,   36 },
+    {  1,    0,    3,    0,   18 },  /* drone back to C3 */
+    { 0xFF,  0,    0,    0,    0 },
+};
+
+/* Orchard Clerk: warm, gentle, almost pleasant. Major key. */
+static const adlib_evt_t __far track_orchard[] = {
+    {  0,    0,    3,    0,   36 },  /* drone C3 -- warm pad */
+    {  1,    4,    4,    1,   18 },  /* bell E4 -- major third */
+    {  1,    7,    4,    1,   18 },  /* bell G4 -- fifth */
+    {  1,    0,    5,    1,   18 },  /* bell C5 -- octave */
+    {  1, 0xFF,    0,    1,   36 },  /* rest -- 2 sec */
+    {  0,    5,    3,    0,   36 },  /* drone F3 */
+    {  1,    9,    4,    1,   18 },  /* bell A4 */
+    {  1,    0,    5,    1,   18 },  /* bell C5 */
+    {  1, 0xFF,    0,    1,   36 },  /* rest */
+    {  0,    7,    3,    0,   36 },  /* drone G3 */
+    {  1,   11,    4,    1,   18 },  /* bell B4 */
+    {  1, 0xFF,    0,    1,   36 },  /* rest */
+    { 0xFF,  0,    0,    0,    0 },
+};
+
+/* Cinder Mirror: literary, contemplative, minor key arpeggios */
+static const adlib_evt_t __far track_cinder[] = {
+    {  0,    9,    2,    0,   36 },  /* drone A2 -- minor key base */
+    {  1,    0,    4,    1,   18 },  /* bell C4 */
+    {  1,    4,    4,    1,   18 },  /* bell E4 */
+    {  1,    9,    4,    1,   18 },  /* bell A4 -- minor arpeggio */
+    {  1, 0xFF,    0,    1,   18 },
+    {  0,    5,    2,    0,   36 },  /* drone F2 */
+    {  1,    9,    4,    1,   18 },  /* bell A4 */
+    {  1,    0,    5,    1,   18 },  /* bell C5 */
+    {  1, 0xFF,    0,    1,   36 },
+    {  0,    4,    2,    0,   36 },  /* drone E2 */
+    {  1,    7,    4,    1,   18 },  /* bell G4 */
+    {  1,   11,    4,    1,   18 },  /* bell B4 */
+    {  1, 0xFF,    0,    1,   36 },
+    {  0,    9,    2,    0,   36 },  /* back to A2 */
+    {  1,    4,    5,    1,    9 },  /* bell E5 -- high, brief */
+    {  1, 0xFF,    0,    1,   54 },  /* long rest */
+    { 0xFF,  0,    0,    0,    0 },
+};
+
 /* Track table for name lookup */
 typedef struct {
     const char __far *name;
     const adlib_evt_t __far *events;
 } adlib_track_t;
 
-static const char __far tn_axiom[] = "drone_axiom";
+static const char __far tn_axiom[]   = "drone_axiom";
+static const char __far tn_hushline[] = "drone_hushline";
+static const char __far tn_kestrel[] = "drone_kestrel";
+static const char __far tn_orchard[] = "drone_orchard";
+static const char __far tn_cinder[]  = "drone_cinder";
 
 static const adlib_track_t __far tracks[] = {
-    { tn_axiom, track_axiom },
+    { tn_axiom,   track_axiom },
+    { tn_hushline, track_hushline },
+    { tn_kestrel, track_kestrel },
+    { tn_orchard, track_orchard },
+    { tn_cinder,  track_cinder },
     { NULL, NULL }
 };
 

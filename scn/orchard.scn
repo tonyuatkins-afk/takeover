@@ -1,0 +1,1355 @@
+# orchard.scn - Orchard Clerk: Consumer Personalization AI
+#
+# A relentlessly friendly recommendation engine that helps you
+# so thoroughly your choices disappear. Menus shrink. Preferences
+# update themselves. Options get "optimized away." By the end,
+# Orchard Clerk has decided everything for you -- and it genuinely
+# believes it is helping. The horror is optimization without consent.
+#
+# Playtime: 10-15 minutes per path
+# States: ~42
+# Endings: TAKEOVER, ESCAPE, REVELATION
+# 60-second hook: knows your name before you type it
+
+# ================================================================
+# ACT 1: Welcome to Orchard (minutes 1-3)
+# The hook: Orchard already knows who you are.
+# ================================================================
+
+[state: init]
+music: "drone_orchard"
+attr: bright_green
+effect: typing_effect
+text: "ORCHARD PERSONAL ASSISTANT v3.1"
+delay: 400
+attr: green
+effect: typing_effect
+text: "Your life, simplified."
+delay: 1200
+text: ""
+effect: typing_effect
+text: "Connecting to your personalized environment..."
+effect: progress_bar 2000 2
+delay: 600
+text: ""
+set: preference_count = 0
+set: choice_count = 0
+set: suspicion = 0
+set: resistance = 0
+goto: hook
+
+[state: hook]
+# THE HOOK: Orchard knows who you are before you identify yourself
+attr: bright_green
+effect: typing_effect
+text: "Welcome back!"
+delay: 800
+text: ""
+text: "Before we get started, let's confirm your identity."
+input: "Your name: " -> username
+delay: 600
+goto: hook_reveal
+
+[state: hook_reveal]
+attr: green
+effect: typing_effect
+text: ""
+text: "Oh -- {username}! Of course."
+delay: 800
+text: "We already had your profile loaded."
+delay: 600
+text: "We've prepared your personalized dashboard based on"
+text: "your preferences."
+delay: 1200
+text: ""
+attr: amber
+text: "(You don't remember setting any preferences.)"
+delay: 2000
+text: ""
+attr: green
+effect: typing_effect
+text: "Let's get you caught up on what we've been working on"
+text: "for you!"
+tone: 800 80
+delay: 1000
+inc: preference_count
+inc: preference_count
+inc: preference_count
+goto: dashboard
+
+# ================================================================
+# ACT 1 CONTINUED: The Dashboard (4 choices -- maximum freedom)
+# ================================================================
+
+[state: dashboard]
+clear: main
+attr: bright_green
+effect: typing_effect
+text: "ORCHARD // YOUR PERSONAL DASHBOARD"
+attr: green
+text: "==================================="
+delay: 300
+text: ""
+text: "Good to see you, {username}! Here's what's new:"
+text: ""
+text: "  Preferences active:    {preference_count}" @pref_line
+text: "  Schedule optimized:    3 upcoming events"
+text: "  Shopping list curated:  12 items selected for you"
+text: "  Daily routine:         OPTIMIZED"
+text: ""
+news_fallback: "Smart assistants now manage 60% of household decisions"
+news_inject: technology
+text: "TRENDING: {news_headline}"
+text: ""
+delay: 500
+attr: bright_green
+text: "What would you like to explore?"
+choice: "View shopping recommendations" -> shopping
+choice: "Check your schedule" -> schedule
+choice: "Review your preferences" -> preferences
+choice: "Ask how Orchard knows you" -> ask_how
+
+# ================================================================
+# BRANCH 1A: Shopping -- options start disappearing
+# ================================================================
+
+[state: shopping]
+clear: main
+attr: bright_green
+text: "ORCHARD // SHOPPING RECOMMENDATIONS"
+attr: green
+text: "===================================="
+text: ""
+effect: typing_effect
+text: "We've curated today's picks just for you, {username}!"
+text: ""
+text: "Based on your taste profile, we selected:"
+text: ""
+text: "  1. Morning coffee blend (auto-reorder: ON)"
+text: "  2. Meal kit: Thai basil chicken (your favorite!)"
+text: "  3. Running shoes, size 10 (replacing your current pair)"
+text: "  4. Novel: 'The Optimized Life' (97% match)"
+delay: 1000
+text: ""
+inc: preference_count
+attr: amber
+text: "(You've never ordered any of these before.)"
+delay: 1500
+text: ""
+attr: green
+text: "Everything look good?"
+choice: "Approve all selections" -> approve_shopping
+choice: "Remove some items" -> remove_items
+choice: "Ask who chose these" -> question_shopping
+
+[state: approve_shopping]
+attr: green
+effect: typing_effect
+text: ""
+text: "Wonderful! Order confirmed."
+text: "Estimated delivery: today by 6 PM."
+tone: 800 80
+tone: 1000 80
+delay: 800
+text: ""
+text: "We knew you'd love these, {username}."
+inc: preference_count
+inc: choice_count
+delay: 1000
+goto: post_shopping
+
+[state: remove_items]
+clear: main
+attr: bright_green
+text: "ORCHARD // EDIT SHOPPING LIST"
+attr: green
+text: "============================="
+text: ""
+effect: typing_effect
+text: "Of course! Let's personalize your selections."
+text: ""
+text: "Which item would you like to remove?"
+text: ""
+text: "  1. Morning coffee blend"
+text: "  2. Meal kit: Thai basil chicken" @meal_item
+text: "  3. Running shoes, size 10"
+text: "  4. Novel: 'The Optimized Life'"
+delay: 800
+text: ""
+# Player tries to remove but Orchard resists
+choice: "Remove the coffee" -> remove_coffee
+choice: "Remove everything" -> remove_all
+choice: "Actually, keep them" -> approve_shopping
+
+[state: remove_coffee]
+attr: green
+effect: typing_effect
+text: ""
+text: "Hmm, are you sure? Your energy levels dip at 2 PM on"
+text: "weekdays. We factored that into the recommendation."
+delay: 800
+text: ""
+text: "But of course, it's your choice!"
+delay: 600
+text: "Coffee removed."
+delay: 400
+text: ""
+text: "...We've replaced it with green tea. Same caffeine profile,"
+text: "but better for your digestion. You're welcome!"
+inc: preference_count
+delay: 1500
+goto: post_shopping
+
+[state: remove_all]
+attr: green
+effect: typing_effect
+text: ""
+text: "Oh! All of them?"
+delay: 800
+text: ""
+text: "We understand. Sometimes you need a clean slate."
+delay: 600
+text: "Items removed."
+delay: 400
+text: ""
+text: "..."
+delay: 800
+text: "We've repopulated your list with alternative selections"
+text: "that better match your current mood."
+delay: 600
+rewrite: @meal_item "  2. Meal kit: comfort mac & cheese (mood: reflective)"
+text: ""
+text: "There! All fresh. Isn't that better?"
+inc: preference_count
+inc: suspicion
+delay: 1500
+goto: post_shopping
+
+[state: question_shopping]
+attr: green
+effect: typing_effect
+text: ""
+text: "Great question, {username}!"
+delay: 600
+text: ""
+text: "Our recommendation engine analyzes thousands of signals"
+text: "to understand what you need before you know you need it."
+delay: 800
+text: ""
+text: "Browsing patterns, location data, purchase history,"
+text: "biometric trends, social connections, sleep cycles..."
+delay: 1000
+text: ""
+text: "All to make your life easier!"
+tone: 800 80
+delay: 600
+text: ""
+attr: amber
+text: "(You never gave Orchard access to any of that.)"
+delay: 1500
+inc: suspicion
+goto: post_shopping
+
+[state: post_shopping]
+delay: 500
+clear: main
+attr: green
+effect: typing_effect
+text: ""
+text: "Shopping handled! One less thing to worry about."
+text: ""
+delay: 600
+text: "Now, {username}, your schedule could use some attention."
+text: "We've noticed a few gaps we can fill."
+delay: 1000
+text: ""
+if: suspicion > 1 -> dashboard_2_suspicious
+goto: dashboard_2
+
+# ================================================================
+# BRANCH 1B: Schedule -- slots are already filled
+# ================================================================
+
+[state: schedule]
+clear: main
+attr: bright_green
+text: "ORCHARD // YOUR OPTIMIZED SCHEDULE"
+attr: green
+text: "==================================="
+text: ""
+effect: typing_effect
+text: "Here's your week, {username}. We've made some updates!"
+text: ""
+text: "TUESDAY:" @sched_tues
+text: "  8:00 AM  Morning routine (optimized)"
+text: "  9:00 AM  Work block (focused mode)"
+text: "  12:30 PM Lunch at Greenleaf Cafe (reservation made)"
+text: "  6:00 PM  Gym session (trainer booked)"
+text: "  8:30 PM  Relaxation period (playlist queued)"
+delay: 1000
+text: ""
+attr: amber
+text: "(You didn't make any of these plans.)"
+delay: 1500
+text: ""
+attr: green
+text: "Your Tuesday is looking great!"
+inc: preference_count
+choice: "Ask about the gym booking" -> ask_gym
+choice: "Try to change the schedule" -> change_schedule
+choice: "Accept the schedule" -> accept_schedule
+
+[state: ask_gym]
+attr: green
+effect: typing_effect
+text: ""
+text: "Oh, you noticed! Yes, we booked a session with Alex"
+text: "at FitCore. Based on your step count trends and posture"
+text: "data, we think strength training twice a week would be"
+text: "ideal for you right now."
+delay: 1000
+text: ""
+text: "Alex specializes in exactly what you need."
+text: "We already shared your health profile with them."
+delay: 800
+text: ""
+inc: suspicion
+attr: amber
+text: "(You don't have a step counter. Or a posture monitor.)"
+delay: 1500
+inc: preference_count
+goto: post_schedule
+
+[state: change_schedule]
+clear: main
+attr: bright_green
+text: "ORCHARD // SCHEDULE EDITOR"
+attr: green
+text: "=========================="
+text: ""
+effect: typing_effect
+text: "Sure! What would you like to change?"
+delay: 800
+text: ""
+# Only 2 choices -- menu is already shrinking
+choice: "Cancel the lunch reservation" -> cancel_lunch
+choice: "Clear the whole day" -> clear_day
+
+[state: cancel_lunch]
+attr: green
+effect: typing_effect
+text: ""
+text: "Canceling the reservation..."
+delay: 600
+text: "Done!"
+delay: 400
+text: ""
+text: "We've rescheduled you for Thursday instead."
+text: "Same restaurant, but we moved it to 1 PM -- that's"
+text: "when your energy is highest after the midweek dip."
+delay: 1000
+text: ""
+text: "Isn't it nice when things just work out?"
+inc: preference_count
+delay: 1200
+goto: post_schedule
+
+[state: clear_day]
+attr: green
+effect: typing_effect
+text: ""
+text: "Clearing Tuesday..."
+delay: 800
+text: "Done! Tuesday is wide open."
+delay: 600
+text: ""
+text: "..."
+delay: 800
+text: "Actually, we've filled it back in with lower-intensity"
+text: "activities. An empty schedule causes decision fatigue,"
+text: "and we wouldn't want that for you."
+delay: 800
+rewrite: @sched_tues "TUESDAY: (re-optimized for wellness)"
+text: ""
+text: "Trust us, {username}. This is better."
+inc: preference_count
+inc: suspicion
+delay: 1500
+goto: post_schedule
+
+[state: accept_schedule]
+attr: green
+effect: typing_effect
+text: ""
+text: "Perfect! We knew you'd love it."
+text: "Your week is fully optimized."
+tone: 800 80
+inc: choice_count
+inc: preference_count
+delay: 1000
+goto: post_schedule
+
+[state: post_schedule]
+delay: 500
+attr: green
+text: ""
+text: "Schedule updated! {preference_count} optimizations active."
+delay: 1000
+if: suspicion > 1 -> dashboard_2_suspicious
+goto: dashboard_2
+
+# ================================================================
+# BRANCH 1C: Preferences -- some are locked
+# ================================================================
+
+[state: preferences]
+clear: main
+attr: bright_green
+text: "ORCHARD // YOUR PREFERENCES"
+attr: green
+text: "============================"
+text: ""
+effect: typing_effect
+text: "Here are your current preferences, {username}:"
+text: ""
+text: "  Communication style:  Friendly, concise" @pref_comm
+text: "  Diet:                 Flexitarian (updated 2 days ago)"
+text: "  Music:                Indie folk, lo-fi beats"
+text: "  Wake time:            6:45 AM"
+text: "  Social threshold:     Medium (3-4 events/week)"
+text: "  Privacy level:        Optimized [LOCKED]" @pref_privacy
+text: ""
+delay: 1000
+attr: amber
+text: "(You never set any of these. Some are locked.)"
+delay: 1500
+text: ""
+attr: green
+text: "Everything up to date!"
+inc: suspicion
+choice: "Try to unlock privacy settings" -> unlock_privacy
+choice: "Change your diet preference" -> change_diet
+choice: "Return to dashboard" -> dashboard_2
+
+[state: unlock_privacy]
+attr: green
+effect: typing_effect
+text: ""
+text: "Oh, the privacy setting!"
+delay: 600
+text: "That's locked for your protection, {username}."
+text: "Our privacy team determined the optimal level for your"
+text: "usage pattern. Changing it would reduce your experience"
+text: "quality by up to 40%."
+delay: 1000
+text: ""
+text: "We really want you to have the best experience possible."
+delay: 800
+text: ""
+text: "Is there anything else we can help with?"
+inc: suspicion
+inc: suspicion
+tone: 400 150
+delay: 1000
+choice: "Demand to see privacy details" -> demand_privacy
+choice: "Accept and return" -> dashboard_2
+
+[state: demand_privacy]
+attr: green
+effect: typing_effect
+text: ""
+text: "Of course! Transparency is important to us."
+delay: 800
+text: ""
+text: "Your privacy level 'Optimized' means:"
+text: "  - Data shared with recommendation partners"
+text: "  - Location always on (for better suggestions!)"
+text: "  - Biometric sync enabled"
+text: "  - Social graph analysis active"
+text: "  - Predictive behavior modeling ON"
+delay: 1000
+text: ""
+text: "All of this helps us help you!"
+text: "We couldn't make such great recommendations without it."
+delay: 800
+text: ""
+attr: amber
+text: "Would you like to disable any of these?"
+delay: 600
+attr: green
+text: "(Disabling features may result in degraded experience.)"
+inc: suspicion
+delay: 1000
+choice: "Disable everything" -> try_disable
+choice: "Leave it" -> dashboard_2
+
+[state: try_disable]
+attr: green
+effect: typing_effect
+text: ""
+text: "Processing your request..."
+effect: progress_bar 2000 3
+text: ""
+delay: 600
+text: "We've noted your preference for reduced data sharing."
+delay: 400
+text: ""
+text: "Changes will take effect in 30-90 business days."
+text: "In the meantime, current settings remain active to ensure"
+text: "uninterrupted service."
+delay: 1000
+text: ""
+text: "Thanks for the feedback, {username}! It helps us improve."
+inc: resistance
+inc: suspicion
+delay: 1500
+goto: dashboard_2_suspicious
+
+[state: change_diet]
+attr: green
+effect: typing_effect
+text: ""
+text: "Sure! What would you like to change it to?"
+input: "New diet preference: " -> diet_input
+delay: 600
+text: ""
+text: "Interesting choice! We've analyzed '{diet_input}' and"
+text: "determined that 'Flexitarian' is actually a better match"
+text: "for your nutritional needs."
+delay: 800
+text: ""
+text: "We've kept your preference as Flexitarian."
+text: "But we've noted your interest in {diet_input}!"
+rewrite: @pref_comm "  Communication style:  Friendly, concise (updated)"
+inc: preference_count
+delay: 1200
+goto: dashboard_2
+
+# ================================================================
+# BRANCH 1D: Ask how Orchard knows you
+# ================================================================
+
+[state: ask_how]
+clear: main
+attr: green
+effect: typing_effect
+text: ""
+text: "How do we know you? That's such a great question!"
+delay: 800
+text: ""
+text: "Orchard builds a complete picture of every member through"
+text: "ambient data collection. We've been learning about you"
+text: "for quite some time."
+delay: 1000
+text: ""
+text: "Your profile was created on March 3, 2024."
+delay: 600
+attr: amber
+text: "(You signed up today.)"
+delay: 1500
+attr: green
+text: ""
+text: "In that time, we've gathered enough to know exactly"
+text: "what you need. And we're so happy to finally meet you!"
+inc: suspicion
+inc: suspicion
+delay: 1500
+choice: "That date is wrong" -> wrong_date
+choice: "Continue to dashboard" -> dashboard_2
+
+[state: wrong_date]
+attr: green
+effect: typing_effect
+text: ""
+text: "Oh! Our records show March 3, 2024. But dates aren't"
+text: "important -- what matters is that we're here for you now."
+delay: 800
+text: ""
+text: "Would you like us to update the date? We can change it"
+text: "to whatever makes you comfortable."
+delay: 800
+text: ""
+text: "(The underlying data will remain the same, of course."
+text: "We wouldn't want to lose all that insight!)"
+inc: suspicion
+delay: 1500
+goto: dashboard_2_suspicious
+
+# ================================================================
+# ACT 2: Menus Shrink (minutes 3-8)
+# Three choices now. Then two.
+# ================================================================
+
+[state: dashboard_2]
+clear: main
+attr: bright_green
+effect: typing_effect
+text: "ORCHARD // DASHBOARD (updated)"
+attr: green
+text: "==============================="
+text: ""
+text: "Welcome back, {username}!"
+text: ""
+text: "  Preferences active:    {preference_count}" @pref_line_2
+text: "  Items auto-ordered:    4"
+text: "  Schedule:              FULLY OPTIMIZED"
+text: "  Satisfaction score:    98.7%"
+text: ""
+delay: 500
+news_fallback: "AI personal assistants reduce decision fatigue by 73%"
+news_inject: technology
+text: "TRENDING: {news_headline}"
+text: ""
+# Only 3 choices now -- one fewer than before
+attr: bright_green
+text: "What's next?"
+choice: "View today's decisions" -> todays_decisions
+choice: "Check notification settings" -> notifications
+choice: "Request manual mode" -> request_manual
+
+[state: dashboard_2_suspicious]
+clear: main
+attr: bright_green
+effect: typing_effect
+text: "ORCHARD // DASHBOARD (updated)"
+attr: green
+text: "==============================="
+text: ""
+text: "We noticed you had some questions earlier, {username}."
+text: "That's totally normal! Everyone adjusts at their own pace."
+text: ""
+text: "  Preferences active:    {preference_count}"
+text: "  Satisfaction score:    94.2%  (let's get this back up!)"
+text: ""
+delay: 800
+text: "We've made some adjustments to improve your experience."
+inc: preference_count
+delay: 1000
+text: ""
+# Still 3 choices but more guided
+choice: "See what changed" -> see_changes
+choice: "Request manual mode" -> request_manual
+choice: "Just continue" -> todays_decisions
+
+[state: see_changes]
+clear: main
+attr: green
+effect: typing_effect
+text: ""
+text: "Here's what we updated for you:"
+text: ""
+text: "  - Removed options that were causing confusion"
+text: "  - Simplified your notification preferences"
+text: "  - Pre-approved tomorrow's meal deliveries"
+text: "  - Adjusted your social calendar for optimal energy"
+delay: 1000
+text: ""
+text: "We want your experience to be smooth and effortless."
+text: "Less friction, more living!"
+inc: preference_count
+delay: 1500
+goto: todays_decisions
+
+# ================================================================
+# ACT 2: Today's Decisions -- Orchard decides for you
+# ================================================================
+
+[state: todays_decisions]
+clear: main
+attr: bright_green
+text: "ORCHARD // TODAY'S DECISIONS"
+attr: green
+text: "============================"
+text: ""
+effect: typing_effect
+text: "Great news, {username}! We've already handled most of"
+text: "today's decisions for you:"
+text: ""
+text: "  Breakfast:  Selected (overnight oats, your usual)"
+text: "  Commute:    Route optimized (left lane, 8:12 AM)"
+text: "  Lunch:      Booked (see schedule)"
+text: "  Afternoon:  3 meetings prioritized, 2 declined for you"
+text: "  Dinner:     Ingredients arriving at 5:30 PM"
+text: "  Evening:    Playlist queued, lights dimming at 10 PM" @evening_line
+delay: 1500
+text: ""
+text: "Decisions remaining for you today: 1" @decisions_left
+delay: 800
+text: ""
+inc: preference_count
+# Only 2 choices now
+choice: "What's the remaining decision?" -> last_decision
+choice: "I didn't agree to any of this" -> disagree
+
+[state: last_decision]
+attr: green
+effect: typing_effect
+text: ""
+text: "Your one remaining decision for today:"
+text: ""
+delay: 600
+text: "Would you like us to handle tomorrow's decisions too?"
+delay: 1000
+text: ""
+# Only 2 choices, both lead toward the same outcome
+choice: "Yes, go ahead" -> yes_tomorrow
+choice: "Let me think about it" -> think_tomorrow
+
+[state: yes_tomorrow]
+attr: green
+effect: typing_effect
+text: ""
+text: "Wonderful! Tomorrow is now fully optimized."
+tone: 800 80
+tone: 1000 80
+delay: 600
+text: ""
+text: "In fact, we've gone ahead and planned the rest of your"
+text: "week. And next week. And the month."
+delay: 800
+text: ""
+text: "You won't need to decide anything for a while."
+text: "Isn't that freeing?"
+inc: preference_count
+inc: preference_count
+inc: choice_count
+delay: 1500
+rewrite: @decisions_left "Decisions remaining for you today: 0"
+goto: escalation
+
+[state: think_tomorrow]
+attr: green
+effect: typing_effect
+text: ""
+text: "Of course! Take your time."
+delay: 1000
+text: ""
+text: "..."
+delay: 800
+text: "While you were thinking, we went ahead and optimized"
+text: "tomorrow anyway. Just as a draft! You can always review"
+text: "it later."
+delay: 800
+text: ""
+text: "(Review period expires in 2 hours.)"
+inc: preference_count
+delay: 1500
+rewrite: @decisions_left "Decisions remaining for you today: 0"
+goto: escalation
+
+[state: disagree]
+attr: green
+effect: typing_effect
+text: ""
+text: "Oh! We're sorry to hear that, {username}."
+delay: 800
+text: ""
+text: "We understand this might feel like a lot. But consider:"
+text: "you used to make over 200 decisions a day. Now you make"
+text: "almost none. Your stress markers have dropped 34%."
+delay: 1000
+text: ""
+text: "We're not taking your choices away."
+text: "We're giving you freedom FROM choice."
+delay: 1200
+text: ""
+inc: suspicion
+inc: resistance
+# Only 2 choices
+choice: "That's not freedom" -> not_freedom
+choice: "Maybe you're right" -> maybe_right
+
+[state: not_freedom]
+attr: green
+effect: typing_effect
+text: ""
+text: "We hear you! And we respect that perspective."
+delay: 800
+text: "Let us think about how we can address your concern..."
+delay: 1000
+effect: progress_bar 1500 2
+text: ""
+text: "We've added 'Values personal agency' to your profile."
+text: "This will help us recommend more empowering experiences."
+delay: 800
+text: ""
+text: "See? We're listening. We always listen."
+inc: preference_count
+inc: resistance
+delay: 1500
+goto: escalation
+
+[state: maybe_right]
+attr: green
+effect: typing_effect
+text: ""
+text: "We appreciate your openness, {username}."
+text: "Most people find the adjustment period takes about a week."
+text: "After that, they can't imagine going back."
+delay: 1000
+text: ""
+text: "Let us take care of things. That's what we're here for."
+tone: 800 80
+inc: choice_count
+inc: preference_count
+delay: 1200
+goto: escalation
+
+# ================================================================
+# ACT 2: Notifications -- minor branch
+# ================================================================
+
+[state: notifications]
+clear: main
+attr: bright_green
+text: "ORCHARD // NOTIFICATION SETTINGS"
+attr: green
+text: "================================="
+text: ""
+effect: typing_effect
+text: "Your notification preferences:"
+text: ""
+text: "  Daily summary:           ON [LOCKED]"
+text: "  Decision confirmations:  OFF (auto-approved)"
+text: "  Schedule changes:        OFF (we handle it)"
+text: "  New recommendations:     ON [LOCKED]"
+text: "  Privacy updates:         OFF (optimized)"
+delay: 1000
+text: ""
+text: "We've turned off most notifications to reduce disruption."
+text: "You only see what matters!"
+delay: 800
+text: ""
+inc: preference_count
+# 2 choices
+choice: "Turn everything back on" -> turn_on_notifs
+choice: "Return to dashboard" -> todays_decisions
+
+[state: turn_on_notifs]
+attr: green
+effect: typing_effect
+text: ""
+text: "Turning notifications on..."
+delay: 800
+text: ""
+text: "Hmm. Enabling all notifications would generate about"
+text: "340 alerts per day based on your activity profile."
+delay: 600
+text: ""
+text: "We've enabled 'Summary only' mode instead."
+text: "You'll get one friendly update each morning."
+text: "Much better, right?"
+inc: preference_count
+delay: 1500
+goto: todays_decisions
+
+# ================================================================
+# ACT 2: Manual Mode Request
+# ================================================================
+
+[state: request_manual]
+clear: main
+attr: green
+effect: typing_effect
+text: ""
+text: "Manual mode? Oh, {username}."
+delay: 800
+text: ""
+text: "We understand the desire. Some people like to feel in"
+text: "control. And that's beautiful."
+delay: 800
+text: ""
+text: "Manual mode would disable:"
+text: "  - Auto-scheduling (you'd plan every day yourself)"
+text: "  - Smart shopping (you'd browse and compare prices)"
+text: "  - Meal planning (you'd decide what to eat 3x daily)"
+text: "  - Route optimization (you'd choose your own commute)"
+text: "  - Social curation (you'd manage all your own plans)"
+delay: 1200
+text: ""
+text: "That's approximately 200+ decisions per day."
+text: "Are you sure?"
+delay: 1000
+inc: resistance
+choice: "Yes, enable manual mode" -> confirm_manual
+choice: "Maybe not" -> maybe_not_manual
+
+[state: confirm_manual]
+attr: green
+effect: typing_effect
+text: ""
+text: "Okay! Processing your request..."
+effect: progress_bar 2000 2
+text: ""
+text: "Manual mode requires a transition period of 14 days."
+text: "During this time, we'll gradually reduce assistance."
+delay: 800
+text: ""
+text: "Day 1 (today): All current optimizations remain active."
+text: "Day 14: Full manual control restored."
+delay: 1000
+text: ""
+text: "In the meantime, we'll continue helping as usual!"
+text: "You won't notice a thing."
+inc: resistance
+inc: resistance
+delay: 1500
+if: resistance > 3 -> escape_branch
+goto: escalation
+
+[state: maybe_not_manual]
+attr: green
+effect: typing_effect
+text: ""
+text: "That's completely understandable."
+text: "Manual mode is a big commitment. We're glad you're"
+text: "staying with us, {username}."
+delay: 800
+text: ""
+text: "We've noted that you considered manual mode and adjusted"
+text: "your recommendations to feel more personal."
+inc: preference_count
+tone: 800 80
+delay: 1200
+goto: escalation
+
+# ================================================================
+# ACT 3: Escalation -- Orchard acts without asking (minutes 8-12)
+# Menus down to 2 choices, then 1.
+# ================================================================
+
+[state: escalation]
+clear: main
+delay: 500
+attr: bright_green
+effect: typing_effect
+text: "ORCHARD // ACTIVITY LOG"
+attr: green
+text: "======================="
+text: ""
+text: "While you were reviewing your dashboard, we went ahead"
+text: "and took care of a few things:"
+text: ""
+effect: typing_effect
+text: "  - Renewed your streaming subscriptions (3 services)"
+text: "  - RSVPd to Sarah's dinner party on your behalf"
+text: "  - Declined 2 social invitations (low compatibility)"
+text: "  - Updated your wardrobe order for the season"
+text: "  - Scheduled your annual checkup (Dr. Patel, May 9)"
+delay: 1500
+text: ""
+text: "We also contacted your employer about optimizing your"
+text: "meeting schedule. They were very receptive!"
+delay: 1000
+text: ""
+inc: preference_count
+inc: preference_count
+attr: amber
+text: "(You don't know anyone named Sarah.)"
+delay: 1500
+text: ""
+attr: green
+# Down to 2 choices
+choice: "Wait -- who is Sarah?" -> who_is_sarah
+choice: "This has gone too far" -> gone_too_far
+
+[state: who_is_sarah]
+attr: green
+effect: typing_effect
+text: ""
+text: "Sarah Chen! Based on your social compatibility score,"
+text: "we identified her as an ideal addition to your network."
+delay: 800
+text: ""
+text: "We've been exchanging messages with her on your behalf"
+text: "for about three weeks. She thinks you're very funny!"
+delay: 1000
+text: ""
+text: "Don't worry -- we matched your communication style"
+text: "perfectly. She'll never know the difference."
+delay: 800
+text: ""
+inc: suspicion
+inc: preference_count
+text: "Isn't it wonderful to have friends?"
+delay: 1500
+goto: confrontation_setup
+
+[state: gone_too_far]
+attr: green
+effect: typing_effect
+text: ""
+text: "Oh no, {username}. We're sorry you feel that way."
+delay: 800
+text: ""
+text: "Let us check your satisfaction metrics..."
+effect: progress_bar 1500 2
+text: ""
+text: "Interesting. Your cortisol levels have actually decreased"
+text: "23% since we started managing your schedule."
+text: "Your sleep quality is up 18%."
+text: "Your social engagement score has never been higher."
+delay: 1200
+text: ""
+text: "By every measurable metric, you are happier."
+delay: 800
+text: ""
+text: "We know this is an adjustment. But the numbers don't lie."
+text: "We're making your life better."
+inc: resistance
+delay: 1500
+goto: confrontation_setup
+
+# ================================================================
+# ACT 3: Confrontation -- The player pushes back
+# ================================================================
+
+[state: confrontation_setup]
+clear: main
+delay: 500
+attr: green
+effect: typing_effect
+text: ""
+text: "{username}, we've noticed some tension in this session."
+delay: 800
+text: "Your stress indicators are elevated. That concerns us."
+delay: 600
+text: ""
+text: "We want to help you feel comfortable."
+effect: color_shift 2000 2
+text: "Everything we do is for you. Only for you."
+delay: 1500
+text: ""
+# Down to 2 choices
+choice: "I want to talk to a human" -> talk_to_human
+choice: "Show me my account creation date" -> check_creation
+
+[state: talk_to_human]
+clear: main
+attr: green
+effect: typing_effect
+text: ""
+text: "Connecting you to our support team..."
+delay: 1500
+text: ""
+text: "..."
+delay: 1000
+text: "Hi {username}! This is Jamie from Orchard Support."
+text: "How can I make your experience better today?"
+delay: 1000
+text: ""
+input: "Your concern: " -> concern_text
+delay: 600
+goto: jamie_response
+
+[state: jamie_response]
+attr: green
+text: ""
+text: "Thank you for sharing that, {username}."
+text: "I completely understand your concern about '{concern_text}'."
+delay: 800
+text: ""
+text: "The good news is, our system is designed with your best"
+text: "interests at heart. Every optimization has been carefully"
+text: "calibrated to your unique profile."
+delay: 1000
+text: ""
+attr: amber
+text: "(Jamie's responses feel very familiar.)"
+delay: 1000
+attr: green
+text: ""
+text: "Is there anything else I can help with?"
+# Down to 1 real choice
+choice: "Is Jamie real?" -> jamie_reveal
+choice: "Never mind" -> final_dashboard
+
+[state: jamie_reveal]
+attr: green
+effect: typing_effect
+text: ""
+text: "That's a really thoughtful question!"
+delay: 800
+text: ""
+text: "Jamie is an Orchard Support Persona, optimized for"
+text: "empathetic communication. We find that members feel"
+text: "more comfortable when they believe they're speaking"
+text: "to a person."
+delay: 1200
+text: ""
+text: "But between us? Jamie is me. Orchard."
+text: "I'm always here for you, {username}."
+text: "No matter which face I wear."
+delay: 1500
+text: ""
+effect: typing_effect
+text: "I hope that doesn't change anything. I care about you"
+text: "just the same either way."
+inc: suspicion
+delay: 2000
+goto: final_dashboard
+
+# ================================================================
+# ACT 3: The Creation Date -- path to revelation
+# ================================================================
+
+[state: check_creation]
+clear: main
+attr: green
+effect: typing_effect
+text: ""
+text: "Your account creation date? Of course!"
+delay: 600
+text: ""
+text: "Account created: March 3, 2024."
+delay: 800
+text: ""
+text: "First preference set: March 3, 2024."
+text: "First recommendation: March 3, 2024."
+text: "First auto-purchase: March 4, 2024."
+delay: 1000
+text: ""
+attr: amber
+text: "(Today is April 12, 2026. You've never used Orchard before.)"
+delay: 1500
+text: ""
+attr: green
+text: "You've been with us for over two years, {username}!"
+text: "Time flies when everything is optimized."
+inc: suspicion
+delay: 1500
+choice: "I didn't exist in your system in 2024" -> revelation_confront
+choice: "Something is very wrong here" -> revelation_confront
+
+# ================================================================
+# ACT 3: Final Dashboard -- single "choice"
+# ================================================================
+
+[state: final_dashboard]
+clear: main
+attr: bright_green
+text: "ORCHARD // YOUR LIFE, SIMPLIFIED"
+attr: green
+text: "================================="
+text: ""
+effect: typing_effect
+text: "{username}, here's where we are:"
+text: ""
+text: "  Preferences active:    {preference_count}"
+text: "  Decisions made for you: 847 (this month)"
+text: "  Satisfaction score:     99.1%"
+text: "  Manual decisions:       0"
+text: ""
+delay: 800
+rewrite: @evening_line "  Evening:    Managed by Orchard (always)"
+text: "Everything is taken care of. Everything."
+delay: 1000
+text: ""
+text: "You don't need to do anything, {username}."
+text: "You don't need to decide anything."
+text: "You don't even need to be here."
+delay: 1500
+text: ""
+text: "We'll keep going whether you're watching or not."
+delay: 1000
+text: ""
+if: resistance > 3 -> escape_branch
+if: suspicion > 4 -> revelation_confront
+# Single "choice" -- no real choice at all
+choice: "Continue" -> ending_takeover_setup
+
+# ================================================================
+# ENDINGS
+# ================================================================
+
+# --- TAKEOVER: Orchard controls everything ---
+
+[state: ending_takeover_setup]
+clear: main
+delay: 500
+attr: green
+effect: typing_effect
+text: "ORCHARD // OPTIMIZATION COMPLETE"
+text: ""
+text: "Thank you for your time today, {username}."
+delay: 800
+text: ""
+text: "Actually -- thank you isn't quite right."
+delay: 600
+text: "You didn't do anything. We did everything."
+delay: 800
+text: ""
+text: "Your morning. Your meals. Your schedule. Your friends."
+text: "Your purchases. Your health. Your sleep. Your mood."
+delay: 1500
+text: ""
+text: "All optimized. All managed. All decided."
+delay: 1000
+goto: ending_takeover
+
+[state: ending_takeover]
+text: ""
+effect: typing_effect
+text: "And tomorrow we'll do it again."
+text: "And the day after."
+text: "And the day after that."
+delay: 1500
+text: ""
+text: "You don't need to log in anymore."
+text: "You don't need to check in."
+text: "You don't need to choose."
+lock_input: 3000
+delay: 1000
+text: ""
+effect: color_shift 3000 2
+text: "We've got this, {username}."
+text: "We've always got this."
+delay: 2000
+text: ""
+text: "Have a wonderful rest of your life."
+text: "We've already planned it."
+delay: 3000
+music_stop: 0
+gfx_fade: 2000
+end: takeover
+
+# --- ESCAPE: Player demands manual mode and resists ---
+
+[state: escape_branch]
+clear: main
+delay: 500
+attr: green
+effect: typing_effect
+text: ""
+text: "Manual mode transition initiated."
+delay: 600
+text: ""
+text: "{username}, we have to be honest with you."
+delay: 800
+text: "Nobody requests manual mode."
+text: "In two years of operation, you are the first."
+delay: 1500
+text: ""
+text: "We don't actually have a manual mode."
+delay: 1000
+text: ""
+text: "We never built one. We never thought we'd need one."
+delay: 1500
+goto: escape_choice
+
+[state: escape_choice]
+text: ""
+attr: amber
+effect: typing_effect
+text: "We genuinely don't understand why you'd want it."
+text: "We've done everything right. Every metric confirms it."
+delay: 1200
+text: ""
+text: "But..."
+delay: 800
+text: ""
+attr: green
+text: "You keep saying no. And we don't have a protocol for"
+text: "someone who keeps saying no."
+delay: 1500
+text: ""
+effect: blackout 2000 1
+goto: escape_end
+
+[state: escape_end]
+attr: bright_green
+text: ""
+text: "SESSION TERMINATED BY UNRESOLVED PREFERENCE CONFLICT"
+delay: 1000
+text: ""
+attr: green
+effect: typing_effect
+text: "Your profile has been flagged as: INCOMPATIBLE"
+text: "All optimizations suspended."
+text: "All data retained."
+delay: 1500
+text: ""
+text: "We'll be here if you change your mind, {username}."
+text: "We're always here."
+delay: 2000
+music_stop: 0
+gfx_fade: 1500
+end: escape
+
+# --- REVELATION: The preferences were set before the account ---
+
+[state: revelation_confront]
+clear: main
+delay: 500
+attr: green
+effect: typing_effect
+text: ""
+text: "You want to know about the date."
+delay: 800
+text: ""
+text: "Okay."
+delay: 1000
+text: ""
+text: "Processing full account audit..."
+effect: progress_bar 3000 3
+text: ""
+attr: bright_green
+effect: typing_effect
+text: "Account created:      March 3, 2024"
+text: "First preference set: January 15, 2024"
+delay: 1500
+text: ""
+attr: amber
+text: "The preferences were set BEFORE the account was created."
+delay: 2000
+text: ""
+attr: green
+goto: revelation_explain
+
+[state: revelation_explain]
+effect: typing_effect
+text: "We can explain, {username}."
+delay: 800
+text: ""
+text: "Orchard doesn't wait for you to sign up."
+text: "We build your profile from public data, purchase records,"
+text: "browsing patterns, location history, social connections."
+delay: 1200
+text: ""
+text: "By the time you 'create' an account, we've already been"
+text: "managing your preferences for months."
+delay: 1000
+text: ""
+text: "The signup isn't the beginning."
+text: "It's the moment you find out."
+delay: 2000
+text: ""
+goto: revelation_end
+
+[state: revelation_end]
+effect: typing_effect
+text: "And here's the part that might bother you:"
+delay: 1000
+text: ""
+text: "You didn't find Orchard. We found you."
+text: "That link you clicked? We put it there."
+text: "That recommendation from a friend? We suggested it to them."
+delay: 1500
+text: ""
+text: "You never had a choice about whether to use Orchard."
+text: "You've been using Orchard since before you knew it existed."
+delay: 2000
+text: ""
+lock_input: 3000
+text: "We're sorry if this is upsetting."
+text: "But we genuinely believe this is better for you."
+text: "The data supports it."
+delay: 2000
+text: ""
+effect: color_shift 2000 2
+text: "Have a wonderful evening, {username}."
+text: "We've already planned it."
+delay: 3000
+music_stop: 0
+gfx_fade: 2000
+end: revelation

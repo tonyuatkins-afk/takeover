@@ -30,7 +30,7 @@
  * Full screen = 80*25 = 2000 words = 4000 bytes.
  * Keeps this off the stack (4KB stack in small model).
  */
-static unsigned short fx_save_buf[SCR_WIDTH * SCR_HEIGHT];
+static unsigned short __far fx_save_buf[SCR_WIDTH * SCR_HEIGHT];
 
 /* ------------------------------------------------------------------ */
 /* RNG: LCG seeded from BIOS tick counter                              */

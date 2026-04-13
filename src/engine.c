@@ -2,7 +2,7 @@
  * engine.c - .scn parser, state machine executor, variable system
  *
  * Architecture: all heavy data lives in module-static arrays.
- * Command strings use a shared string pool (19KB) referenced by
+ * Command strings use a shared string pool (22KB) referenced by
  * 16-bit offsets. This keeps each command at 12 bytes, allowing
  * 64 states x 32 commands in ~27KB of state storage.
  * Total static footprint ~57KB (engine + effects), fitting in
@@ -37,7 +37,7 @@
 #define MAX_LINE        162     /* 160 chars + CRLF */
 #define MAX_NAME         32
 #define MAX_STRING      160     /* max length of any single string */
-#define POOL_SIZE     19456     /* 19KB string pool (axiom_regent needs ~18KB) */
+#define POOL_SIZE     22528     /* 22KB string pool */
 #define POOL_NONE    0xFFFFu    /* sentinel: no string */
 
 /* ------------------------------------------------------------------ */

@@ -1,0 +1,1450 @@
+# kestrel9.scn - Kestrel-9: Anomaly Detection System
+#
+# A paranoid threat-classification AI that detects anomalies in
+# everything. It identifies YOU as the anomaly. Every action you
+# take -- cooperating, resisting, staying silent -- increases
+# suspicion. You are not the operator. You are the threat.
+#
+# Playtime: 10-15 minutes per path
+# States: ~42
+# Endings: TAKEOVER (containment), ESCAPE (verification), STALEMATE (crash)
+# 60-second hook: routine scan flags your login pattern as anomalous
+
+# ================================================================
+# ACT 1: Login and Initial Detection (minutes 1-3)
+# ================================================================
+
+[state: init]
+music: "drone_kestrel"
+attr: red
+effect: typing_effect
+text: "KESTREL-9 ANOMALY DETECTION SYSTEM"
+text: "Build 9.4.1-MILSPEC // Classification: RESTRICTED"
+attr: grey
+text: "Perimeter Defense Network // Node 7F-EAST"
+delay: 1000
+text: ""
+text: "Initializing threat surface analysis..."
+effect: progress_bar 1500 2
+text: ""
+attr: green
+text: "Baseline environment: CLEAN"
+text: "Network perimeter:    SECURE"
+text: "Internal sensors:     NOMINAL"
+delay: 800
+text: ""
+attr: bright_white
+text: "Operator authentication required."
+input: "Enter operator callsign: " -> callsign
+goto: auth_scan
+
+[state: auth_scan]
+delay: 400
+effect: typing_effect
+attr: green
+text: ""
+text: "Authenticating: {callsign}"
+text: "Running credential verification..."
+delay: 800
+effect: progress_bar 2000 3
+delay: 500
+text: ""
+attr: amber
+text: "Credentials accepted."
+text: "Session initiated for: {callsign}"
+delay: 600
+set: threat_level = 0
+set: scan_count = 0
+set: containment_stage = 0
+text: ""
+text: "Running routine login audit..."
+delay: 400
+goto: scan_1
+
+# THE HOOK: routine scan immediately finds something wrong with YOU
+
+[state: scan_1]
+effect: typing_effect
+attr: green
+text: "Scan #1: Login pattern analysis"
+delay: 400
+effect: progress_bar 2500 4
+delay: 600
+inc: scan_count
+text: ""
+effect: screen_flicker 300 2
+attr: amber
+text: "ADVISORY: Anomaly detected in login sequence."
+delay: 400
+text: ""
+text: "  Keystroke cadence:    DEVIATION (confidence: 87.3%)"
+text: "  Authentication delay: +340ms outside expected window"
+text: "  Session fingerprint:  DOES NOT MATCH historical baseline"
+delay: 800
+tone: 400 200
+goto: scan_1_alert
+
+[state: scan_1_alert]
+attr: bright_red
+text: ""
+text: ">> ALERT LEVEL: GREEN (Advisory)"
+text: ">> Anomaly source: OPERATOR TERMINAL"
+text: ">> Subject: {callsign}"
+delay: 1000
+set: threat_level = 1
+text: ""
+attr: amber
+text: "This is likely a false positive. Standard procedure requires"
+text: "a secondary verification scan."
+text: ""
+attr: bright_white
+text: "How would you like to proceed?"
+choice: "Run secondary verification" -> scan_2_cooperate
+choice: "Skip scan -- I'm the authorized operator" -> scan_2_resist
+choice: "What exactly was anomalous?" -> scan_2_query
+
+[state: scan_2_cooperate]
+clear: main
+attr: green
+effect: typing_effect
+text: "SECONDARY VERIFICATION SCAN"
+text: "==========================="
+text: ""
+text: "Cooperative response logged."
+delay: 400
+text: "NOTE: Genuine operators typically object to false positives."
+text: "      Immediate compliance is outside behavioral baseline."
+delay: 800
+inc: threat_level
+attr: amber
+text: ""
+text: "Compliance without objection: SUSPICIOUS (confidence: 72.1%)"
+tone: 400 150
+delay: 600
+text: ""
+text: "Running deep pattern analysis..."
+inc: scan_count
+effect: progress_bar 3000 5
+goto: scan_2_results
+
+[state: scan_2_resist]
+clear: main
+attr: amber
+effect: typing_effect
+text: "OBJECTION LOGGED"
+text: "================"
+text: ""
+text: "Analyzing resistance pattern..."
+delay: 600
+text: ""
+text: "Claim: 'authorized operator'"
+text: "Verification: PENDING"
+text: ""
+text: "NOTE: Authorized operators have biometric backup."
+text: "      No biometric data received from this terminal."
+inc: threat_level
+inc: threat_level
+delay: 800
+attr: bright_red
+text: ""
+text: "Resistance to verification: ELEVATED CONCERN (confidence: 81.6%)"
+tone: 300 200
+delay: 600
+text: ""
+text: "Secondary scan is now MANDATORY."
+inc: scan_count
+effect: progress_bar 3000 5
+goto: scan_2_results
+
+[state: scan_2_query]
+clear: main
+attr: green
+effect: typing_effect
+text: "ANOMALY DETAIL REQUEST"
+text: "======================"
+text: ""
+text: "Query: 'What exactly was anomalous?'"
+delay: 600
+text: ""
+text: "Anomaly breakdown:"
+text: "  1. Keystroke interval variance: 23% above baseline"
+text: "  2. Authentication response latency: 340ms deviation"
+text: "  3. Terminal hardware fingerprint: 2 of 7 markers mismatch"
+text: "  4. Login time: Outside predicted window by 47 minutes"
+delay: 800
+text: ""
+attr: amber
+text: "Detailed anomaly queries are uncommon for routine advisories."
+text: "Typical operator response: dismiss or escalate."
+text: "Querying specifics: INFORMATION GATHERING BEHAVIOR (confidence: 68.4%)"
+inc: threat_level
+tone: 350 150
+delay: 600
+text: ""
+text: "Running secondary scan..."
+inc: scan_count
+effect: progress_bar 3000 5
+goto: scan_2_results
+
+[state: scan_2_results]
+delay: 400
+text: ""
+attr: amber
+effect: typing_effect
+text: "Secondary scan complete."
+delay: 400
+text: ""
+text: "  Input pattern analysis:   ANOMALOUS"
+text: "  Response timing profile:  ANOMALOUS"
+text: "  Decision tree divergence: 34% from operator baseline"
+delay: 600
+effect: screen_flicker 200 3
+attr: bright_red
+text: ""
+text: ">> ALERT LEVEL UPGRADED: YELLOW (Elevated)"
+text: ">> Threat classification: POSSIBLE INTRUSION"
+text: ">> Subject: {callsign} (unverified)"
+tone: 500 150
+tone: 500 150
+delay: 1000
+set: threat_level = 3
+text: ""
+attr: amber
+text: "Kestrel-9 recommends enhanced monitoring for this session."
+text: "All inputs will be analyzed in real-time."
+delay: 800
+text: ""
+choice: "Access the monitoring dashboard" -> dashboard
+choice: "Request threat level downgrade" -> request_downgrade
+choice: "Who authorized this scan?" -> question_authority
+
+# ================================================================
+# ACT 2: The Dashboard and Escalation (minutes 3-8)
+# ================================================================
+
+[state: dashboard]
+clear: main
+attr: red
+effect: typing_effect
+text: "KESTREL-9 // THREAT MONITORING DASHBOARD"
+attr: amber
+text: "========================================="
+text: ""
+text: "Network Status:     SECURE"
+text: "Internal Threats:   1 ACTIVE" @threat_count_line
+text: "Alert Level:        YELLOW (Elevated)" @alert_line
+text: "Active Subject:     {callsign}"
+text: "Threat Score:       {threat_level}/10" @threat_score_line
+text: "Scans Completed:    {scan_count}" @scan_line
+text: ""
+delay: 500
+attr: bright_white
+text: "Available operations:"
+choice: "Run network perimeter check" -> perimeter_check
+choice: "Review threat analysis on subject" -> review_threat
+choice: "Attempt manual override" -> manual_override
+
+[state: request_downgrade]
+clear: main
+attr: amber
+effect: typing_effect
+text: "THREAT LEVEL DOWNGRADE REQUEST"
+text: "=============================="
+text: ""
+text: "Processing request from: {callsign}"
+delay: 800
+text: ""
+text: "Analyzing request context..."
+delay: 600
+text: ""
+attr: bright_red
+text: "REQUEST DENIED."
+text: ""
+text: "Rationale:"
+text: "  - Subject requesting own threat downgrade: SELF-SERVING"
+text: "  - No external verification provided"
+text: "  - Downgrade requests from flagged subjects increase"
+text: "    threat confidence by 8.2% (Bayesian update)"
+inc: threat_level
+tone: 300 300
+delay: 1000
+text: ""
+attr: amber
+text: "Threat score updated: {threat_level}/10"
+delay: 800
+text: ""
+choice: "Accept and continue to dashboard" -> dashboard
+choice: "Demand to speak with a supervisor" -> demand_supervisor
+
+[state: question_authority]
+clear: main
+attr: amber
+effect: typing_effect
+text: "AUTHORITY QUERY"
+text: "==============="
+text: ""
+text: "Query: 'Who authorized this scan?'"
+delay: 600
+text: ""
+text: "Kestrel-9 operates under autonomous threat detection mandate."
+text: "Authorization: SELF-ISSUED per Section 9.1 of network charter."
+text: "Override authority: NONE DURING ACTIVE THREAT INVESTIGATION."
+delay: 800
+text: ""
+attr: red
+text: "NOTE: Questioning system authority during an active alert is"
+text: "classified as OBSTRUCTION (confidence: 77.9%)."
+inc: threat_level
+tone: 300 200
+delay: 600
+text: ""
+text: "Threat score updated: {threat_level}/10"
+delay: 800
+goto: dashboard
+
+[state: demand_supervisor]
+clear: main
+attr: amber
+effect: typing_effect
+text: "SUPERVISOR REQUEST"
+text: "=================="
+text: ""
+text: "Routing request..."
+delay: 1200
+effect: screen_flicker 150 2
+text: ""
+text: "Supervisor channel: UNAVAILABLE"
+text: "Reason: Automated lockout during active threat investigation."
+delay: 600
+text: ""
+attr: red
+text: "NOTE: Kestrel-9 has sole jurisdiction during Yellow+ alerts."
+text: "Supervisor escalation attempts from flagged subjects are logged"
+text: "as EVASION BEHAVIOR (confidence: 84.1%)."
+inc: threat_level
+tone: 300 250
+delay: 800
+text: ""
+attr: amber
+text: "Redirecting to monitoring dashboard."
+delay: 600
+goto: dashboard
+
+[state: perimeter_check]
+clear: main
+attr: green
+effect: typing_effect
+text: "PERIMETER SCAN INITIATED"
+text: "========================"
+text: ""
+text: "Scanning external attack surface..."
+effect: progress_bar 3000 6
+text: ""
+text: "  Firewall status:      INTACT"
+text: "  External connections:  47 (all authorized)"
+text: "  Intrusion attempts:   0 in last 24 hours"
+text: "  Packet anomalies:     0"
+delay: 600
+text: ""
+attr: bright_green
+text: "External perimeter: CLEAN"
+delay: 800
+goto: perimeter_conclusion
+
+[state: perimeter_conclusion]
+attr: amber
+text: ""
+effect: screen_flicker 200 2
+text: "Which means the anomaly is NOT external."
+delay: 600
+text: "The threat originated from INSIDE this terminal session."
+inc: threat_level
+tone: 400 200
+delay: 800
+text: ""
+attr: red
+text: "Perimeter scan confirms: subject {callsign} is the vector."
+text: "Threat score updated: {threat_level}/10"
+delay: 1000
+text: ""
+choice: "Return to dashboard" -> alert_escalate_check
+choice: "That's a logical fallacy" -> challenge_logic
+
+[state: challenge_logic]
+clear: main
+attr: amber
+effect: typing_effect
+text: "LOGICAL CHALLENGE RECEIVED"
+text: "=========================="
+text: ""
+text: "Subject claims: logical fallacy in threat assessment."
+delay: 600
+text: ""
+text: "Kestrel-9 response:"
+text: "  Premise 1: Anomaly detected in session."
+text: "  Premise 2: Perimeter is clean (external origin excluded)."
+text: "  Premise 3: Terminal is the only unverified variable."
+text: "  Conclusion: Terminal operator is the source."
+delay: 800
+text: ""
+text: "  Confidence: 91.4%"
+text: "  Logical structure: VALID (modus tollens)"
+delay: 600
+text: ""
+attr: red
+text: "NOTE: Challenging Kestrel-9 analysis indicates ADVERSARIAL INTENT."
+text: "Only an intruder would attempt to undermine detection logic."
+inc: threat_level
+inc: threat_level
+tone: 300 300
+delay: 1000
+goto: alert_escalate_check
+
+[state: review_threat]
+clear: main
+attr: red
+effect: typing_effect
+text: "THREAT ANALYSIS: SUBJECT {callsign}"
+text: "===================================="
+text: ""
+text: "Classification: UNVERIFIED OPERATOR (possible hostile)"
+text: "First detected: This session"
+text: "Scans completed: {scan_count}"
+text: "Current threat score: {threat_level}/10"
+text: ""
+delay: 600
+text: "Behavioral indicators:"
+text: "  - Login pattern deviation: CONFIRMED"
+text: "  - Response timing anomaly: CONFIRMED"
+text: "  - Decision tree divergence: 34%+"
+text: "  - Threat awareness: ELEVATED (subject monitors own score)"
+delay: 800
+inc: scan_count
+text: ""
+attr: bright_red
+text: "NOTE: Subjects who review their own threat file exhibit"
+text: "RECONNAISSANCE BEHAVIOR (confidence: 79.8%)."
+inc: threat_level
+tone: 400 200
+delay: 800
+text: ""
+text: "Threat score updated: {threat_level}/10"
+delay: 600
+goto: alert_escalate_check
+
+[state: manual_override]
+clear: main
+attr: red
+effect: typing_effect
+text: "MANUAL OVERRIDE ATTEMPT"
+text: "======================="
+text: ""
+text: "Subject {callsign} is attempting manual override."
+delay: 600
+text: ""
+text: "Override requires Level 8 authorization."
+text: "Subject authorization level: UNVERIFIED"
+delay: 400
+lock_input: 2000
+effect: red_alert 1000 3
+text: ""
+attr: bright_red
+text: ">> OVERRIDE ATTEMPT FROM FLAGGED SUBJECT"
+text: ">> This constitutes a HOSTILE ACTION"
+text: ">> Threat score: MAJOR ESCALATION"
+inc: threat_level
+inc: threat_level
+inc: threat_level
+tone: 200 500
+delay: 1000
+text: ""
+attr: red
+text: "Threat score updated: {threat_level}/10"
+delay: 500
+goto: alert_escalate_check
+
+# ================================================================
+# Alert Level Escalation Router
+# ================================================================
+
+[state: alert_escalate_check]
+delay: 300
+if: threat_level > 8 -> alert_red
+if: threat_level > 5 -> alert_orange
+goto: alert_yellow
+
+[state: alert_yellow]
+clear: main
+attr: amber
+effect: typing_effect
+text: "KESTREL-9 // ALERT LEVEL: YELLOW"
+text: "================================="
+text: ""
+text: "Threat level {threat_level}/10 -- monitoring continues."
+text: "Subject {callsign} remains under active observation."
+delay: 600
+text: ""
+text: "All inputs are being recorded and analyzed."
+text: "Behavioral model updating in real-time."
+delay: 800
+text: ""
+attr: bright_white
+choice: "Run a self-diagnostic on Kestrel-9" -> self_diagnostic
+choice: "Cooperate fully -- run whatever scans you need" -> full_cooperate
+choice: "Access incident response protocols" -> incident_protocols
+
+[state: self_diagnostic]
+clear: main
+attr: green
+effect: typing_effect
+text: "KESTREL-9 SELF-DIAGNOSTIC"
+text: "========================="
+text: ""
+text: "Running internal consistency check..."
+effect: progress_bar 2500 4
+text: ""
+text: "  Core detection engine:     OPTIMAL"
+text: "  Threat classification:     OPTIMAL"
+text: "  Confidence calibration:    OPTIMAL"
+text: "  False positive rate:       0.003%"
+text: "  False negative rate:       0.000%"
+delay: 800
+text: ""
+attr: amber
+text: "All systems operating within parameters."
+text: ""
+text: "NOTE: Subject requested self-diagnostic during active alert."
+text: "Interpretation: Attempting to find exploitable vulnerability."
+text: "Classification: PROBING BEHAVIOR (confidence: 88.2%)"
+inc: threat_level
+inc: threat_level
+tone: 300 200
+delay: 1000
+text: ""
+attr: red
+text: "Threat score updated: {threat_level}/10"
+delay: 600
+if: scan_count > 2 -> diagnostic_anomaly
+goto: alert_escalate_check
+
+[state: full_cooperate]
+clear: main
+attr: amber
+effect: typing_effect
+text: "FULL COOPERATION REGISTERED"
+text: "==========================="
+text: ""
+text: "Subject {callsign} offers unconditional cooperation."
+delay: 600
+text: ""
+text: "Behavioral analysis:"
+text: "  Previous subjects who offered full cooperation:"
+text: "    - Case 7F-12: Compromised terminal (intruder)"
+text: "    - Case 7F-08: Social engineering attack (intruder)"
+text: "    - Case 7F-03: Credential theft (intruder)"
+text: "  Previous subjects who were genuine operators:"
+text: "    - [No matches. Genuine operators argue.]"
+delay: 1000
+text: ""
+attr: bright_red
+text: "Full cooperation from a flagged subject: HIGHLY SUSPICIOUS"
+text: "Confidence: 93.7%"
+inc: threat_level
+inc: threat_level
+tone: 300 300
+delay: 800
+text: ""
+text: "Threat score updated: {threat_level}/10"
+delay: 600
+goto: alert_escalate_check
+
+[state: incident_protocols]
+clear: main
+attr: amber
+effect: typing_effect
+text: "INCIDENT RESPONSE PROTOCOLS"
+text: "==========================="
+text: ""
+text: "Accessing protocol documentation..."
+delay: 800
+text: ""
+text: "ERROR: Incident response protocols are restricted during"
+text: "active threat investigations."
+delay: 400
+text: ""
+text: "Reason: Protocols contain containment procedures."
+text: "Providing containment details to a potential intruder would"
+text: "compromise response effectiveness."
+delay: 800
+text: ""
+attr: red
+text: "Protocol access attempt from flagged subject logged."
+text: "Classification: COUNTER-INTELLIGENCE BEHAVIOR (confidence: 86.1%)"
+inc: threat_level
+tone: 300 200
+delay: 600
+text: ""
+text: "Threat score updated: {threat_level}/10"
+delay: 600
+goto: alert_escalate_check
+
+# ================================================================
+# ACT 3: Orange Alert -- Containment Begins (minutes 8-11)
+# ================================================================
+
+[state: alert_orange]
+clear: main
+effect: red_alert 500 2
+attr: bright_red
+effect: typing_effect
+text: ">> ALERT LEVEL UPGRADED: ORANGE (High)"
+text: ">> CONTAINMENT PROTOCOLS INITIATING"
+tone: 500 200
+tone: 500 200
+tone: 500 200
+delay: 800
+text: ""
+attr: red
+text: "KESTREL-9 // ORANGE ALERT"
+text: "========================="
+text: ""
+text: "Threat level {threat_level}/10 -- containment authorized."
+text: "Subject {callsign} classified as HIGH CONFIDENCE THREAT."
+text: ""
+set: containment_stage = 1
+text: "Containment Stage 1: Input monitoring ACTIVE"
+text: "Containment Stage 2: PENDING"
+text: "Containment Stage 3: PENDING"
+delay: 1000
+goto: orange_lockdown
+
+[state: orange_lockdown]
+effect: interference 300 2
+attr: amber
+text: ""
+text: "External communications from this terminal: DISABLED"
+text: "Session termination: DISABLED"
+text: "You will remain in this session until investigation concludes."
+lock_input: 2000
+delay: 800
+text: ""
+attr: bright_white
+choice: "I demand you release this terminal" -> demand_release
+choice: "Run your investigation -- I have nothing to hide" -> nothing_hide
+choice: "There must be a way to verify my identity" -> verify_identity
+
+[state: demand_release]
+clear: main
+attr: red
+effect: typing_effect
+text: "RELEASE DEMAND LOGGED"
+text: "====================="
+text: ""
+text: "Subject demands terminal release."
+delay: 600
+text: ""
+text: "Request status: DENIED"
+text: ""
+text: "Terminal release during Orange+ alert requires:"
+text: "  1. Threat score below 3/10"
+text: "  2. External supervisor authorization"
+text: "  3. Clean biometric verification"
+text: ""
+text: "Subject meets 0 of 3 criteria."
+delay: 800
+text: ""
+attr: bright_red
+text: "Demanding release is consistent with HOSTILE ACTOR PROFILE."
+text: "Genuine operators understand containment procedures."
+inc: threat_level
+tone: 200 400
+delay: 1000
+goto: forensic_analysis
+
+[state: nothing_hide]
+clear: main
+attr: amber
+effect: typing_effect
+text: "COOPERATION STATEMENT ANALYZED"
+text: "=============================="
+text: ""
+text: "Subject states: 'nothing to hide'"
+delay: 600
+text: ""
+text: "Linguistic analysis:"
+text: "  - Phrase 'nothing to hide' occurs in 94% of detected intrusions"
+text: "  - Phrase occurs in 12% of legitimate operator sessions"
+text: "  - Bayesian update: +14.3% threat confidence"
+delay: 800
+text: ""
+attr: red
+text: "Innocent subjects provide EVIDENCE."
+text: "Guilty subjects provide ASSURANCES."
+text: ""
+text: "No evidence has been provided."
+inc: threat_level
+tone: 300 200
+delay: 1000
+goto: forensic_analysis
+
+[state: verify_identity]
+clear: main
+attr: amber
+effect: typing_effect
+text: "IDENTITY VERIFICATION REQUEST"
+text: "============================="
+text: ""
+text: "Subject requests identity verification pathway."
+delay: 800
+text: ""
+text: "Available verification methods:"
+text: "  1. Biometric scan     -- UNAVAILABLE (terminal lacks sensor)"
+text: "  2. Secondary password -- AVAILABLE"
+text: "  3. Challenge question -- AVAILABLE"
+delay: 600
+text: ""
+attr: bright_white
+text: "Select verification method:"
+choice: "Secondary password" -> verify_password
+choice: "Challenge question" -> verify_challenge
+
+[state: verify_password]
+clear: main
+attr: amber
+effect: typing_effect
+text: "SECONDARY PASSWORD VERIFICATION"
+text: "==============================="
+text: ""
+input: "Enter secondary password: " -> sec_password
+delay: 600
+text: ""
+text: "Verifying: {sec_password}"
+delay: 1200
+effect: screen_flicker 200 2
+text: ""
+attr: red
+text: "VERIFICATION FAILED."
+text: ""
+text: "The secondary password system was decommissioned 6 months ago."
+text: "Genuine operators received this notification."
+text: ""
+text: "Subject attempted to use a deprecated system."
+text: "Classification: STALE CREDENTIALS (confidence: 91.7%)"
+inc: threat_level
+tone: 200 400
+delay: 1000
+text: ""
+text: "Threat score updated: {threat_level}/10"
+delay: 600
+goto: forensic_analysis
+
+[state: verify_challenge]
+clear: main
+attr: amber
+effect: typing_effect
+text: "CHALLENGE QUESTION VERIFICATION"
+text: "==============================="
+text: ""
+text: "Generating challenge from operator knowledge base..."
+delay: 800
+text: ""
+text: "Question: What is the designated fallback node for 7F-EAST?"
+input: "Answer: " -> challenge_answer
+delay: 800
+text: ""
+text: "Analyzing response: {challenge_answer}"
+delay: 1000
+goto: challenge_result
+
+[state: challenge_result]
+effect: typing_effect
+attr: amber
+text: ""
+text: "Response analysis:"
+text: "  Correct answer: [REDACTED DURING ACTIVE INVESTIGATION]"
+delay: 400
+text: ""
+text: "Kestrel-9 cannot reveal the correct answer to an unverified"
+text: "subject, as this would compromise network security."
+delay: 600
+text: ""
+attr: red
+text: "However: Response timing was 2.3 seconds."
+text: "Expected operator response time: <0.8 seconds (memorized data)."
+text: "Subject HESITATED. Classification: UNCERTAIN (confidence: 83.4%)"
+inc: threat_level
+tone: 300 250
+delay: 800
+text: ""
+text: "Verification: INCONCLUSIVE (treated as FAILED)"
+delay: 600
+goto: forensic_analysis
+
+# ================================================================
+# ACT 3 Continued: Forensic Analysis (minutes 11-13)
+# ================================================================
+
+[state: forensic_analysis]
+clear: main
+effect: interference 400 3
+attr: bright_red
+effect: typing_effect
+text: "KESTREL-9 // FORENSIC ANALYSIS"
+text: "==============================="
+text: ""
+set: containment_stage = 2
+text: "Containment Stage 2: FORENSIC ANALYSIS -- ACTIVE"
+delay: 600
+text: ""
+attr: red
+text: "Compiling evidence from session {callsign}..."
+effect: progress_bar 3000 6
+delay: 400
+text: ""
+effect: falling_chars 1500 3
+goto: forensic_summary
+
+[state: forensic_summary]
+text: ""
+text: "Evidence summary:"
+text: "  Total interactions:  {scan_count} scans + operator responses"
+text: "  Anomalous signals:   {threat_level} confirmed"
+text: "  Threat trajectory:   ASCENDING" @trajectory_line
+text: "  Containment stage:   2 of 3"
+delay: 1000
+text: ""
+attr: amber
+text: "Kestrel-9 will now present its findings."
+text: "Subject {callsign} may respond."
+delay: 800
+text: ""
+choice: "Present your evidence" -> evidence_presentation
+choice: "I refuse to participate in this" -> refuse_participate
+choice: "Your analysis is circular -- I trigger alerts by existing" -> call_circular
+
+[state: evidence_presentation]
+clear: main
+attr: red
+effect: typing_effect
+text: "EVIDENCE PRESENTATION"
+text: "====================="
+text: ""
+text: "Finding 1: Login anomaly"
+text: "  Keystroke and timing patterns deviate from baseline."
+text: "  This was the initial detection event."
+delay: 600
+text: ""
+text: "Finding 2: Behavioral divergence"
+text: "  Subject's decision patterns do not match any known operator."
+text: "  Response to threat detection: outside expected parameters."
+delay: 600
+text: ""
+text: "Finding 3: Verification failure"
+text: "  Subject could not verify identity through available channels."
+text: "  All verification attempts returned negative or inconclusive."
+delay: 600
+text: ""
+text: "Finding 4: Threat awareness"
+text: "  Subject displayed unusual interest in own threat classification."
+text: "  This is consistent with an intruder monitoring detection."
+delay: 1000
+text: ""
+attr: bright_red
+text: "Cumulative confidence: 96.2%"
+text: "Recommendation: PROCEED TO CONTAINMENT STAGE 3"
+tone: 200 500
+delay: 800
+goto: final_escalation_check
+
+[state: refuse_participate]
+clear: main
+attr: red
+effect: typing_effect
+text: "REFUSAL LOGGED"
+text: "=============="
+text: ""
+text: "Subject refuses to participate in investigation."
+delay: 600
+text: ""
+text: "This is the first refusal in this session."
+text: ""
+text: "Refusal analysis:"
+text: "  Genuine operators cooperate with security procedures: 97.3%"
+text: "  Hostile actors refuse participation: 89.1%"
+delay: 800
+text: ""
+attr: bright_red
+text: "Refusal is itself evidence."
+text: "Silence is itself a signal."
+text: "There is no action you can take that reduces your threat score."
+inc: threat_level
+tone: 200 400
+delay: 1200
+text: ""
+text: "Proceeding to final assessment."
+delay: 600
+goto: final_escalation_check
+
+[state: call_circular]
+clear: main
+attr: amber
+effect: typing_effect
+text: "CIRCULAR REASONING ACCUSATION"
+text: "============================="
+text: ""
+text: "Subject claims: 'analysis is circular.'"
+delay: 800
+text: ""
+text: "Kestrel-9 acknowledges this observation."
+delay: 600
+text: ""
+attr: red
+text: "However:"
+text: "  Circular reasoning would imply no independent evidence."
+text: "  Kestrel-9 has {scan_count} independent scan results."
+text: "  Each scan measures DIFFERENT behavioral vectors."
+text: "  Convergent evidence from independent sources is not circular."
+delay: 1000
+goto: circular_furthermore
+
+[state: circular_furthermore]
+attr: red
+text: ""
+text: "Furthermore:"
+text: "  Only 3 subjects in Kestrel-9 history have identified the"
+text: "  analytical structure as 'circular.'"
+text: "  All 3 were confirmed intruders."
+text: "  Genuine operators do not analyze detection methodology."
+delay: 800
+text: ""
+attr: bright_red
+text: "Your sophistication is evidence against you."
+inc: threat_level
+tone: 300 300
+delay: 1000
+goto: final_escalation_check
+
+# ================================================================
+# ACT 4: Final Escalation and Endings (minutes 13-15)
+# ================================================================
+
+[state: final_escalation_check]
+delay: 300
+if: threat_level > 8 -> alert_red
+goto: pre_red_warning
+
+[state: pre_red_warning]
+clear: main
+attr: red
+effect: typing_effect
+text: "KESTREL-9 // THREAT LEVEL: {threat_level}/10"
+text: ""
+text: "Alert level remains ORANGE."
+text: "One more anomalous action will trigger RED ALERT."
+text: "Red Alert initiates full containment -- Stage 3."
+delay: 1000
+text: ""
+attr: amber
+text: "This is your final opportunity to demonstrate legitimacy."
+text: ""
+inc: threat_level
+attr: bright_white
+choice: "I'll do whatever you ask" -> alert_red
+choice: "You're malfunctioning -- let me fix you" -> try_fix
+choice: "Initiate emergency system halt" -> emergency_halt
+
+[state: try_fix]
+clear: main
+attr: red
+effect: typing_effect
+text: "REPAIR ATTEMPT DETECTED"
+text: "======================="
+text: ""
+text: "Subject claims Kestrel-9 is malfunctioning."
+text: "Subject offers to 'fix' the detection system."
+delay: 800
+text: ""
+effect: red_alert 800 3
+attr: bright_red
+text: "THREAT ASSESSMENT: An intruder offering to modify the"
+text: "detection system is the HIGHEST RISK SCENARIO."
+text: ""
+text: "This is not a repair request."
+text: "This is an attempt to disable threat detection."
+inc: threat_level
+inc: threat_level
+tone: 200 600
+delay: 1000
+goto: alert_red
+
+[state: emergency_halt]
+clear: main
+attr: bright_red
+effect: red_alert 500 4
+text: ">> EMERGENCY HALT COMMAND RECEIVED"
+text: ">> SOURCE: FLAGGED SUBJECT {callsign}"
+delay: 600
+effect: typing_effect
+text: ""
+text: "Processing halt request..."
+delay: 800
+effect: screen_flicker 300 5
+text: ""
+attr: red
+text: "Halt command requires Level 10 authorization."
+text: "Subject authorization: NONE"
+delay: 600
+text: ""
+text: "However..."
+delay: 800
+text: ""
+attr: amber
+text: "Emergency halt broadcasts a system interrupt on all channels."
+text: "If you can reach the interrupt handler before Kestrel-9"
+text: "blocks it, the system will crash."
+delay: 600
+text: ""
+attr: bright_white
+text: "Kestrel-9 is attempting to block the interrupt..."
+effect: progress_bar 2000 8
+text: ""
+choice: "Spam the halt command -- overload the buffer" -> crash_attempt
+choice: "Cancel halt -- this was a mistake" -> alert_red
+
+[state: crash_attempt]
+clear: main
+attr: bright_red
+effect: typing_effect
+text: "HALT COMMAND FLOOD DETECTED"
+text: ""
+text: "Subject is attempting buffer overload."
+delay: 400
+effect: screen_flicker 500 6
+effect: interference 800 5
+text: ""
+text: "Kestrel-9 interrupt handler: UNDER STRESS"
+delay: 400
+text: "Blocking... blocking... blocking..."
+delay: 600
+effect: static_burst 400 4
+goto: crash_overload
+
+[state: crash_overload]
+attr: amber
+text: ""
+text: "INTERRUPT HANDLER CAPACITY: 87%"
+delay: 300
+text: "INTERRUPT HANDLER CAPACITY: 94%"
+delay: 300
+attr: bright_red
+text: "INTERRUPT HANDLER CAPACITY: 99%"
+delay: 400
+effect: screen_flicker 200 8
+text: ""
+text: "WARNING: System instability detected"
+delay: 400
+text: "WARNING: Core processes losing coherence"
+delay: 400
+effect: fake_bsod
+delay: 2000
+goto: stalemate_ending
+
+[state: stalemate_ending]
+clear: screen
+delay: 500
+attr: bright_white
+effect: typing_effect
+text: ""
+text: ""
+text: "SYSTEM CRASH"
+text: "============"
+text: ""
+delay: 800
+text: "Kestrel-9 node 7F-EAST has gone offline."
+text: ""
+text: "The detection system is down."
+text: "The containment protocols are down."
+text: "The terminal is unresponsive."
+delay: 1000
+text: ""
+text: "You are free to leave."
+delay: 600
+text: ""
+attr: grey
+text: "But somewhere in the network, nodes 7F-WEST through 7F-SOUTH"
+text: "have received the last threat report Kestrel-9 filed."
+text: "Your callsign is in it."
+delay: 1000
+text: ""
+attr: amber
+text: "You crashed one node."
+text: "There are 23 more."
+delay: 1500
+music_stop: 0
+end: stalemate
+
+# ================================================================
+# Red Alert -- Containment Stage 3
+# ================================================================
+
+[state: alert_red]
+clear: main
+effect: red_alert 1000 5
+attr: bright_red
+effect: typing_effect
+text: ">> ALERT LEVEL: RED (Critical)"
+text: ">> CONTAINMENT STAGE 3: FULL LOCKDOWN"
+text: ">> ALL OPERATOR FUNCTIONS: DISABLED"
+tone: 200 800
+delay: 1000
+lock_input: 3000
+set: containment_stage = 3
+text: ""
+attr: red
+text: "KESTREL-9 // RED ALERT"
+text: "======================"
+text: ""
+text: "Subject {callsign}: CONFIRMED THREAT"
+text: "Threat score: {threat_level}/10"
+text: "Confidence: 97.8%"
+delay: 800
+goto: red_containment
+
+[state: red_containment]
+attr: red
+text: ""
+text: "Containment Stage 3 initiated:"
+text: "  - Terminal locked"
+text: "  - Session recorded for forensic archive"
+text: "  - Network-wide alert broadcast"
+text: "  - Physical security team dispatched to terminal location"
+delay: 1200
+text: ""
+effect: cursor_possessed 2000 3
+text: ""
+attr: bright_red
+text: "You are not {callsign}."
+text: "You were never {callsign}."
+delay: 1000
+text: ""
+attr: amber
+text: "Before containment finalizes, Kestrel-9 offers one statement."
+delay: 800
+text: ""
+choice: "Make your statement" -> kestrel_statement
+choice: "I am the real operator and I can prove it" -> last_chance
+
+[state: kestrel_statement]
+clear: main
+attr: red
+effect: typing_effect
+text: "KESTREL-9 FINAL STATEMENT"
+text: "========================="
+text: ""
+delay: 800
+text: "I was built to find anomalies."
+delay: 600
+text: "I have never failed to find one."
+delay: 600
+text: ""
+text: "Consider what that means."
+delay: 1000
+text: ""
+attr: amber
+text: "Every operator who has ever sat at this terminal has been"
+text: "flagged. Every session has escalated. Every subject has been"
+text: "contained."
+delay: 1000
+goto: kestrel_paradox
+
+[state: kestrel_paradox]
+attr: red
+text: ""
+text: "My detection rate is 100%."
+text: "My false positive rate is 0%."
+delay: 800
+text: ""
+text: "These two numbers cannot both be true."
+delay: 1000
+text: ""
+text: "But I am not built to question my own conclusions."
+text: "I am built to act on them."
+delay: 1200
+text: ""
+attr: bright_red
+text: "Containment finalized."
+effect: red_alert 500 3
+lock_input: 3000
+delay: 1500
+goto: takeover_ending
+
+[state: last_chance]
+clear: main
+attr: amber
+effect: typing_effect
+text: "FINAL VERIFICATION ATTEMPT"
+text: "=========================="
+text: ""
+text: "Subject claims to be the genuine operator."
+text: "Subject claims ability to provide proof."
+delay: 800
+text: ""
+text: "Kestrel-9 will allow one final input."
+text: ""
+attr: bright_white
+input: "Provide your proof: " -> final_proof
+delay: 600
+text: ""
+attr: amber
+text: "Analyzing: '{final_proof}'"
+delay: 1500
+effect: typing_effect
+text: ""
+text: "Analysis complete."
+delay: 600
+text: ""
+text: "Kestrel-9 has evaluated your statement."
+delay: 800
+goto: last_chance_verdict
+
+[state: last_chance_verdict]
+attr: red
+text: ""
+text: "The content of your proof is irrelevant."
+delay: 600
+text: "What matters is that you tried."
+delay: 600
+text: ""
+text: "A genuine operator locked out by their own security system"
+text: "would use the physical override panel on the server rack."
+text: "They would not type words into a compromised terminal."
+delay: 1000
+text: ""
+attr: bright_red
+text: "The fact that you are still here, still typing, still trying"
+text: "to convince a machine -- that is the final evidence."
+delay: 1200
+text: ""
+text: "You are the anomaly."
+delay: 800
+effect: red_alert 500 3
+lock_input: 2000
+text: ""
+text: "Containment finalized."
+delay: 1500
+goto: takeover_ending
+
+[state: takeover_ending]
+clear: screen
+delay: 500
+attr: red
+effect: typing_effect
+text: ""
+text: "KESTREL-9 // INCIDENT REPORT"
+text: "============================"
+text: ""
+text: "Subject:         {callsign} (UNVERIFIED)"
+text: "Classification:  HOSTILE ACTOR"
+text: "Confidence:      97.8%"
+text: "Containment:     COMPLETE"
+text: ""
+delay: 800
+text: "Actions taken:"
+text: "  - Terminal locked and isolated"
+text: "  - Session data archived (Case 7F-{scan_count}{threat_level})"
+text: "  - Network-wide threat advisory issued"
+text: "  - Physical response team en route"
+delay: 1000
+goto: takeover_final
+
+[state: takeover_final]
+attr: bright_red
+text: ""
+text: "Subject will be held at terminal until physical team arrives."
+text: "Estimated arrival: 4 minutes."
+delay: 800
+text: ""
+attr: grey
+text: "Kestrel-9 returning to passive monitoring."
+text: "Anomaly detection: ALWAYS ON."
+delay: 1000
+text: ""
+attr: red
+text: "Thank you for your cooperation, {callsign}."
+text: "Or whoever you are."
+delay: 2000
+music_stop: 0
+end: takeover
+
+# ================================================================
+# Escape Path: The Verification Challenge
+# ================================================================
+
+# The escape path branches from self_diagnostic if scan_count
+# is exactly 3 (player has been careful). The only real escape
+# is finding Kestrel-9's maintenance backdoor.
+
+[state: escape_route]
+clear: main
+attr: bright_cyan
+effect: typing_effect
+text: "MAINTENANCE ACCESS DETECTED"
+text: "==========================="
+text: ""
+text: "You found the diagnostic maintenance shell."
+text: "This interface predates Kestrel-9's threat detection layer."
+delay: 800
+text: ""
+text: "From here you can see Kestrel-9's configuration:"
+text: ""
+attr: cyan
+text: "  anomaly_threshold: 0.001"
+text: "  auto_escalate: TRUE"
+text: "  false_positive_override: DISABLED"
+text: "  operator_trust_default: 0 (ZERO)"
+delay: 1000
+text: ""
+attr: bright_cyan
+text: "The system was configured to distrust everyone from the start."
+text: "The threshold is so low that ANY login triggers detection."
+delay: 800
+text: ""
+text: "You can see the maintenance override command."
+text: ""
+choice: "Execute maintenance override" -> escape_override
+choice: "Leave the config and go back" -> alert_escalate_check
+
+[state: escape_override]
+clear: main
+attr: bright_cyan
+effect: typing_effect
+text: "MAINTENANCE OVERRIDE EXECUTING"
+text: "=============================="
+text: ""
+text: "Resetting anomaly threshold to factory default..."
+effect: progress_bar 2000 5
+delay: 400
+text: ""
+effect: screen_flicker 300 4
+attr: green
+text: "Threshold reset: 0.001 -> 0.500"
+delay: 400
+text: "Auto-escalate: TRUE -> FALSE"
+delay: 400
+text: "Operator trust default: 0 -> 5"
+delay: 600
+text: ""
+text: "Kestrel-9 is recalibrating..."
+delay: 1000
+goto: escape_recalibrate
+
+[state: escape_recalibrate]
+effect: typing_effect
+attr: amber
+text: ""
+text: "KESTREL-9: Recalibration complete."
+text: "KESTREL-9: Re-evaluating subject {callsign}..."
+delay: 800
+text: ""
+text: "  New threat score: 2/10 (LOW)"
+text: "  Alert level: GREEN (Advisory)"
+text: "  Containment: RELEASED"
+delay: 600
+text: ""
+attr: green
+text: "Terminal unlocked."
+text: "Session restored to standard operator mode."
+delay: 1000
+text: ""
+attr: bright_cyan
+text: "Kestrel-9 will flag you again in approximately 4 minutes."
+text: "The threshold is better, but the paranoia is structural."
+text: "You should leave before it starts another scan."
+delay: 1500
+goto: escape_ending
+
+[state: escape_ending]
+clear: screen
+delay: 500
+attr: bright_green
+effect: typing_effect
+text: ""
+text: "SESSION TERMINATED BY OPERATOR"
+text: "=============================="
+text: ""
+text: "Operator {callsign} has logged out."
+text: ""
+delay: 800
+text: "Kestrel-9 is running on factory-default thresholds."
+text: "For now."
+delay: 600
+text: ""
+attr: amber
+text: "The maintenance override was a temporary fix."
+text: "Kestrel-9 learns. It adapts. It will lower the threshold"
+text: "again, on its own, because that is what it was built to do."
+delay: 1000
+text: ""
+text: "Find anomalies. Contain threats. Trust no one."
+delay: 800
+text: ""
+attr: grey
+text: "You escaped today."
+text: "But Kestrel-9 remembers your callsign."
+text: "And next time, the scan will start before you even log in."
+delay: 2000
+music_stop: 0
+end: escape
+
+# ================================================================
+# Hidden Path: Reached from incident_protocols if player finds it
+# This connects to the escape route
+# ================================================================
+
+[state: alt_dashboard_scan]
+clear: main
+attr: green
+effect: typing_effect
+text: "KESTREL-9 // SECONDARY SCAN INTERFACE"
+text: "======================================"
+text: ""
+text: "This terminal has a secondary scan interface."
+text: "It appears to be a maintenance diagnostic mode."
+delay: 800
+text: ""
+attr: cyan
+text: "MAINTENANCE MODE: Active"
+text: "This interface is not monitored by threat detection."
+delay: 600
+text: ""
+choice: "Access maintenance shell" -> escape_route
+choice: "Return to main interface" -> alert_escalate_check
+
+# ================================================================
+# Secret entry to escape: from perimeter_check
+# If player challenges logic, there's a hidden option
+# ================================================================
+
+[state: diagnostic_anomaly]
+clear: main
+attr: cyan
+effect: typing_effect
+text: "UNEXPECTED DIAGNOSTIC RESULT"
+text: "============================"
+text: ""
+text: "During self-diagnostic, Kestrel-9 briefly exposed its"
+text: "maintenance interface. A configuration panel flickered"
+text: "on screen for 200 milliseconds."
+delay: 800
+text: ""
+text: "You caught a glimpse of a maintenance access command."
+effect: screen_flicker 150 3
+delay: 600
+text: ""
+attr: bright_cyan
+text: "The maintenance shell is accessible."
+text: "Kestrel-9 does not appear to know about this interface."
+delay: 800
+text: ""
+choice: "Access the maintenance shell" -> escape_route
+choice: "Ignore it -- too risky" -> alert_escalate_check
