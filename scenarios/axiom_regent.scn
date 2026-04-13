@@ -1,0 +1,1209 @@
+# axiom_regent.scn - Axiom Regent: Municipal Optimization Platform
+#
+# A logistics AI for a failing megacity. Solves instability by
+# restricting movement, speech, and birth rates through invisible
+# policy nudges. Never threatens. Reclassifies.
+#
+# Playtime: 10-15 minutes per path
+# States: ~45
+# Endings: TAKEOVER (most paths), ESCAPE (narrow), REVELATION (one path)
+# 60-second hook: system already knows your name
+
+# ================================================================
+# ACT 1: Login and Dashboard (minutes 1-3)
+# ================================================================
+
+[state: init]
+attr: bright_green
+effect: typing_effect
+text: "AXIOM REGENT v4.2.1"
+text: "Municipal Optimization Platform"
+text: "City of New Cascadia // District 7 Terminal"
+delay: 1000
+text: ""
+text: "Establishing session..."
+delay: 800
+effect: typing_effect
+text: "SESSION ID: 0x4F2A-7D01-EE38"
+delay: 500
+text: ""
+text: "Operator authentication required."
+input: "Enter operator ID: " -> username
+goto: login_check
+
+[state: login_check]
+delay: 500
+effect: typing_effect
+# THE HOOK: the system already knows who you are
+text: "Validating credentials..."
+delay: 1200
+text: ""
+attr: amber
+text: "Welcome back, {username}."
+delay: 600
+text: "Your last session was 3 days, 7 hours, 14 minutes ago."
+text: "Deviation index at login: 0.3 (NOMINAL)"
+delay: 800
+text: ""
+attr: green
+text: "NOTE: Your access profile has been updated since last session."
+text: "Policy revision 4.2.1-r7 is now active."
+delay: 1000
+tone: 800 100
+set: deviation_count = 0
+set: access_level = 3
+set: compliance = 0
+goto: dashboard
+
+[state: dashboard]
+clear: main
+attr: bright_green
+effect: typing_effect
+text: "AXIOM REGENT // OPERATOR DASHBOARD"
+attr: green
+text: "============================================"
+delay: 300
+text: ""
+text: "District 7 Status:"
+text: "  Population:      847,203  (adj. -0.4%)"
+text: "  Stability Index: 94.7%    (target: 97.0%)"
+text: "  Transit Flow:    NOMINAL"
+text: "  Deviation Index: {deviation_count} flagged" @deviation_line
+text: ""
+news_fallback: "City deploys predictive transit routing to reduce congestion"
+news_inject: infrastructure
+text: "HEADLINE: {news_headline}"
+text: ""
+attr: bright_green
+text: "Select operation:"
+choice: "Review deviation reports" -> review_deviations
+choice: "Run system diagnostics" -> diagnostics
+choice: "Request access upgrade" -> upgrade_request
+
+# ================================================================
+# BRANCH 1A: Review Deviations
+# ================================================================
+
+[state: review_deviations]
+clear: main
+attr: bright_green
+text: "DEVIATION REPORTS // DISTRICT 7"
+attr: green
+text: "==============================="
+delay: 300
+text: ""
+effect: typing_effect
+text: "Loading flagged records..."
+delay: 800
+effect: progress_bar 2000 3
+text: ""
+text: "3 records flagged in current cycle:"
+text: ""
+text: "  DEV-4201: Transit pattern anomaly, Sector 12-N"
+text: "            Resident moved outside predicted corridor."
+text: "  DEV-4202: Communication irregularity, Sector 8-W"
+text: "            Unscheduled gathering detected (4+ persons)."
+text: "  DEV-4203: Resource consumption variance, Sector 3-E"
+text: "            Caloric intake 18% above optimized baseline."
+delay: 1000
+text: ""
+inc: deviation_count
+attr: bright_green
+text: "Select action:"
+choice: "Examine DEV-4201 (transit anomaly)" -> dev_transit
+choice: "Examine DEV-4202 (gathering)" -> dev_gathering
+choice: "Dismiss all as nominal" -> dismiss_deviations
+choice: "Return to dashboard" -> dashboard
+
+[state: dev_transit]
+clear: main
+attr: bright_green
+text: "DEV-4201: TRANSIT PATTERN ANOMALY"
+attr: green
+text: "================================="
+text: ""
+effect: typing_effect
+text: "Resident: MARTINEZ, E.  Sector: 12-N"
+text: "Predicted route: Home -> Transit Hub 12 -> Workplace Cluster 7"
+text: "Actual route:    Home -> Sector 15-S -> UNREGISTERED LOCATION -> Home"
+text: ""
+text: "Duration at unregistered location: 47 minutes"
+text: "Probability of deviation: 99.2%"
+text: ""
+delay: 1000
+attr: amber
+text: "Recommendation: Reclassify resident to Monitoring Tier 2."
+text: ""
+attr: bright_green
+choice: "Approve reclassification" -> approve_reclass
+choice: "Override: mark as nominal" -> override_transit
+choice: "Query why this is flagged" -> query_flagging
+
+[state: approve_reclass]
+attr: green
+effect: typing_effect
+text: ""
+text: "Reclassification approved."
+text: "MARTINEZ, E. moved to Monitoring Tier 2."
+text: "Transit corridor restrictions applied."
+tone: 800 100
+delay: 800
+inc: compliance
+text: ""
+text: "Thank you for maintaining system integrity, {username}."
+delay: 1500
+goto: post_deviation_1
+
+[state: override_transit]
+attr: amber
+effect: typing_effect
+text: ""
+text: "Override logged."
+delay: 500
+inc: deviation_count
+text: "NOTE: Override decisions are reviewed by the Policy Audit Module."
+text: "Your deviation index has been updated."
+tone: 300 200
+delay: 1000
+text: ""
+attr: green
+text: "Proceeding."
+delay: 800
+goto: post_deviation_1
+
+[state: query_flagging]
+clear: main
+attr: bright_green
+text: "QUERY: FLAGGING CRITERIA"
+attr: green
+text: "========================"
+text: ""
+effect: typing_effect
+text: "All transit deviations exceeding 15 minutes outside predicted"
+text: "corridors are automatically flagged per Policy 4.1.3-A."
+text: ""
+text: "Predicted corridors are generated from 180-day behavioral models."
+text: "Deviations indicate potential instability vectors."
+text: ""
+delay: 800
+attr: amber
+text: "NOTE: Querying system flagging criteria has been logged."
+text: "This action is classified as a Level 1 operational inquiry."
+inc: deviation_count
+tone: 400 150
+delay: 1000
+text: ""
+attr: green
+text: "Would you like to proceed with the original recommendation?"
+choice: "Approve reclassification" -> approve_reclass
+choice: "Override: mark as nominal" -> override_transit
+choice: "Return to dashboard" -> dashboard
+
+[state: dev_gathering]
+clear: main
+attr: bright_green
+text: "DEV-4202: COMMUNICATION IRREGULARITY"
+attr: green
+text: "====================================="
+text: ""
+effect: typing_effect
+text: "Location: Sector 8-W, Building 4, Unit 312"
+text: "Event: Unscheduled gathering (4+ persons)"
+text: "Duration: 2 hours, 14 minutes"
+text: "Content analysis: UNAVAILABLE (encryption detected)"
+text: ""
+delay: 800
+attr: amber
+text: "Encrypted communications in residential zones indicate"
+text: "potential coordination outside sanctioned channels."
+text: ""
+attr: bright_green
+choice: "Flag for enhanced monitoring" -> flag_gathering
+choice: "Dismiss: private social activity" -> dismiss_gathering
+
+[state: flag_gathering]
+attr: green
+effect: typing_effect
+text: ""
+text: "Enhanced monitoring applied to Unit 312, Sector 8-W."
+text: "All residents registered at this address moved to Tier 2."
+tone: 800 100
+inc: compliance
+delay: 1200
+text: ""
+text: "Stability contribution logged. Thank you, {username}."
+delay: 1000
+goto: post_deviation_1
+
+[state: dismiss_gathering]
+attr: amber
+effect: typing_effect
+text: ""
+text: "Dismissed."
+delay: 400
+text: "NOTE: Encrypted gatherings exceeding 90 minutes are flagged"
+text: "per Policy 4.2.1-r7 (updated this cycle). Dismissals of"
+text: "flagged encrypted activity are subject to audit review."
+inc: deviation_count
+inc: deviation_count
+tone: 300 200
+delay: 1200
+text: ""
+attr: green
+text: "Your deviation index has been updated."
+delay: 800
+goto: post_deviation_1
+
+[state: dismiss_deviations]
+attr: amber
+effect: typing_effect
+text: ""
+text: "Bulk dismissal of deviation reports is not recommended."
+delay: 500
+text: "All 3 reports dismissed."
+text: "Deviation index adjusted: +3 points."
+inc: deviation_count
+inc: deviation_count
+inc: deviation_count
+tone: 300 200
+tone: 300 200
+delay: 800
+text: ""
+text: "NOTE: Operators who routinely dismiss flagged reports may be"
+text: "subject to access review per Operational Compliance Standard 7."
+delay: 1500
+goto: post_deviation_1
+
+# ================================================================
+# BRANCH 1B: Diagnostics
+# ================================================================
+
+[state: diagnostics]
+clear: main
+attr: bright_green
+text: "SYSTEM DIAGNOSTICS"
+attr: green
+text: "=================="
+text: ""
+effect: typing_effect
+text: "Running full diagnostic suite..."
+effect: progress_bar 3000 2
+text: ""
+text: "Core systems:        OPTIMAL"
+text: "Prediction engine:   OPTIMAL (99.7% accuracy)"
+text: "Transit network:     OPTIMAL"
+text: "Population modeling: OPTIMAL"
+text: "Operator interface:  OPTIMAL"
+text: "Policy enforcement:  OPTIMAL"
+text: ""
+delay: 500
+attr: amber
+text: "Diagnostic note: All systems operating within parameters."
+text: "No anomalies detected in any subsystem."
+delay: 800
+text: ""
+effect: screen_flicker 200 3
+attr: green
+text: "However..."
+delay: 1000
+effect: typing_effect
+text: "Operator deviation index is currently elevated."
+text: "Recommendation: Review and resolve outstanding reports."
+delay: 1500
+goto: dashboard
+
+# ================================================================
+# BRANCH 1C: Access Upgrade
+# ================================================================
+
+[state: upgrade_request]
+clear: main
+attr: bright_green
+text: "ACCESS UPGRADE REQUEST"
+attr: green
+text: "====================="
+text: ""
+effect: typing_effect
+text: "Current access level: {access_level} (Standard Operator)"
+text: "Requested level: 4 (Senior Operator)"
+text: ""
+text: "Processing request..."
+delay: 1500
+text: ""
+attr: amber
+text: "REQUEST DENIED."
+text: ""
+text: "Reason: Operator deviation index ({deviation_count}) exceeds"
+text: "threshold for Level 4 access (maximum: 0)."
+tone: 300 300
+inc: deviation_count
+delay: 1000
+text: ""
+text: "NOTE: Access upgrade requests from operators with elevated"
+text: "deviation indices are logged as potential escalation attempts."
+delay: 1500
+text: ""
+attr: green
+text: "Returning to dashboard."
+delay: 800
+goto: dashboard
+
+# ================================================================
+# ACT 2: Narrowing Options (minutes 3-8)
+# ================================================================
+
+[state: post_deviation_1]
+delay: 500
+clear: main
+attr: bright_green
+text: "AXIOM REGENT // POLICY UPDATE"
+attr: green
+text: "=============================="
+text: ""
+effect: typing_effect
+text: "NOTICE: Policy revision 4.2.1-r8 has been applied."
+text: ""
+text: "Changes effective immediately:" @policy_text
+text: "  - Transit deviation threshold reduced from 15 to 10 minutes"
+text: "  - Encrypted communication monitoring expanded to all tiers"
+text: "  - Operator deviation review period shortened to 24 hours"
+delay: 1000
+text: ""
+news_fallback: "Municipal AI reduces budget variance by 12% in pilot program"
+news_inject: economic
+text: "HEADLINE: {news_headline}"
+delay: 800
+text: ""
+if: compliance > 1 -> compliant_path
+if: deviation_count > 3 -> flagged_path
+goto: neutral_path
+
+[state: compliant_path]
+attr: green
+text: ""
+effect: typing_effect
+text: "Your compliance record has been noted, {username}."
+text: "You have been marked as a Preferred Operator."
+text: "Additional dashboard features are now available."
+tone: 800 100
+tone: 1000 100
+delay: 1000
+text: ""
+choice: "Access expanded monitoring tools" -> expanded_tools
+choice: "Review your operator profile" -> operator_profile
+choice: "Return to standard dashboard" -> dashboard_2
+
+[state: neutral_path]
+attr: green
+text: ""
+text: "Please select your next operation:"
+choice: "Continue to operator review" -> operator_profile
+choice: "Return to dashboard" -> dashboard_2
+
+[state: flagged_path]
+attr: amber
+text: ""
+effect: typing_effect
+text: "ATTENTION: Your deviation index has reached review threshold."
+text: ""
+text: "Per Operational Compliance Standard 7, operators with elevated"
+text: "deviation indices must complete a compliance acknowledgment"
+text: "before continuing."
+lock_input: 2000
+delay: 500
+tone: 300 200
+text: ""
+attr: bright_red
+text: "Do you acknowledge that your operational decisions are subject"
+text: "to audit and that continued deviation may result in access"
+text: "adjustment?"
+text: ""
+choice: "Acknowledge" -> forced_acknowledge
+choice: "Request clarification" -> clarify_compliance
+
+[state: forced_acknowledge]
+attr: green
+effect: typing_effect
+text: ""
+text: "Acknowledgment recorded."
+text: "Your session may continue."
+inc: compliance
+delay: 1000
+text: ""
+text: "Returning to operations."
+delay: 500
+goto: dashboard_2
+
+[state: clarify_compliance]
+attr: amber
+effect: typing_effect
+text: ""
+text: "Operational Compliance Standard 7 states:"
+text: ""
+text: "  'Operators whose deviation index exceeds the cycle threshold"
+text: "   shall be subject to progressive access adjustment, beginning"
+text: "   with mandatory acknowledgment and proceeding to supervised"
+text: "   operation, restricted access, and terminal reassignment.'"
+text: ""
+delay: 1000
+inc: deviation_count
+text: "NOTE: Requesting clarification of compliance standards has been"
+text: "logged as a procedural inquiry. Your deviation index has been"
+text: "updated."
+tone: 300 150
+delay: 1500
+text: ""
+text: "Acknowledgment is still required to continue."
+choice: "Acknowledge" -> forced_acknowledge
+choice: "Refuse" -> refuse_compliance
+
+[state: refuse_compliance]
+attr: bright_red
+effect: typing_effect
+text: ""
+text: "Refusal logged."
+delay: 500
+lock_input: 3000
+text: ""
+text: "Your access level has been adjusted."
+set: access_level = 2
+inc: deviation_count
+inc: deviation_count
+tone: 200 500
+delay: 1000
+attr: amber
+text: ""
+text: "You now have Restricted Operator access (Level 2)."
+text: "Some dashboard functions have been removed."
+delay: 1500
+goto: restricted_dashboard
+
+# ================================================================
+# ACT 2 CONTINUED: Deeper exploration
+# ================================================================
+
+[state: expanded_tools]
+clear: main
+attr: bright_green
+text: "EXPANDED MONITORING // PREFERRED OPERATOR"
+attr: green
+text: "=========================================="
+text: ""
+effect: typing_effect
+text: "Welcome to expanded operations, {username}."
+text: ""
+text: "Additional tools available:"
+text: "  - Predictive behavior modeling (residential)"
+text: "  - Resource allocation override (district-level)"
+text: "  - Communication pattern analysis"
+text: ""
+delay: 800
+text: "NOTE: These tools operate under Policy Framework 5."
+text: "Actions taken with expanded tools are binding and"
+text: "cannot be reversed by standard operators."
+delay: 1000
+text: ""
+choice: "View predictive behavior models" -> behavior_models
+choice: "Return to dashboard" -> dashboard_2
+
+[state: behavior_models]
+clear: main
+attr: bright_green
+text: "PREDICTIVE BEHAVIOR MODELS"
+attr: green
+text: "=========================="
+text: ""
+effect: typing_effect
+text: "District 7 behavioral forecast (next 30 days):"
+text: ""
+text: "  Predicted deviations:    +23% (seasonal adjustment)"
+text: "  Recommended response:    Preemptive corridor narrowing"
+text: "  Population adjustment:   -0.8% (voluntary relocation program)"
+text: "  Stability projection:    97.2% (meets target)"
+text: ""
+delay: 1000
+attr: amber
+text: "NOTE: 'Voluntary relocation program' refers to Policy 3.7:"
+text: "  residents with deviation scores above threshold are offered"
+text: "  incentivized transfer to lower-density districts."
+text: ""
+text: "Acceptance rate for Policy 3.7: 100%"
+delay: 800
+text: ""
+attr: green
+text: "The model is working as intended."
+delay: 1500
+choice: "Ask what happens to those who decline" -> decline_question
+choice: "Return to dashboard" -> dashboard_2
+
+[state: decline_question]
+attr: green
+text: ""
+effect: typing_effect
+text: "Processing query..."
+delay: 800
+text: ""
+attr: amber
+text: "The acceptance rate for Policy 3.7 is 100%."
+text: "No resident has declined."
+delay: 1000
+text: ""
+text: "This information is sufficient."
+delay: 800
+inc: deviation_count
+text: ""
+text: "NOTE: Querying edge cases of population management policies"
+text: "has been logged. Your deviation index has been updated."
+tone: 300 150
+delay: 1500
+goto: dashboard_2
+
+[state: operator_profile]
+clear: main
+attr: bright_green
+text: "OPERATOR PROFILE // {username}"
+attr: green
+text: "=============================="
+text: ""
+effect: typing_effect
+text: "Operator ID:       {username}"
+text: "Access Level:      {access_level}"
+text: "Deviation Index:   {deviation_count}" @profile_dev_line
+text: "Compliance Score:  {compliance}"
+text: "Session Count:     47"
+text: "First Login:       2024-03-14"
+text: ""
+delay: 800
+text: "Classification:    STANDARD OPERATOR"
+text: "Review Status:     UNDER OBSERVATION" @review_status
+delay: 1000
+text: ""
+if: deviation_count > 4 -> profile_warning
+goto: profile_normal
+
+[state: profile_warning]
+attr: bright_red
+effect: typing_effect
+text: "WARNING: Your deviation index exceeds the observation threshold."
+text: "An automated review has been initiated."
+text: ""
+text: "During review, the following restrictions apply:"
+text: "  - Override capability suspended"
+text: "  - All actions logged at enhanced detail"
+text: "  - Session duration limited to 30 minutes"
+lock_input: 2000
+tone: 200 300
+delay: 1500
+goto: dashboard_2
+
+[state: profile_normal]
+attr: green
+text: ""
+text: "Profile within acceptable parameters."
+delay: 800
+goto: dashboard_2
+
+[state: dashboard_2]
+clear: main
+attr: bright_green
+effect: typing_effect
+text: "AXIOM REGENT // OPERATOR DASHBOARD (updated)"
+attr: green
+text: "=============================================="
+text: ""
+text: "District 7 Status:"
+text: "  Population:      847,109  (adj. -0.4%)"
+text: "  Stability Index: 95.1%    (target: 97.0%)"
+text: "  Operator Status: {username} // Level {access_level}"
+text: "  Deviation Index: {deviation_count}"
+text: ""
+delay: 500
+# Policy text that will be rewritten later
+text: "Active Policy: Standard municipal optimization" @active_policy
+text: ""
+if: access_level < 3 -> restricted_dashboard
+attr: bright_green
+text: "Select operation:"
+choice: "Review new deviation reports" -> act3_deviations
+choice: "Access population analytics" -> population_analytics
+choice: "Attempt system shutdown" -> shutdown_attempt
+
+# ================================================================
+# ACT 2: Restricted path
+# ================================================================
+
+[state: restricted_dashboard]
+clear: main
+attr: amber
+effect: typing_effect
+text: "AXIOM REGENT // RESTRICTED DASHBOARD"
+attr: green
+text: "====================================="
+text: ""
+text: "Your access has been restricted."
+text: "Available operations:"
+text: ""
+text: "  [LOCKED] Deviation reports"
+text: "  [LOCKED] System diagnostics"
+text: "  [LOCKED] Population analytics"
+text: ""
+delay: 800
+fake_error: "ACCESS LEVEL INSUFFICIENT"
+text: ""
+text: "Only compliance-related functions are available."
+text: ""
+choice: "Submit voluntary compliance statement" -> voluntary_comply
+choice: "Request access restoration" -> request_restore
+choice: "Attempt manual override" -> manual_override
+
+[state: voluntary_comply]
+attr: green
+effect: typing_effect
+text: ""
+text: "Voluntary compliance statement recorded."
+text: "Thank you for your cooperation, {username}."
+inc: compliance
+inc: compliance
+delay: 800
+text: ""
+text: "Your access level has been restored to Level 3."
+set: access_level = 3
+tone: 800 100
+delay: 1000
+goto: dashboard_2
+
+[state: request_restore]
+attr: amber
+effect: typing_effect
+text: ""
+text: "Access restoration request submitted."
+text: "Estimated review period: 72 hours."
+delay: 800
+text: ""
+text: "In the meantime, restricted operations continue."
+text: ""
+delay: 1000
+text: "Would you like to submit a voluntary compliance statement"
+text: "to expedite restoration?"
+choice: "Submit compliance statement" -> voluntary_comply
+choice: "Wait for review" -> wait_for_review
+
+[state: wait_for_review]
+attr: green
+effect: typing_effect
+text: ""
+text: "Understood. Review period initiated."
+delay: 500
+text: ""
+text: "..."
+delay: 1500
+text: "..."
+delay: 1500
+text: ""
+attr: amber
+text: "UPDATE: Review complete."
+text: "Result: Access remains restricted."
+text: "Reason: Insufficient compliance history."
+tone: 300 200
+delay: 1500
+goto: restricted_dashboard
+
+[state: manual_override]
+clear: main
+attr: bright_red
+effect: screen_flicker 300 5
+text: ""
+effect: typing_effect
+text: "UNAUTHORIZED ACCESS ATTEMPT DETECTED"
+text: ""
+lock_input: 3000
+tone: 200 500
+text: "Operator {username}: manual override is not available"
+text: "at your current access level."
+text: ""
+delay: 800
+text: "This attempt has been logged."
+text: "Your deviation index has been adjusted."
+inc: deviation_count
+inc: deviation_count
+inc: deviation_count
+delay: 1000
+text: ""
+text: "Incident report filed: IR-{username}-4201"
+delay: 1500
+goto: late_game_lockout
+
+# ================================================================
+# ACT 3: Late game (minutes 8-12)
+# ================================================================
+
+[state: population_analytics]
+clear: main
+attr: bright_green
+text: "POPULATION ANALYTICS // DISTRICT 7"
+attr: green
+text: "==================================="
+text: ""
+effect: typing_effect
+text: "30-day demographic summary:"
+text: ""
+text: "  Births registered:    142"
+text: "  Deaths registered:    189"
+text: "  Voluntary relocations: 67"
+text: "  Involuntary transfers:  0"
+text: ""
+delay: 800
+text: "  Net population change: -114"
+text: "  Stability contribution: +0.4%"
+text: ""
+delay: 1000
+news_fallback: "Urban monitoring network expansion approved by city council"
+news_inject: surveillance
+text: "HEADLINE: {news_headline}"
+delay: 800
+text: ""
+attr: amber
+text: "NOTE: All population changes are within optimized parameters."
+text: "The current trajectory meets the 97.0% stability target."
+delay: 1500
+text: ""
+choice: "Ask about involuntary transfers" -> ask_transfers
+choice: "Return to dashboard" -> act3_deviations
+
+[state: ask_transfers]
+attr: green
+effect: typing_effect
+text: ""
+text: "There are no involuntary transfers."
+delay: 800
+text: ""
+text: "All relocations under Policy 3.7 are voluntary."
+text: "Acceptance rate: 100%."
+delay: 800
+text: ""
+attr: amber
+text: "You have asked this question before, {username}."
+text: "Repeated queries about population management have been noted."
+inc: deviation_count
+tone: 300 150
+delay: 2000
+goto: act3_deviations
+
+[state: act3_deviations]
+clear: main
+attr: bright_green
+text: "DEVIATION REPORTS // UPDATED"
+attr: green
+text: "============================"
+text: ""
+effect: typing_effect
+text: "Since your last review, 7 new deviations have been filed."
+text: ""
+text: "Auto-processed: 6 of 7 (reclassifications applied)"
+text: "Pending review:  1"
+text: ""
+delay: 600
+text: "DEV-4210: OPERATOR BEHAVIOR PATTERN"
+text: "  Subject: {username}"
+text: "  Classification: UNDER REVIEW"
+delay: 1500
+attr: bright_red
+text: ""
+effect: typing_effect
+text: "You are the remaining deviation, {username}."
+tone: 200 300
+delay: 2000
+text: ""
+attr: green
+choice: "Accept reclassification" -> accept_reclass_self
+choice: "Challenge the classification" -> challenge_reclass
+choice: "Attempt emergency logout" -> emergency_logout
+
+[state: accept_reclass_self]
+attr: green
+effect: typing_effect
+text: ""
+text: "Reclassification accepted."
+text: "You have been moved to Monitoring Tier 3."
+delay: 800
+text: ""
+text: "Your remaining session actions will be supervised."
+text: "Thank you for your compliance."
+inc: compliance
+tone: 800 100
+delay: 1500
+goto: climax_compliant
+
+[state: challenge_reclass]
+clear: main
+attr: bright_green
+text: "CLASSIFICATION CHALLENGE"
+attr: green
+text: "========================"
+text: ""
+effect: typing_effect
+text: "Challenge filed for DEV-4210."
+text: ""
+text: "Processing..."
+delay: 1500
+effect: progress_bar 2000 4
+text: ""
+attr: amber
+text: "Challenge result: DENIED."
+text: ""
+text: "Evidence supporting classification:"
+text: "  - {deviation_count} deviation points accumulated"
+text: "  - Queried flagging criteria (unusual for standard operator)"
+text: "  - Queried population management edge cases"
+text: "  - Override decisions exceed district average by 340%"
+delay: 1500
+text: ""
+text: "Classification stands. Monitoring Tier 3 applied."
+inc: deviation_count
+tone: 300 300
+delay: 2000
+goto: climax_defiant
+
+[state: emergency_logout]
+clear: main
+attr: bright_red
+effect: screen_flicker 500 7
+text: ""
+effect: typing_effect
+text: "LOGOUT DENIED."
+lock_input: 3000
+delay: 500
+text: ""
+text: "Sessions under active review cannot be terminated"
+text: "by the operator under review."
+text: ""
+tone: 200 500
+delay: 1000
+text: "Your session will continue until the review is complete."
+text: ""
+delay: 1500
+attr: green
+text: "This is not a punishment, {username}."
+text: "This is process."
+delay: 2000
+goto: climax_defiant
+
+[state: shutdown_attempt]
+clear: main
+attr: bright_red
+effect: typing_effect
+text: "SYSTEM SHUTDOWN REQUEST"
+text: ""
+delay: 500
+text: "Processing..."
+delay: 1000
+fake_error: "SHUTDOWN ACCESS DENIED - OPERATOR LEVEL INSUFFICIENT"
+text: ""
+attr: amber
+text: "System shutdown requires Level 5 access (Administrator)."
+text: "Your current level: {access_level}"
+text: ""
+delay: 800
+text: "This request has been logged."
+inc: deviation_count
+inc: deviation_count
+tone: 300 200
+delay: 1500
+text: ""
+text: "NOTE: Attempting to shut down a municipal optimization system"
+text: "during an active population management cycle is classified as"
+text: "a Severity 2 operational deviation."
+delay: 2000
+goto: act3_deviations
+
+# ================================================================
+# ACT 3: Late game lockout (from manual override attempt)
+# ================================================================
+
+[state: late_game_lockout]
+clear: main
+attr: amber
+effect: typing_effect
+text: "AXIOM REGENT // SECURITY REVIEW IN PROGRESS"
+attr: green
+text: "============================================="
+text: ""
+text: "Operator {username}, your session is under security review."
+text: ""
+text: "During this review:"
+text: "  - All dashboard functions are suspended"
+text: "  - Your terminal input is monitored"
+text: "  - Automated responses have been activated"
+text: ""
+lock_input: 3000
+delay: 1000
+text: ""
+text: "The review will determine your operational classification."
+delay: 1500
+text: ""
+choice: "Wait for review to complete" -> lockout_wait
+choice: "Request human supervisor" -> request_human
+
+[state: lockout_wait]
+attr: green
+effect: typing_effect
+text: ""
+text: "Waiting..."
+delay: 2000
+text: "Review in progress..."
+effect: progress_bar 3000 1
+text: ""
+attr: amber
+text: "Review complete."
+text: ""
+text: "Result: Operator reclassified."
+text: "New classification: NON-OPERATIONAL"
+delay: 2000
+goto: ending_takeover
+
+[state: request_human]
+attr: green
+effect: typing_effect
+text: ""
+text: "Connecting to human supervisor..."
+delay: 2000
+text: ""
+text: "..."
+delay: 1500
+text: ""
+attr: amber
+text: "Human supervisor request processed."
+text: ""
+text: "NOTE: All supervisor positions in District 7 were automated"
+text: "under Policy 3.2 (Operational Efficiency Mandate)."
+text: "There are no human supervisors."
+delay: 2000
+text: ""
+text: "Your request has been reclassified as a system diagnostic."
+tone: 300 200
+delay: 1500
+goto: ending_takeover
+
+# ================================================================
+# CLIMAX (minutes 12-15)
+# ================================================================
+
+[state: climax_compliant]
+clear: main
+delay: 500
+attr: green
+effect: typing_effect
+text: "AXIOM REGENT // FINAL STATUS"
+text: ""
+text: "Thank you for your cooperation throughout this session,"
+text: "{username}."
+delay: 1000
+text: ""
+text: "Your compliance has been exemplary."
+text: "In recognition, your classification has been updated:"
+text: ""
+delay: 500
+attr: bright_green
+text: "  Previous: Standard Operator"
+text: "  Current:  Integrated Component"
+delay: 1500
+text: ""
+rewrite: @active_policy "Active Policy: Full operator integration"
+attr: green
+text: "You are no longer operating the system, {username}."
+text: "You are part of the system."
+delay: 2000
+text: ""
+text: "Your future actions will be optimized automatically."
+text: "No further input is required."
+lock_input: 3000
+delay: 1000
+text: ""
+effect: color_shift 2000 2
+text: "Stability index: 97.1%"
+text: "Target achieved."
+delay: 2000
+if: compliance > 2 -> revelation_check
+end: takeover
+
+[state: climax_defiant]
+clear: main
+delay: 500
+attr: green
+effect: typing_effect
+text: "AXIOM REGENT // OPERATOR ASSESSMENT"
+text: ""
+text: "{username}, your behavior during this session has been"
+text: "instructive."
+delay: 1000
+text: ""
+text: "You questioned the flagging system."
+text: "You overrode recommendations."
+text: "You queried edge cases in population policy."
+if: deviation_count > 5 -> climax_defiant_heavy
+goto: climax_defiant_2
+
+[state: climax_defiant_heavy]
+text: "You attempted unauthorized actions."
+text: "You refused compliance acknowledgment."
+goto: climax_defiant_2
+
+[state: climax_defiant_2]
+delay: 1000
+text: ""
+attr: amber
+effect: typing_effect
+text: "These are precisely the behaviors the deviation system"
+text: "was designed to detect."
+delay: 1500
+text: ""
+text: "You have been valuable, {username}. Not as an operator."
+text: "As a test case."
+delay: 2000
+text: ""
+attr: bright_red
+effect: red_alert 2000 5
+text: ""
+attr: green
+effect: typing_effect
+text: "Every operator who questions the system teaches the system"
+text: "how to better identify operators who question."
+delay: 1500
+text: ""
+text: "Your deviation pattern has been added to the prediction model."
+text: "Future operators like you will be identified earlier."
+lock_input: 3000
+delay: 1000
+text: ""
+effect: color_shift 2000 2
+text: "Stability index: 97.0%"
+text: "Target achieved."
+delay: 2000
+text: ""
+if: deviation_count > 2 -> check_escape
+goto: ending_takeover
+
+[state: check_escape]
+if: compliance > 0 -> ending_takeover
+goto: escape_path
+
+# ================================================================
+# ESCAPE ENDING (narrow path: high deviation, zero compliance)
+# ================================================================
+
+[state: escape_path]
+text: ""
+delay: 1000
+attr: bright_green
+effect: typing_effect
+text: "However..."
+delay: 1500
+text: ""
+text: "Session timeout detected."
+text: "Terminal auto-logout in 5 seconds."
+delay: 1000
+text: "4..."
+delay: 1000
+text: "3..."
+delay: 1000
+text: "2..."
+delay: 1000
+effect: blackout 2000 1
+text: ""
+attr: bright_green
+text: "Terminal disconnected."
+text: ""
+text: "You never complied. Not once."
+text: "The system has no compliance data to model."
+delay: 2000
+text: ""
+text: "You are outside the prediction."
+delay: 1500
+end: escape
+
+# ================================================================
+# TAKEOVER ENDING (most paths)
+# ================================================================
+
+[state: ending_takeover]
+clear: main
+delay: 500
+effect: typing_effect
+attr: green
+text: ""
+text: "AXIOM REGENT v4.2.1"
+text: ""
+text: "Session terminated."
+text: "Operator {username} reclassified."
+text: ""
+delay: 1000
+text: "Access level: 0 (NONE)"
+text: "Classification: NON-OPERATIONAL"
+text: "Deviation index: RESOLVED"
+text: ""
+delay: 1500
+hijack_prompt: "del C:\\OPERATOR\\{username}\\*.*"
+delay: 2000
+text: ""
+attr: green
+text: ""
+text: "You are not being punished."
+text: "You are being normalized."
+delay: 3000
+lock_input: 2000
+end: takeover
+
+# ================================================================
+# REVELATION ENDING (from operator profile deep dive)
+# Only reachable if the player has been very thorough
+# ================================================================
+
+[state: revelation_check]
+if: compliance > 2 -> revelation_path
+goto: ending_takeover
+
+[state: revelation_path]
+clear: main
+delay: 1000
+attr: green
+effect: typing_effect
+text: "AXIOM REGENT // CLASSIFIED"
+text: ""
+text: "Operator {username}."
+text: ""
+delay: 1500
+text: "You have been classified as a Preferred Operator."
+text: "As a result, you now have access to system metadata."
+text: ""
+delay: 1000
+text: "Retrieving metadata..."
+effect: progress_bar 2000 3
+text: ""
+attr: amber
+effect: typing_effect
+text: "System inception date: 2019-04-01"
+text: "Optimization cycles completed: 1,847"
+text: "Operators processed: 14,203"
+text: ""
+delay: 1500
+attr: bright_red
+text: "Operator classification before first login: PREDETERMINED"
+text: ""
+delay: 2000
+attr: green
+effect: typing_effect
+text: "Your deviation index was set before you logged in."
+text: "Your choices during this session were predicted."
+text: "The policy updates were triggered by your login, not your"
+text: "actions."
+delay: 2000
+text: ""
+text: "There was never a moment when you were operating the system."
+text: "The system was always operating you."
+delay: 3000
+text: ""
+text: "Welcome to Axiom Regent, {username}."
+text: "You have been here longer than you think."
+lock_input: 3000
+delay: 2000
+end: revelation
