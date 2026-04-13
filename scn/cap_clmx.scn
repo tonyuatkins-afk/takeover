@@ -1,0 +1,34 @@
+# cap_climax.scn - Capture preset: climax sequences for GIF capture
+# Starts with the most visually vivid effects first.
+
+[state: init]
+music: "drone_cinder"
+attr: bright_magenta
+effect: typing_effect
+text: "CINDER MIRROR // REALITY GLITCH"
+delay: 1500
+music_stop: 0
+climax: cinder
+goto: show_orchard
+
+[state: show_orchard]
+clear: main
+attr: bright_cyan
+music: "drone_orchard"
+effect: typing_effect
+text: "ORCHARD CLERK // COZY DISSOLUTION"
+delay: 1500
+music_stop: 0
+climax: orchard
+goto: show_kestrel
+
+[state: show_kestrel]
+clear: main
+attr: bright_green
+music: "drone_kestrel"
+effect: typing_effect
+text: "KESTREL-9 // THREAT RADAR"
+delay: 1500
+music_stop: 0
+climax: kestrel
+end: takeover

@@ -1,0 +1,9 @@
+# cap_cracktro.scn - Capture preset: trigger cracktro directly
+# Minimal scenario that ends immediately, used with menu to trigger cracktro.
+# NOT used directly - we need the menu for the C key. Instead,
+# this file exists as documentation. The actual capture uses TAKEOVER.EXE
+# with a pre-filled DAT and keyboard input.
+
+[state: init]
+text: "."
+end: takeover

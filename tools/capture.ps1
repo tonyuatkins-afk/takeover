@@ -15,6 +15,9 @@
       orchard   - Orchard Clerk personalization opening
       cinder    - Cinder Mirror narrative opening
       testeng   - Test scenario showing effects
+      climax    - Mode 13h climax sequences (Kestrel, Cinder, Axiom)
+      fx        - Demoscene effects showcase (transitions, sine wave, palette)
+      cracktro  - Hidden cracktro easter egg (raster bars, DYCP, chiptune)
 
     Custom:
       Provide -DosCmd, -AutoType, -Duration, -StartDelay directly.
@@ -123,6 +126,30 @@ $presets = @{
         Dur   = 20
         Delay = 3
     }
+    "climax" = @{
+        Cmd   = "TAKEOVER.EXE scn\cap_clmx.scn"
+        Auto  = ""
+        Dur   = 35
+        Delay = 3
+        Machine = "svga_s3"
+    }
+    "fx" = @{
+        Cmd   = "TAKEOVER.EXE scn\cap_fx.scn"
+        Auto  = ""
+        Dur   = 30
+        Delay = 3
+    }
+    "cracktro" = @{
+        # Cracktro requires manual capture - Mode 13h not captured by PrintWindow.
+        # Use: DOSBox-X Ctrl+F5 to start/stop AVI recording, then convert to GIF.
+        # Or run TAKEOVER.EXE with all-complete DAT and press C at menu.
+        Cmd   = "TAKEOVER.EXE"
+        Auto  = "-w 8000 space -w 5000 c"
+        Dur   = 15
+        Delay = 22
+        Machine = "svga_s3"
+        Setup = "mkfull"
+    }
 }
 
 # Apply preset defaults, then override with CLI args
@@ -133,6 +160,7 @@ if ($presets.ContainsKey($Preset)) {
     if ($Duration -eq 0)   { $Duration  = $p.Dur }
     if ($StartDelay -eq 0) { $StartDelay = $p.Delay }
     if ($p.Machine)        { $Machine   = $p.Machine } else { $Machine = "svga_s3" }
+    if ($p.Setup)          { $Setup     = $p.Setup } else { $Setup = "" }
 } else {
     Write-Host "ERROR: Unknown preset '$Preset'. Available: $($presets.Keys -join ', ')"
     exit 1
@@ -218,7 +246,7 @@ $autoexec += "`n$DosCmd"
 $conf = @"
 [sdl]
 output = surface
-windowresolution = 720x400
+windowresolution = 720x450
 
 [render]
 aspect = true
@@ -246,6 +274,16 @@ Write-Host "  Duration:   $Duration`s @ $FPS fps"
 Write-Host "  StartDelay: $StartDelay`s"
 Write-Host "  Output:     $OutFile"
 Write-Host ""
+
+# Run setup commands if needed
+if ($Setup -eq "mkfull") {
+    Write-Host "  Running setup: creating full-completion save file..."
+    # Write TAKEOVER.DAT: magic=0x544B(LE), version=1, completed=[1,1,1,1,1,0,0,0]
+    $datPath = "$projectDir\TAKEOVER.DAT"
+    [byte[]]$dat = 0x4B, 0x54, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00
+    [System.IO.File]::WriteAllBytes($datPath, $dat)
+    Write-Host "  Wrote $datPath ($($dat.Length) bytes)"
+}
 
 Write-Host "[1/3] Launching DOSBox-X..."
 $proc = Start-Process -FilePath $dosboxExe -ArgumentList "-conf",$confPath -PassThru
@@ -302,7 +340,7 @@ if (-not $proc.HasExited) {
 # ── Build GIF ──────────────────────────────────────────────────
 Write-Host "[3/3] Building GIF via ffmpeg..."
 
-$vf = "scale=${GifWidth}:-1:flags=lanczos,split[s0][s1];[s0]palettegen=max_colors=64:stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=3"
+$vf = "scale=${GifWidth}:-1:flags=lanczos,split[s0][s1];[s0]palettegen=max_colors=128:stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=3"
 $inputPattern = "$tempDir\frame_%05d.png"
 $ffCmd = "`"$ffmpegExe`" -y -framerate $FPS -i `"$inputPattern`" -vf `"$vf`" -loop 0 `"$OutFile`""
 cmd.exe /c "$ffCmd 2>NUL"

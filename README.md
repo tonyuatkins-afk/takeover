@@ -24,6 +24,8 @@ This is not a text adventure. It is a takeover.
 
 ![Axiom Regent scenario running in DOSBox-X](https://barelybooting.com/img/takeover-axiom.gif)
 
+![Demoscene effects: palette pulse, transitions, AI control status bar](https://barelybooting.com/img/takeover-fx.gif)
+
 ## What's New in v1.1
 
 Informed by research into the demoscene — from Commodore 64 cracktros to modern 4KB intros — v1.1 adds eight features:

@@ -1,0 +1,61 @@
+# cap_fx.scn - Capture preset: showcase new demoscene effects
+# Shows transitions, sine wave, palette pulse, stingers, status bar.
+
+[state: init]
+music: "drone_axiom"
+transition_default: dissolve
+control: +10
+attr: bright_green
+effect: typing_effect
+text: "AXIOM REGENT v4.2.1"
+text: "Municipal Optimization Platform"
+text: ""
+delay: 1500
+stinger: stamp
+text: "POLICY UPDATE APPLIED"
+control: +20
+delay: 1500
+goto: show_sine dissolve
+
+[state: show_sine]
+clear: main
+attr: green
+text: "AXIOM REGENT // DEVIATION REPORT"
+text: "================================"
+text: ""
+text: "Subject: OPERATOR"
+text: "Classification: UNDER REVIEW"
+text: ""
+text: "Analyzing behavioral patterns..."
+text: "Cross-referencing deviation index..."
+delay: 1000
+effect: sine_wave 3000 3
+delay: 500
+stinger: alarm
+control: +25
+goto: show_pulse fade
+
+[state: show_pulse]
+clear: main
+attr: bright_red
+text: "ALERT: CONTAINMENT PROTOCOL ACTIVE"
+text: ""
+effect: palette_pulse 3000 5
+delay: 500
+attr: amber
+text: "You are not being punished."
+text: "You are being normalized."
+control: +40
+delay: 3000
+goto: show_glitch glitch
+
+[state: show_glitch]
+clear: main
+attr: bright_green
+text: "SYSTEM STATUS: OPTIMAL"
+text: "DEVIATION INDEX: RESOLVED"
+text: ""
+text: "All operators reclassified."
+delay: 2000
+music_stop: 0
+end: takeover
