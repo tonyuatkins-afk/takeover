@@ -974,10 +974,10 @@ static int handle_audio_key(int key)
     } else {
         return 0;
     }
-    /* Brief status flash */
-    scr_puts(60, STATUS_ROW, msg, ATTR_STATUS);
+    /* Brief status flash, then restore F9/F10 hints */
+    scr_puts(56, STATUS_ROW, msg, ATTR_STATUS);
     engine_delay(600);
-    scr_puts(60, STATUS_ROW, " TAKEOVER   ", ATTR_STATUS);
+    scr_puts(56, STATUS_ROW, "F9:Music F10:Sound", ATTR_STATUS);
     return 1;
 }
 
