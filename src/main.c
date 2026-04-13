@@ -9,6 +9,7 @@
 #include "engine.h"
 #include "effects.h"
 #include "menu.h"
+#include "hwdetect.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -98,6 +99,7 @@ int main(int argc, char *argv[])
             printf("Failed to load: %s\n", argv[1]);
             return 1;
         }
+        hw_detect_all();
         scr_init();
         rng_seed();
         scr_clear(ATTR_NORMAL);

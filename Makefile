@@ -25,7 +25,8 @@ CFLAGS += -i=src -i=lib
 
 # Object files (explicit list for wmake compatibility)
 OBJS = src\main.obj src\engine.obj src\effects.obj src\audio.obj &
-       src\menu.obj src\news.obj src\display.obj lib\screen.obj
+       src\menu.obj src\news.obj src\display.obj src\hwdetect.obj &
+       lib\screen.obj
 
 # Target
 TARGET = TAKEOVER.EXE
@@ -33,7 +34,7 @@ TARGET = TAKEOVER.EXE
 all: $(TARGET) .SYMBOLIC
 
 # Explicit compilation rules (wmake inference rules are fragile across dirs)
-src\main.obj: src\main.c src\engine.h src\effects.h src\menu.h lib\screen.h
+src\main.obj: src\main.c src\engine.h src\effects.h src\menu.h src\hwdetect.h lib\screen.h
 	$(CC) $(CFLAGS) -fo=$^@ src\main.c
 
 src\engine.obj: src\engine.c src\engine.h src\effects.h src\audio.h lib\screen.h
@@ -51,8 +52,11 @@ src\menu.obj: src\menu.c src\menu.h src\engine.h lib\screen.h
 src\news.obj: src\news.c src\news.h
 	$(CC) $(CFLAGS) -fo=$^@ src\news.c
 
-src\display.obj: src\display.c src\display.h lib\screen.h
+src\display.obj: src\display.c src\display.h src\hwdetect.h lib\screen.h
 	$(CC) $(CFLAGS) -fo=$^@ src\display.c
+
+src\hwdetect.obj: src\hwdetect.c src\hwdetect.h
+	$(CC) $(CFLAGS) -fo=$^@ src\hwdetect.c
 
 lib\screen.obj: lib\screen.c lib\screen.h
 	$(CC) $(CFLAGS) -fo=$^@ lib\screen.c
