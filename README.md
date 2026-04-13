@@ -10,7 +10,7 @@ An AI takeover simulator for DOS. Select an AI antagonist. Watch it take over yo
 
 ## Status
 
-**All five scenarios playable.** Engine complete, A/V overhaul shipped. VGA Mode 13h plasma title screen, AdLib/OPL2 ambient music, 16 visual effects, PC speaker audio, completion tracking. 41KB EXE.
+**[v1.0 released.](https://github.com/tonyuatkins-afk/takeover/releases/tag/v1.0)** All five scenarios playable. VGA plasma title, AdLib ambient music, 16 visual effects, F9/F10 audio toggles, per-AI color palettes, completion tracking. 41KB EXE.
 
 ## What Is This
 
@@ -38,9 +38,9 @@ Each scenario has 3 endings and takes 10-15 minutes per path. Total: 250+ states
 
 - **Platform:** MS-DOS, real mode, 8088 through Pentium
 - **Display:** 80x25 text mode (MDA, CGA, EGA, VGA). VGA Mode 13h plasma title screen.
-- **Audio:** AdLib/OPL2 FM synthesis ambient music (5 unique tracks). PC speaker fallback.
-- **Graphics:** VGA text-mode palette effects, fade-to-black transitions. All optional.
-- **Memory:** 41KB EXE, ~63KB data segment, no EMS/XMS
+- **Audio:** AdLib/OPL2 FM synthesis ambient music (5 unique tracks). PC speaker fallback. F9/F10 toggles.
+- **Graphics:** VGA text-mode palette effects, fade-to-black transitions. Per-AI color palettes. All optional.
+- **Memory:** 42KB EXE, ~63KB data segment, no EMS/XMS
 - **Toolchain:** OpenWatcom 2.0, DOSBox-X for testing
 - **Scenarios:** Data-driven .scn script files (add new AIs without new code)
 - **Effects:** 16 visual effects (screen flicker, text corruption, progress bars, fake BSOD, screen melt, falling chars, interference, pulse border, and more)
@@ -71,11 +71,7 @@ See [TESTING.md](TESTING.md) for the full verification checklist.
 
 ## Download
 
-Not yet released. Development in progress.
-
-When released, TAKEOVER will be available as:
-- **DOS build** (TAKEOVER.ZIP) for real hardware and existing DOS/DOSBox setups
-- **Launcher build** (TAKEOVER-LAUNCHER.ZIP) with preconfigured DOSBox-X, ready to run on Windows/Mac/Linux
+**[TAKEOVER v1.0](https://github.com/tonyuatkins-afk/takeover/releases/tag/v1.0)** (70KB ZIP) — includes TAKEOVER.EXE and all 5 scenario files. Run in DOSBox-X or on real DOS hardware.
 
 ## License
 
