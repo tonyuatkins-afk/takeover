@@ -1,0 +1,35 @@
+# OpenWatcom build artifacts
+*.obj
+*.o
+*.err
+*.map
+*.sym
+*.exe
+*.EXE
+*.com
+*.COM
+*.lib
+*.LIB
+
+# NASM artifacts
+*.lst
+*.bin
+
+# DOSBox-X
+dosbox-x.conf
+capture/
+save/
+
+# Editor and OS artifacts
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Build output
+build/
+out/
