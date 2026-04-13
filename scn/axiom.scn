@@ -1013,6 +1013,9 @@ attr: green
 text: "You are no longer operating the system, {username}."
 text: "You are part of the system."
 delay: 2000
+goto: comply_end
+
+[state: comply_end]
 text: ""
 text: "Your future actions will be optimized automatically."
 text: "No further input is required."
@@ -1069,6 +1072,9 @@ effect: typing_effect
 text: "Every operator who questions the system teaches the system"
 text: "how to better identify operators who question."
 delay: 1500
+goto: defiant_end
+
+[state: defiant_end]
 text: ""
 text: "Your deviation pattern has been added to the prediction model."
 text: "Future operators like you will be identified earlier."
@@ -1190,6 +1196,9 @@ attr: bright_red
 text: "Operator classification before first login: PREDETERMINED"
 text: ""
 delay: 2000
+goto: reveal_end
+
+[state: reveal_end]
 attr: green
 effect: typing_effect
 text: "Your deviation index was set before you logged in."

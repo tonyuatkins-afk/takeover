@@ -2,7 +2,7 @@
  * main.c - TAKEOVER entry point
  *
  * Game loop: menu -> scenario -> result -> save -> loop.
- * Command-line override: TAKEOVER.EXE scenarios\test_engine.scn
+ * Command-line override: TAKEOVER.EXE scn\testeng.scn
  */
 
 #include "screen.h"
@@ -16,11 +16,11 @@
 
 /* Scenario filename table (DOS 8.3 paths) */
 static const char *scenario_files[MENU_NUM_SCENARIOS] = {
-    "scenarios\\axiom.scn",
-    "scenarios\\hushline.scn",
-    "scenarios\\kestrel9.scn",
-    "scenarios\\orchard.scn",
-    "scenarios\\cinder.scn"
+    "scn\\axiom.scn",
+    "scn\\hushline.scn",
+    "scn\\kestrel9.scn",
+    "scn\\orchard.scn",
+    "scn\\cinder.scn"
 };
 
 /* Static scenario control block */
