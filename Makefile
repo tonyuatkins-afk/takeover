@@ -26,7 +26,7 @@ CFLAGS += -i=src -i=lib
 # Object files (explicit list for wmake compatibility)
 OBJS = src\main.obj src\engine.obj src\effects.obj src\audio.obj &
        src\menu.obj src\news.obj src\display.obj src\hwdetect.obj &
-       src\vga13h.obj src\title.obj lib\screen.obj
+       src\vga13h.obj src\title.obj src\adlib.obj lib\screen.obj
 
 # Target
 TARGET = TAKEOVER.EXE
@@ -37,7 +37,7 @@ all: $(TARGET) .SYMBOLIC
 src\main.obj: src\main.c src\engine.h src\effects.h src\menu.h src\hwdetect.h src\title.h lib\screen.h
 	$(CC) $(CFLAGS) -fo=$^@ src\main.c
 
-src\engine.obj: src\engine.c src\engine.h src\effects.h src\audio.h lib\screen.h
+src\engine.obj: src\engine.c src\engine.h src\effects.h src\audio.h src\adlib.h src\hwdetect.h lib\screen.h
 	$(CC) $(CFLAGS) -fo=$^@ src\engine.c
 
 src\effects.obj: src\effects.c src\effects.h src\engine.h lib\screen.h
@@ -63,6 +63,9 @@ src\vga13h.obj: src\vga13h.c src\vga13h.h src\engine.h
 
 src\title.obj: src\title.c src\title.h src\vga13h.h src\hwdetect.h src\engine.h lib\screen.h
 	$(CC) $(CFLAGS) -fo=$^@ src\title.c
+
+src\adlib.obj: src\adlib.c src\adlib.h
+	$(CC) $(CFLAGS) -fo=$^@ src\adlib.c
 
 lib\screen.obj: lib\screen.c lib\screen.h
 	$(CC) $(CFLAGS) -fo=$^@ lib\screen.c

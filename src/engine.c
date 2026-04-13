@@ -14,6 +14,8 @@
 #include "engine.h"
 #include "effects.h"
 #include "audio.h"
+#include "adlib.h"
+#include "hwdetect.h"
 #include "screen.h"
 
 #include <stdio.h>
@@ -67,7 +69,9 @@ enum {
     CMD_TONE,
     CMD_SILENCE,
     CMD_NEWS_FALLBACK,
-    CMD_NEWS_INJECT
+    CMD_NEWS_INJECT,
+    CMD_MUSIC,
+    CMD_MUSIC_STOP
 };
 
 /* Clear regions */
@@ -227,7 +231,7 @@ void engine_delay(int ms)
     if (ticks == 0) ticks = 1;
     start = *tick;
     while ((*tick - start) < ticks) {
-        /* spin on BIOS counter */
+        adlib_tick();   /* advance background music */
     }
 }
 
@@ -708,6 +712,14 @@ static int parse_command(char *line, cmd_t *cmd, int line_num)
         strncpy(buf1, args, MAX_NAME - 1);
         buf1[MAX_NAME - 1] = '\0';
         cmd->str1 = pool_add(buf1);
+    }
+    else if (strcmp(keyword, "music") == 0) {
+        cmd->type = CMD_MUSIC;
+        extract_quoted(args, buf1, MAX_STRING);
+        cmd->str1 = pool_add(buf1);
+    }
+    else if (strcmp(keyword, "music_stop") == 0) {
+        cmd->type = CMD_MUSIC_STOP;
     }
     else {
         printf("Line %d: unknown command '%s'\n", line_num, keyword);
@@ -1316,6 +1328,16 @@ int engine_run(engine_scenario_t *scn)
                 strncpy(scn->news_headline, scn->news_fallback,
                         sizeof(scn->news_headline) - 1);
                 set_var("news_headline", scn->news_headline, 0, 0);
+                break;
+
+            case CMD_MUSIC:
+                if (g_hw.adlib)
+                    adlib_play_track(pool_str(c->str1));
+                break;
+
+            case CMD_MUSIC_STOP:
+                if (g_hw.adlib)
+                    adlib_stop_track();
                 break;
 
             } /* switch */

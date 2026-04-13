@@ -11,6 +11,7 @@
 #include "menu.h"
 #include "hwdetect.h"
 #include "title.h"
+#include "adlib.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -101,6 +102,7 @@ int main(int argc, char *argv[])
             return 1;
         }
         hw_detect_all();
+        if (g_hw.adlib) adlib_init();
         scr_init();
         rng_seed();
         scr_clear(ATTR_NORMAL);
@@ -109,6 +111,7 @@ int main(int argc, char *argv[])
         scr_puts(1, SCR_HEIGHT - 1, " TAKEOVER ", ATTR_STATUS);
         result = engine_run(&scenario);
         show_result(result);
+        if (g_hw.adlib) adlib_shutdown();
         scr_shutdown();
         return 0;
     }
@@ -118,6 +121,7 @@ int main(int argc, char *argv[])
         takeover_save_t save;
 
         hw_detect_all();
+        if (g_hw.adlib) adlib_init();
         rng_seed();
 
         /* VGA title screen (Mode 13h plasma) before menu */
@@ -144,6 +148,7 @@ int main(int argc, char *argv[])
             }
         }
 
+        if (g_hw.adlib) adlib_shutdown();
         scr_shutdown();
     }
 
