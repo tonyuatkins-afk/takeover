@@ -33,19 +33,19 @@ TARGET = TAKEOVER.EXE
 all: $(TARGET) .SYMBOLIC
 
 # Explicit compilation rules (wmake inference rules are fragile across dirs)
-src\main.obj: src\main.c src\engine.h lib\screen.h
+src\main.obj: src\main.c src\engine.h src\effects.h src\menu.h lib\screen.h
 	$(CC) $(CFLAGS) -fo=$^@ src\main.c
 
 src\engine.obj: src\engine.c src\engine.h src\effects.h src\audio.h lib\screen.h
 	$(CC) $(CFLAGS) -fo=$^@ src\engine.c
 
-src\effects.obj: src\effects.c src\effects.h
+src\effects.obj: src\effects.c src\effects.h src\engine.h lib\screen.h
 	$(CC) $(CFLAGS) -fo=$^@ src\effects.c
 
 src\audio.obj: src\audio.c src\audio.h src\engine.h
 	$(CC) $(CFLAGS) -fo=$^@ src\audio.c
 
-src\menu.obj: src\menu.c src\menu.h
+src\menu.obj: src\menu.c src\menu.h src\engine.h lib\screen.h
 	$(CC) $(CFLAGS) -fo=$^@ src\menu.c
 
 src\news.obj: src\news.c src\news.h

@@ -1,21 +1,28 @@
 /*
- * main.c - TAKEOVER entry point (test harness)
+ * main.c - TAKEOVER entry point
  *
- * Loads and runs a single .scn scenario for engine testing.
- * This is NOT the final menu system. It is a test harness
- * that will be replaced once the engine is proven.
- *
- * Usage: TAKEOVER [scenario.scn]
- * Default: scenarios/axiom_regent.scn
+ * Game loop: menu -> scenario -> result -> save -> loop.
+ * Command-line override: TAKEOVER.EXE scenarios\test_engine.scn
  */
 
 #include "screen.h"
 #include "engine.h"
+#include "effects.h"
+#include "menu.h"
 
 #include <stdio.h>
 #include <string.h>
 
-/* Static scenario struct (large, lives in BSS segment) */
+/* Scenario filename table (DOS backslash paths) */
+static const char *scenario_files[MENU_NUM_SCENARIOS] = {
+    "scenarios\\axiom_regent.scn",
+    "scenarios\\hushline.scn",
+    "scenarios\\kestrel9.scn",
+    "scenarios\\orchard_clerk.scn",
+    "scenarios\\cinder_mirror.scn"
+};
+
+/* Static scenario control block */
 static engine_scenario_t scenario;
 
 static const char *result_name(int result)
@@ -29,53 +36,92 @@ static const char *result_name(int result)
     }
 }
 
-int main(int argc, char *argv[])
+static void show_result(int result)
 {
-    const char *filename = "scenarios/axiom_regent.scn";
+    int row = 11;
+    int col;
+    const char *rname = result_name(result);
+    char msg[80];
+
+    scr_fill(1, 1, SCR_WIDTH - 2, SCR_HEIGHT - 2, ' ', ATTR_NORMAL);
+    scr_box(0, 0, SCR_WIDTH, SCR_HEIGHT, ATTR_BORDER);
+
+    sprintf(msg, "Scenario complete: %s", rname);
+    col = (SCR_WIDTH - (int)strlen(msg)) / 2;
+    scr_puts(col, row, msg, ATTR_HIGHLIGHT);
+    scr_puts((SCR_WIDTH - 19) / 2, row + 2,
+             "Press any key...", ATTR_DIM);
+    scr_getkey();
+}
+
+/* Run a single scenario file. Returns the END_* result or -1. */
+static int run_scenario(const char *filename)
+{
     int result;
 
-    if (argc > 1)
-        filename = argv[1];
+    /* Load before entering screen mode so errors print to console */
+    if (engine_load(&scenario, filename) != 0)
+        return -1;
 
-    /* Load scenario before init so parse errors print to DOS console */
-    if (engine_load(&scenario, filename) != 0) {
-        printf("Failed to load scenario: %s\n", filename);
-        return 1;
-    }
-
-    /* Enter graphics mode */
-    scr_init();
-
-    /* Draw outer border */
+    /* Draw border and status bar */
+    scr_clear(ATTR_NORMAL);
     scr_box(0, 0, SCR_WIDTH, SCR_HEIGHT - 1, ATTR_BORDER);
-
-    /* Status bar */
     scr_hline(0, SCR_HEIGHT - 1, SCR_WIDTH, ' ', ATTR_STATUS);
     scr_puts(1, SCR_HEIGHT - 1, " TAKEOVER ", ATTR_STATUS);
-    scr_puts(SCR_WIDTH - 18, SCR_HEIGHT - 1, " ESC to abort ", ATTR_STATUS);
 
-    /* Run the scenario */
     result = engine_run(&scenario);
+    show_result(result);
+    return result;
+}
 
-    /* Show result */
-    {
-        int row = 11;
-        int col;
-        const char *rname = result_name(result);
-        char msg[80];
-
-        scr_fill(1, 1, SCR_WIDTH - 2, SCR_HEIGHT - 3, ' ', ATTR_NORMAL);
+int main(int argc, char *argv[])
+{
+    /* Command-line override: run one scenario directly */
+    if (argc > 1) {
+        int result;
+        /* Load before scr_init so parse errors go to console */
+        if (engine_load(&scenario, argv[1]) != 0) {
+            printf("Failed to load: %s\n", argv[1]);
+            return 1;
+        }
+        scr_init();
+        rng_seed();
+        scr_clear(ATTR_NORMAL);
         scr_box(0, 0, SCR_WIDTH, SCR_HEIGHT - 1, ATTR_BORDER);
-
-        sprintf(msg, "Scenario complete: %s", rname);
-        col = (SCR_WIDTH - strlen(msg)) / 2;
-        scr_puts(col, row, msg, ATTR_HIGHLIGHT);
-        scr_puts((SCR_WIDTH - 19) / 2, row + 2, "Press any key...",
-                 ATTR_DIM);
-
-        scr_getkey();
+        scr_hline(0, SCR_HEIGHT - 1, SCR_WIDTH, ' ', ATTR_STATUS);
+        scr_puts(1, SCR_HEIGHT - 1, " TAKEOVER ", ATTR_STATUS);
+        result = engine_run(&scenario);
+        show_result(result);
+        scr_shutdown();
+        return 0;
     }
 
-    scr_shutdown();
+    /* Normal mode: menu loop */
+    {
+        takeover_save_t save;
+
+        scr_init();
+        rng_seed();
+        menu_load_progress(&save);
+
+        while (1) {
+            int sel = menu_run(&save);
+            int result;
+
+            if (sel < 0) break;  /* Esc */
+            if (sel >= MENU_NUM_SCENARIOS) continue;
+
+            result = run_scenario(scenario_files[sel]);
+
+            if (result >= 0) {
+                /* Store completion: END_* + 1 (0 = unplayed) */
+                save.completed[sel] = (unsigned char)(result + 1);
+                menu_save_progress(&save);
+            }
+        }
+
+        scr_shutdown();
+    }
+
     return 0;
 }
