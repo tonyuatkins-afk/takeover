@@ -586,6 +586,7 @@ delay: 600
 text: ""
 text: "Threat score updated: {threat_level}/10"
 delay: 600
+if: scan_count > 1 -> alt_dashboard_scan
 goto: alert_escalate_check
 
 # ================================================================

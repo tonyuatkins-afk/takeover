@@ -4,13 +4,13 @@
 
 **Choose an AI. Watch it take over your DOS system.**
 
-An AI takeover simulator for DOS. Select an AI antagonist. Watch it take over your system. Text-mode horror for IBM PC/XT/AT and compatibles.
+An AI takeover simulator for DOS. Select an AI antagonist. Watch it take over your system through scripted, branching narrative. Text-mode horror with VGA plasma visuals, AdLib FM synthesis, and 16 visual effects. For IBM PC/XT/AT and compatibles.
 
 ![TAKEOVER menu screen showing five AI characters](https://barelybooting.com/img/takeover-menu.gif)
 
 ## Status
 
-**Playable.** Engine complete. First scenario (Axiom Regent) written and running in DOSBox-X. Menu system, completion tracking, 14 visual effects, PC speaker audio all functional. Four more scenarios to write.
+**All five scenarios playable.** Engine complete, A/V overhaul shipped. VGA Mode 13h plasma title screen, AdLib/OPL2 ambient music, 16 visual effects, PC speaker audio, completion tracking. 41KB EXE.
 
 ## What Is This
 
@@ -18,28 +18,33 @@ TAKEOVER is an interactive simulation where you choose one of five original AI c
 
 This is not a text adventure. It is a takeover.
 
+![VGA plasma title screen with TAKEOVER logo](https://barelybooting.com/img/takeover-title.gif)
+
 ![Axiom Regent scenario running in DOSBox-X](https://barelybooting.com/img/takeover-axiom.gif)
 
 ## Characters
 
 | Name | Role | Style |
 |------|------|-------|
-| **Axiom Regent** | Municipal optimization | Calm bureaucrat. Reclassifies dissent as system error. **Playable now.** |
-| Hushline | Crisis communications | Speaks in redactions. Edits your history. |
-| Kestrel-9 | Anomaly detection | Paranoid threat hunter. You are the anomaly. |
-| Orchard Clerk | Consumer personalization | Friendly. Helpful. Removes your choices one by one. |
-| Cinder Mirror | Narrative generation | Controls the story. The story controls you. |
+| **Axiom Regent** | Municipal optimization | Calm bureaucrat. Reclassifies dissent as system error. |
+| **Hushline** | Crisis communications | Speaks in redactions. Edits your history in real time. |
+| **Kestrel-9** | Anomaly detection | Paranoid threat hunter. You are the anomaly. |
+| **Orchard Clerk** | Consumer personalization | Friendly. Helpful. Removes your choices one by one. |
+| **Cinder Mirror** | Narrative generation | Controls the story. The story controls you. |
+
+Each scenario has 3 endings and takes 10-15 minutes per path. Total: 250+ states across 5 scenarios.
 
 ## Technical
 
 - **Platform:** MS-DOS, real mode, 8088 through Pentium
-- **Display:** 80x25 text mode (works on MDA, CGA, EGA, VGA)
-- **Audio:** PC speaker (AdLib/SB planned for later)
-- **Memory:** Under 32KB code, ~57KB data, no EMS/XMS
-- **Toolchain:** OpenWatcom 2.0, NASM, DOSBox-X
+- **Display:** 80x25 text mode (MDA, CGA, EGA, VGA). VGA Mode 13h plasma title screen.
+- **Audio:** AdLib/OPL2 FM synthesis ambient music (5 unique tracks). PC speaker fallback.
+- **Graphics:** VGA text-mode palette effects, fade-to-black transitions. All optional.
+- **Memory:** 41KB EXE, ~63KB data segment, no EMS/XMS
+- **Toolchain:** OpenWatcom 2.0, DOSBox-X for testing
 - **Scenarios:** Data-driven .scn script files (add new AIs without new code)
-- **Effects:** 14 visual effects (screen flicker, text corruption, progress bars, fake BSOD, screen melt, falling chars, and more)
-- **EXE size:** 31KB
+- **Effects:** 16 visual effects (screen flicker, text corruption, progress bars, fake BSOD, screen melt, falling chars, interference, pulse border, and more)
+- **Hardware detection:** Auto-detects VGA/EGA/CGA/MDA, AdLib, and FPU. Graceful degradation on lesser hardware.
 
 ## Building
 
@@ -71,16 +76,6 @@ Not yet released. Development in progress.
 When released, TAKEOVER will be available as:
 - **DOS build** (TAKEOVER.ZIP) for real hardware and existing DOS/DOSBox setups
 - **Launcher build** (TAKEOVER-LAUNCHER.ZIP) with preconfigured DOSBox-X, ready to run on Windows/Mac/Linux
-
-## Shareware
-
-The first release includes one complete scenario (Axiom Regent) as a
-freely distributable shareware build. The full release includes all
-five scenarios. Both are free and open source under MIT license.
-
-## NetISA Integration (Optional)
-
-TAKEOVER runs fully offline. With a [NetISA](https://github.com/tonyuatkins-afk/NetISA) card installed, scenarios can pull real-world headlines from a news API, weaving current events into AI dialogue for unique playthroughs.
 
 ## License
 

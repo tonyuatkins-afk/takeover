@@ -63,7 +63,7 @@ void vga_set_palette(const unsigned char __far *pal)
 
 void vga_fade_out(int steps, int delay_ms)
 {
-    unsigned char cur[768];
+    static unsigned char cur[768];
     int s, i;
 
     /* Read current palette */

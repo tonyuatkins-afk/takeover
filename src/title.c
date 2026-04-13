@@ -286,6 +286,7 @@ void title_show(void)
     /* Consume the keypress */
     scr_getkey();
 
-    /* Fade out */
+    /* Fade out and return to text mode */
     vga_fade_out(24, 40);
+    vga_leave_13h();
 }

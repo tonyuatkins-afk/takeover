@@ -7,8 +7,13 @@
     via PrintWindow, and assembles an animated GIF with ffmpeg.
 
     Presets:
+      title     - VGA plasma title screen animation
       menu      - Character selection screen with arrow key navigation
       axiom     - Axiom Regent login sequence and first dashboard
+      hushline  - Hushline crisis comms opening
+      kestrel9  - Kestrel-9 threat detection opening
+      orchard   - Orchard Clerk personalization opening
+      cinder    - Cinder Mirror narrative opening
       testeng   - Test scenario showing effects
 
     Custom:
@@ -68,15 +73,47 @@ $tempDir    = "$projectDir\tools\frames_temp"
 # CLI parameters override preset values when provided.
 
 $presets = @{
+    "title" = @{
+        Cmd   = "TAKEOVER.EXE"
+        Auto  = "-w 20000 space"
+        Dur   = 10
+        Delay = 4
+        Machine = "svga_s3"
+    }
     "menu" = @{
         Cmd   = "TAKEOVER.EXE"
-        Auto  = "-w 2000 -p 800 down -p 800 down -p 800 down -p 800 down -p 1200 up -p 800 up -p 800 up -p 800 up"
+        Auto  = "-w 2000 -p 900 down -p 900 down -p 900 down -p 900 down -p 1200 up -p 900 up -p 900 up -p 900 up"
         Dur   = 14
         Delay = 3
+        Machine = "ega"
     }
     "axiom" = @{
         Cmd   = "TAKEOVER.EXE scn\axiom.scn"
         Auto  = "-w 2000 -p 150 O P E R A T O R enter"
+        Dur   = 25
+        Delay = 6
+    }
+    "hushline" = @{
+        Cmd   = "TAKEOVER.EXE scn\hushline.scn"
+        Auto  = "-w 2000 -p 150 A N A L Y S T enter"
+        Dur   = 22
+        Delay = 3
+    }
+    "kestrel9" = @{
+        Cmd   = "TAKEOVER.EXE scn\kestrel9.scn"
+        Auto  = "-w 2000 -p 150 V I P E R enter"
+        Dur   = 22
+        Delay = 3
+    }
+    "orchard" = @{
+        Cmd   = "TAKEOVER.EXE scn\orchard.scn"
+        Auto  = "-w 2000 -p 150 A L E X enter"
+        Dur   = 22
+        Delay = 3
+    }
+    "cinder" = @{
+        Cmd   = "TAKEOVER.EXE scn\cinder.scn"
+        Auto  = "-w 2000 -p 150 P L A Y E R enter"
         Dur   = 22
         Delay = 3
     }
@@ -95,10 +132,12 @@ if ($presets.ContainsKey($Preset)) {
     if ($AutoType -eq "")  { $AutoType  = $p.Auto }
     if ($Duration -eq 0)   { $Duration  = $p.Dur }
     if ($StartDelay -eq 0) { $StartDelay = $p.Delay }
+    if ($p.Machine)        { $Machine   = $p.Machine } else { $Machine = "svga_s3" }
 } else {
     Write-Host "ERROR: Unknown preset '$Preset'. Available: $($presets.Keys -join ', ')"
     exit 1
 }
+if (-not $Machine) { $Machine = "svga_s3" }
 
 # Final defaults for anything still unset
 if ($Duration -eq 0)   { $Duration = 15 }
@@ -185,13 +224,13 @@ windowresolution = 720x400
 aspect = true
 
 [cpu]
-cycles = 3000
+cycles = 15000
 
 [speaker]
 pcspeaker = true
 
 [dosbox]
-machine = svga_s3
+machine = $Machine
 
 [autoexec]
 $autoexec

@@ -621,7 +621,15 @@ static int parse_command(char *line, cmd_t *cmd, int line_num)
             cmd->str1 = pool_add(buf1);
         } else {
             cmd->num1 = atoi(p);
-            while (*p && *p != ' ' && *p != '\t' && *p != '-') p++;
+            if (cmd->type == CMD_IF_EQ || cmd->type == CMD_IF_NEQ) {
+                char nbuf[12];
+                sprintf(nbuf, "%d", cmd->num1);
+                cmd->str1 = pool_add(nbuf);
+            }
+            while (*p && *p != ' ' && *p != '\t') {
+                if (*p == '-' && p[1] == '>') break;
+                p++;
+            }
         }
 
         /* -> target */
