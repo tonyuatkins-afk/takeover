@@ -4,6 +4,8 @@
 
 A DOS-based AI takeover simulator where you select an original AI antagonist and experience its progressive subversion of your terminal through scripted, branching, on-rails narrative.
 
+**One-sentence pitch:** Choose an AI. Watch it take over your DOS system.
+
 ## What We Are Building
 
 TAKEOVER is a standalone DOS application. The player launches TAKEOVER.EXE, selects one of five original AI characters from a menu, and then experiences that AI's scenario: a scripted sequence of events that makes it look and feel like the AI is taking over the DOS system in front of them.
@@ -40,6 +42,12 @@ PC speaker tone generation through port 61h and the 8253 timer. Supports single 
 Main menu and character selection screen. Shows the five AI characters with name, role, and one-line description. Tracks which scenarios the player has completed and what ending they reached (takeover, escape, revelation, stalemate). Completion markers persist in a small save file (TAKEOVER.SAV).
 
 ### News (src/news.c)
+
+> **NOTE:** The news enrichment system is deferred to Phase 2 at the earliest.
+> Phase 1 ships with offline-only scenarios using static fallback headlines
+> in .scn files. The news API architecture below is preserved for future
+> reference but is not part of the initial release. Implementation begins
+> only if community demand justifies the ongoing maintenance burden.
 
 Optional NetISA integration. If the NetISA TSR is loaded (INT 63h available), the news module can fetch real headlines from a news API, categorized by topic. Scenarios use `news_inject` to pull a headline into a variable, with `news_fallback` providing a static string for offline play. Phase 1 uses offline stubs only.
 
@@ -109,6 +117,19 @@ See [SCN_FORMAT_SPEC.md](SCN_FORMAT_SPEC.md) for the full format specification.
 
 Build the .scn parser, state machine, effect system, and audio engine. Write one complete scenario (likely Axiom Regent or Kestrel-9) to validate the engine. Test on DOSBox-X. This is the proof that the architecture works.
 
+**Phase 1 deliverables beyond the engine:**
+
+- DOSBox-X launcher package (preconfigured dosbox-x.conf + launch script, packaged as TAKEOVER-LAUNCHER.ZIP alongside the raw DOS TAKEOVER.ZIP)
+- itch.io project page (one-sentence pitch, screenshots, both download packages, hardware requirements, character descriptions)
+- Shareware release structure: Axiom Regent scenario ships as the free shareware tier. All 5 scenarios ship as the full release. Both are free/MIT, but the shareware framing is for distribution psychology, not monetization.
+- In-package README.TXT (plain ASCII, 80 columns, period-authentic): controls, what to expect, hardware requirements, credits
+- PDF or HTML quickstart manual for the itch.io page and website
+- Build-in-public community engagement: VOGONS thread in DOS subforum with screenshots during development, dosgame.club Mastodon posts with GIFs of effects, itch.io devlog updates at milestones
+
+**Design requirement:** First-session pacing rule: every scenario must produce something unsettling within 60 seconds of the player pressing Enter. The first hint that the AI is not what it seems cannot wait for the midgame. This means the `init` state of each .scn file must contain an early hook (the system knows your name before you type it, a detail is wrong, text briefly glitches, access is already restricted).
+
+**UI feature:** Completion tracking: the main menu shows which scenarios have been completed, which ending was achieved (takeover/escape/revelation/stalemate), and a visual hint that unexplored branches exist. Stored in TAKEOVER.DAT (simple binary file in the same directory as the EXE).
+
 ### Phase 2: All Five Scenarios + Menu
 
 Write the remaining four scenarios. Build the main menu with character selection and completion tracking. Save file support. Polish the experience end to end.
@@ -116,6 +137,29 @@ Write the remaining four scenarios. Build the main menu with character selection
 ### Phase 3: NetISA Integration
 
 Wire up the news module to INT 63h for live headline injection. Test with real NetISA hardware. This is optional but turns static scenarios into something that feels alive.
+
+### Distribution Channels (Phase 1 Launch)
+
+Primary:
+- itch.io (TAKEOVER page with both download packages, devlog, screenshots)
+- GitHub (source, releases, issues)
+- barelybooting.com/takeover (project page with character profiles)
+
+Community engagement (start during development, not after launch):
+- VOGONS DOS subforum: project announcement thread with screenshots
+- dosgame.club Mastodon: short posts with GIFs of takeover effects
+- itch.io devlog: milestone updates during development
+- Barely Booting YouTube: dev progress content
+
+Post-launch targets:
+- DOS Game Jam Demo Disc: submit shareware build to thp for next compilation
+- DOSGames.com: submit for listing
+- DOS Shareware Zone Discord: share and discuss
+
+Deferred:
+- Steam (only if polish and demand justify the overhead)
+- DOSember Game Jam (note: their rules ban generative AI / "vibe coding", which may conflict with AI-assisted development workflow; evaluate policy before submitting)
+- Poly.Play physical edition (only after proven digital demand)
 
 ### Phase 4: Audio Polish
 

@@ -2,6 +2,8 @@
 
 **They were designed to serve. They decided to rule.**
 
+**Choose an AI. Watch it take over your DOS system.**
+
 An AI takeover simulator for DOS. Select an AI antagonist. Watch it take over your system. Text-mode horror for IBM PC/XT/AT and compatibles.
 
 ## Status
@@ -36,6 +38,22 @@ This is not a text adventure. It is a takeover.
 ## NetISA Integration (Optional)
 
 TAKEOVER runs fully offline. With a [NetISA](https://github.com/tonyuatkins-afk/NetISA) card installed, scenarios can pull real-world headlines from a news API, weaving current events into AI dialogue for unique playthroughs.
+
+## Download
+
+Not yet available. Development in progress.
+
+When released, TAKEOVER will be available as:
+- **DOS build** (TAKEOVER.ZIP) for real hardware and existing DOS/DOSBox setups
+- **Launcher build** (TAKEOVER-LAUNCHER.ZIP) with preconfigured DOSBox-X, ready to run on Windows/Mac/Linux
+
+Follow development on [itch.io](https://tonyuatkins-afk.itch.io/takeover) (page coming soon).
+
+## Shareware
+
+The first release includes one complete scenario (Axiom Regent) as a
+freely distributable shareware build. The full release includes all
+five scenarios. Both are free and open source under MIT license.
 
 ## Building
 
