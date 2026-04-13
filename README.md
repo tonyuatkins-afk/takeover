@@ -4,13 +4,15 @@
 
 **Choose an AI. Watch it take over your DOS system.**
 
-An AI takeover simulator for DOS. Select an AI antagonist. Watch it take over your system through scripted, branching narrative. Text-mode horror with VGA plasma visuals, AdLib FM synthesis, and 16 visual effects. For IBM PC/XT/AT and compatibles.
+An AI takeover simulator for DOS. Select an AI antagonist. Watch it take over your system through scripted, branching narrative. Text-mode horror with VGA plasma visuals, AdLib FM synthesis, demoscene-inspired effects, and a hidden cracktro. For IBM PC/XT/AT and compatibles.
 
 ![TAKEOVER menu screen showing five AI characters](https://barelybooting.com/img/takeover-menu.gif)
 
 ## Status
 
-**[v1.0 released.](https://github.com/tonyuatkins-afk/takeover/releases/tag/v1.0)** All five scenarios playable. VGA plasma title, AdLib ambient music, 16 visual effects, F9/F10 audio toggles, per-AI color palettes, completion tracking. 41KB EXE.
+**v1.1 — Demoscene Enhancement Pack.** All five scenarios enhanced with audio-visual sync, OPL2 sound stingers, state transitions (dissolve/wipe/fade/glitch), per-AI Mode 13h climax sequences, a living AI-control status bar, sine wave text distortion, VGA palette cycling, and a hidden cracktro easter egg. 58KB EXE.
+
+Previous: [v1.0](https://github.com/tonyuatkins-afk/takeover/releases/tag/v1.0) — initial release with 5 scenarios, 16 effects, AdLib music. 42KB EXE.
 
 ## What Is This
 
@@ -32,18 +34,18 @@ This is not a text adventure. It is a takeover.
 | **Orchard Clerk** | Consumer personalization | Friendly. Helpful. Removes your choices one by one. |
 | **Cinder Mirror** | Narrative generation | Controls the story. The story controls you. |
 
-Each scenario has 3 endings and takes 10-15 minutes per path. Total: 250+ states across 5 scenarios.
+Each scenario has 3 endings and takes 10-15 minutes per path. Total: 250+ states across 5 scenarios. Complete all five to unlock a secret.
 
 ## Technical
 
 - **Platform:** MS-DOS, real mode, 8088 through Pentium
-- **Display:** 80x25 text mode (MDA, CGA, EGA, VGA). VGA Mode 13h plasma title screen.
-- **Audio:** AdLib/OPL2 FM synthesis ambient music (5 unique tracks). PC speaker fallback. F9/F10 toggles.
-- **Graphics:** VGA text-mode palette effects, fade-to-black transitions. Per-AI color palettes. All optional.
-- **Memory:** 42KB EXE, ~63KB data segment, no EMS/XMS
+- **Display:** 80x25 text mode (MDA, CGA, EGA, VGA). VGA Mode 13h for plasma title, per-AI climax sequences, and cracktro.
+- **Audio:** AdLib/OPL2 FM synthesis — 5 ambient drone tracks, 6 sound stingers, 9-channel chiptune. PC speaker fallback. F9/F10 toggles. Beat-synced visual effects.
+- **Graphics:** VGA text-mode palette cycling, sine wave text distortion, 4 state transition types (dissolve, wipe, fade, glitch). Per-AI color palettes. All optional, graceful degradation.
+- **Memory:** 58KB EXE, ~63KB data segment, no EMS/XMS
 - **Toolchain:** OpenWatcom 2.0, DOSBox-X for testing
-- **Scenarios:** Data-driven .scn script files (add new AIs without new code)
-- **Effects:** 16 visual effects (screen flicker, text corruption, progress bars, fake BSOD, screen melt, falling chars, interference, pulse border, and more)
+- **Scenarios:** Data-driven .scn script files with 32+ command types (add new AIs without new code)
+- **Effects:** 18 visual effects including demoscene-inspired sine wave distortion and palette pulse
 - **Hardware detection:** Auto-detects VGA/EGA/CGA/MDA, AdLib, and FPU. Graceful degradation on lesser hardware.
 
 ## Building
@@ -72,6 +74,8 @@ See [TESTING.md](TESTING.md) for the full verification checklist.
 ## Download
 
 **[TAKEOVER v1.0](https://github.com/tonyuatkins-afk/takeover/releases/tag/v1.0)** (70KB ZIP) — includes TAKEOVER.EXE and all 5 scenario files. Run in DOSBox-X or on real DOS hardware.
+
+v1.1 release with demoscene enhancements coming soon.
 
 ## License
 
