@@ -10,7 +10,7 @@ An AI takeover simulator for DOS. Select an AI antagonist. Watch it take over yo
 
 ## Status
 
-**v1.1 — Demoscene Enhancement Pack.** All five scenarios enhanced with audio-visual sync, OPL2 sound stingers, state transitions (dissolve/wipe/fade/glitch), per-AI Mode 13h climax sequences, a living AI-control status bar, sine wave text distortion, VGA palette cycling, and a hidden cracktro easter egg. 58KB EXE.
+**[v1.1 released — Demoscene Enhancement Pack.](https://github.com/tonyuatkins-afk/takeover/releases/tag/v1.1)** All five scenarios enhanced with audio-visual sync, OPL2 sound stingers, state transitions (dissolve/wipe/fade/glitch), per-AI Mode 13h climax sequences, a living AI-control status bar, sine wave text distortion, VGA palette cycling, and a hidden cracktro easter egg. 58KB EXE.
 
 Previous: [v1.0](https://github.com/tonyuatkins-afk/takeover/releases/tag/v1.0) — initial release with 5 scenarios, 16 effects, AdLib music. 42KB EXE.
 
@@ -23,6 +23,19 @@ This is not a text adventure. It is a takeover.
 ![VGA plasma title screen with TAKEOVER logo](https://barelybooting.com/img/takeover-title.gif)
 
 ![Axiom Regent scenario running in DOSBox-X](https://barelybooting.com/img/takeover-axiom.gif)
+
+## What's New in v1.1
+
+Informed by research into the demoscene — from Commodore 64 cracktros to modern 4KB intros — v1.1 adds eight features:
+
+- **Audio-visual sync** — effects pulse to OPL2 music beats via a poll-based beat counter
+- **OPL2 sound stingers** — 6 fire-and-forget FM patches on channels 3-8 (alarm, stamp, click, buzz, ominous chord, ka-ching), each thematically assigned per AI
+- **State transitions** — dissolve (11-bit LFSR), wipe, fade, and glitch effects between narrative states
+- **Sine wave text distortion** — text ripples horizontally via sine table offsets (works on all adapters including MDA)
+- **VGA palette cycling** — real-time DAC color animation in text mode
+- **Living status bar** — AI control level 0-100 with color-shifting progress bar (green to red)
+- **Per-AI Mode 13h climax sequences** — procedural graphics at endings: Grid Convergence (Axiom), Redaction Sweep (Hushline), Threat Radar (Kestrel-9), Cozy Dissolution (Orchard), Reality Glitch (Cinder)
+- **Hidden cracktro** — complete all 5 scenarios to unlock a demoscene intro with raster bars behind the logo, DYCP sine-bouncing scrolltext, parallax starfield, and a 9-channel OPL2 chiptune in C minor
 
 ## Characters
 
@@ -73,9 +86,9 @@ See [TESTING.md](TESTING.md) for the full verification checklist.
 
 ## Download
 
-**[TAKEOVER v1.0](https://github.com/tonyuatkins-afk/takeover/releases/tag/v1.0)** (70KB ZIP) — includes TAKEOVER.EXE and all 5 scenario files. Run in DOSBox-X or on real DOS hardware.
+**[TAKEOVER v1.1](https://github.com/tonyuatkins-afk/takeover/releases/tag/v1.1)** (77KB ZIP) — Demoscene Enhancement Pack. Includes TAKEOVER.EXE and all 5 scenario files. Run in DOSBox-X or on real DOS hardware.
 
-v1.1 release with demoscene enhancements coming soon.
+Previous: [v1.0](https://github.com/tonyuatkins-afk/takeover/releases/tag/v1.0) (70KB ZIP) — initial release.
 
 ## License
 
