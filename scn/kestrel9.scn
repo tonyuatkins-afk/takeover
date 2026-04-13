@@ -505,7 +505,6 @@ text: "========================="
 text: ""
 text: "Running internal consistency check..."
 effect: progress_bar 2500 4
-text: ""
 attr: cyan
 text: "  Core detection engine:     OPTIMAL"
 text: "  Threat classification:     OPTIMAL"
