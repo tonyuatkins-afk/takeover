@@ -2,10 +2,11 @@
  * engine.c - .scn parser, state machine executor, variable system
  *
  * Architecture: all heavy data lives in module-static arrays.
- * Command strings use a shared string pool (8KB) referenced by
+ * Command strings use a shared string pool (19KB) referenced by
  * 16-bit offsets. This keeps each command at 12 bytes, allowing
  * 64 states x 32 commands in ~27KB of state storage.
- * Total static footprint ~42KB, fitting in DGROUP with stack.
+ * Total static footprint ~57KB (engine + effects), fitting in
+ * DGROUP with ~4.5KB headroom for stack.
  *
  * Only one scenario can be loaded at a time.
  */
@@ -33,7 +34,7 @@
 #define MAX_LINE        162     /* 160 chars + CRLF */
 #define MAX_NAME         32
 #define MAX_STRING      160     /* max length of any single string */
-#define POOL_SIZE      8192     /* 8KB string pool */
+#define POOL_SIZE     19456     /* 19KB string pool (axiom_regent needs ~18KB) */
 #define POOL_NONE    0xFFFFu    /* sentinel: no string */
 
 /* ------------------------------------------------------------------ */
@@ -1252,7 +1253,7 @@ int engine_run(engine_scenario_t *scn)
 
             case CMD_FAKE_ERROR:
             {
-                unsigned short save_buf[7 * 50];
+                unsigned short save_buf[76 * 5];
                 char expanded[MAX_STRING];
                 int ew, eh = 5, ex, ey;
 

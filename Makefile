@@ -58,7 +58,7 @@ lib\screen.obj: lib\screen.c lib\screen.h
 	$(CC) $(CFLAGS) -fo=$^@ lib\screen.c
 
 $(TARGET): $(OBJS)
-	$(LD) system dos name $(TARGET) file { $(OBJS) }
+	$(LD) system dos name $(TARGET) option stack=3072 file { $(OBJS) }
 
 clean: .SYMBOLIC
 	-del src\*.obj

@@ -12,6 +12,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <i86.h>
 
 /* Scenario filename table (DOS backslash paths) */
 static const char *scenario_files[MENU_NUM_SCENARIOS] = {
@@ -43,8 +44,8 @@ static void show_result(int result)
     const char *rname = result_name(result);
     char msg[80];
 
-    scr_fill(1, 1, SCR_WIDTH - 2, SCR_HEIGHT - 2, ' ', ATTR_NORMAL);
-    scr_box(0, 0, SCR_WIDTH, SCR_HEIGHT, ATTR_BORDER);
+    scr_fill(1, 1, SCR_WIDTH - 2, SCR_HEIGHT - 3, ' ', ATTR_NORMAL);
+    scr_box(0, 0, SCR_WIDTH, SCR_HEIGHT - 1, ATTR_BORDER);
 
     sprintf(msg, "Scenario complete: %s", rname);
     col = (SCR_WIDTH - (int)strlen(msg)) / 2;
@@ -59,12 +60,25 @@ static int run_scenario(const char *filename)
 {
     int result;
 
-    /* Load before entering screen mode so errors print to console */
-    if (engine_load(&scenario, filename) != 0)
+    /*
+     * Temporarily restore DOS text mode for engine_load so any
+     * parse errors are visible on the console. Re-init after.
+     */
+    scr_shutdown();
+    if (engine_load(&scenario, filename) != 0) {
+        printf("Press any key...\n");
+        /* Wait for a key using BIOS since screen lib is shut down */
+        {
+            union REGS r;
+            r.h.ah = 0x00;
+            int86(0x16, &r, &r);
+        }
+        scr_init();
         return -1;
+    }
+    scr_init();
 
     /* Draw border and status bar */
-    scr_clear(ATTR_NORMAL);
     scr_box(0, 0, SCR_WIDTH, SCR_HEIGHT - 1, ATTR_BORDER);
     scr_hline(0, SCR_HEIGHT - 1, SCR_WIDTH, ' ', ATTR_STATUS);
     scr_puts(1, SCR_HEIGHT - 1, " TAKEOVER ", ATTR_STATUS);

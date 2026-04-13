@@ -22,6 +22,14 @@
 #define FX_ROWS    (FX_BOTTOM - FX_TOP + 1)
 #define FX_COLS    (FX_RIGHT - FX_LEFT + 1)
 
+/*
+ * Shared static save buffer for effects that need to save/restore
+ * screen regions. Only one effect runs at a time, so sharing is safe.
+ * Full screen = 80*25 = 2000 words = 4000 bytes.
+ * Keeps this off the stack (4KB stack in small model).
+ */
+static unsigned short fx_save_buf[SCR_WIDTH * SCR_HEIGHT];
+
 /* ------------------------------------------------------------------ */
 /* RNG: LCG seeded from BIOS tick counter                              */
 /* ------------------------------------------------------------------ */
@@ -65,8 +73,6 @@ void fx_typing_effect(int duration, int intensity)
 
 void fx_screen_flicker(int duration, int intensity)
 {
-    /* Save buffer: 78 * 22 = 1716 words = 3432 bytes. Fits on stack. */
-    unsigned short save[FX_COLS * FX_ROWS];
     int cycles, i, r, c;
     int tick_ms = 55;
 
@@ -74,12 +80,10 @@ void fx_screen_flicker(int duration, int intensity)
     if (intensity > 10) intensity = 10;
     cycles = (duration / tick_ms);
     if (cycles < 1) cycles = 1;
-    /* intensity scales how many cycles are glitched vs clean */
 
-    scr_save_region(FX_LEFT, FX_TOP, FX_COLS, FX_ROWS, save);
+    scr_save_region(FX_LEFT, FX_TOP, FX_COLS, FX_ROWS, fx_save_buf);
 
     for (i = 0; i < cycles; i++) {
-        /* Glitch frame */
         for (r = FX_TOP; r <= FX_BOTTOM; r++) {
             for (c = FX_LEFT; c <= FX_RIGHT; c++) {
                 if (rng_range(10) < intensity) {
@@ -89,8 +93,7 @@ void fx_screen_flicker(int duration, int intensity)
             }
         }
         engine_delay(tick_ms);
-        /* Restore */
-        scr_restore_region(FX_LEFT, FX_TOP, FX_COLS, FX_ROWS, save);
+        scr_restore_region(FX_LEFT, FX_TOP, FX_COLS, FX_ROWS, fx_save_buf);
         if (i < cycles - 1)
             engine_delay(tick_ms);
     }
@@ -247,14 +250,13 @@ void fx_color_shift(int duration, int intensity)
 
 void fx_blackout(int duration, int intensity)
 {
-    unsigned short save[SCR_WIDTH * SCR_HEIGHT];
     (void)intensity;
 
-    scr_save_region(0, 0, SCR_WIDTH, SCR_HEIGHT, save);
+    scr_save_region(0, 0, SCR_WIDTH, SCR_HEIGHT, fx_save_buf);
     scr_fill(0, 0, SCR_WIDTH, SCR_HEIGHT, ' ',
              SCR_ATTR(SCR_BLACK, SCR_BLACK));
     engine_delay(duration);
-    scr_restore_region(0, 0, SCR_WIDTH, SCR_HEIGHT, save);
+    scr_restore_region(0, 0, SCR_WIDTH, SCR_HEIGHT, fx_save_buf);
 }
 
 /* ------------------------------------------------------------------ */
@@ -405,7 +407,6 @@ void fx_screen_melt(int duration, int intensity)
 
 void fx_falling_chars(int duration, int intensity)
 {
-    unsigned short save[FX_COLS * FX_ROWS];
     /* Track column state: -1=inactive, 0..FX_ROWS-1=current row */
     int col_row[80]; /* indexed by screen col */
     int col_ch[80];
@@ -422,7 +423,7 @@ void fx_falling_chars(int duration, int intensity)
     tick_ms = 55;
     flen = (int)strlen(fall_set);
 
-    scr_save_region(FX_LEFT, FX_TOP, FX_COLS, FX_ROWS, save);
+    scr_save_region(FX_LEFT, FX_TOP, FX_COLS, FX_ROWS, fx_save_buf);
 
     for (c = 0; c < 80; c++) {
         col_row[c] = -1;
@@ -459,7 +460,7 @@ void fx_falling_chars(int duration, int intensity)
         engine_delay(tick_ms);
     }
 
-    scr_restore_region(FX_LEFT, FX_TOP, FX_COLS, FX_ROWS, save);
+    scr_restore_region(FX_LEFT, FX_TOP, FX_COLS, FX_ROWS, fx_save_buf);
 }
 
 /* ------------------------------------------------------------------ */
@@ -475,7 +476,6 @@ void fx_progress_bar(int duration, int intensity)
         "CALIBRATING...",
         "INTEGRATING..."
     };
-    unsigned short save[52 * 5]; /* 52 wide, 5 tall */
     int bw = 50, bh = 5;
     int bx, by;
     int fill_ms;
@@ -492,7 +492,7 @@ void fx_progress_bar(int duration, int intensity)
     by = (SCR_HEIGHT - bh) / 2;
     label = labels[rng_range(5)];
 
-    scr_save_region(bx, by, bw, bh, save);
+    scr_save_region(bx, by, bw, bh, fx_save_buf);
     scr_fill(bx, by, bw, bh, ' ', ATTR_ERROR);
     scr_box_single(bx, by, bw, bh, ATTR_ERROR);
     scr_puts(bx + 2, by + 1, label, ATTR_ERROR);
@@ -507,7 +507,7 @@ void fx_progress_bar(int duration, int intensity)
     /* Brief pause at full */
     engine_delay(500);
 
-    scr_restore_region(bx, by, bw, bh, save);
+    scr_restore_region(bx, by, bw, bh, fx_save_buf);
 }
 
 /* ------------------------------------------------------------------ */
@@ -516,12 +516,11 @@ void fx_progress_bar(int duration, int intensity)
 
 void fx_fake_bsod(int duration, int intensity)
 {
-    unsigned short save[SCR_WIDTH * SCR_HEIGHT];
     unsigned char bsod_attr = SCR_ATTR(SCR_WHITE, SCR_BLUE);
     int elapsed;
     (void)intensity;
 
-    scr_save_region(0, 0, SCR_WIDTH, SCR_HEIGHT, save);
+    scr_save_region(0, 0, SCR_WIDTH, SCR_HEIGHT, fx_save_buf);
     scr_fill(0, 0, SCR_WIDTH, SCR_HEIGHT, ' ', bsod_attr);
 
     scr_puts(4, 3,
@@ -549,7 +548,7 @@ void fx_fake_bsod(int duration, int intensity)
         engine_delay(55);
     }
 
-    scr_restore_region(0, 0, SCR_WIDTH, SCR_HEIGHT, save);
+    scr_restore_region(0, 0, SCR_WIDTH, SCR_HEIGHT, fx_save_buf);
 }
 
 /* ------------------------------------------------------------------ */
