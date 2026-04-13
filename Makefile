@@ -26,7 +26,7 @@ CFLAGS += -i=src -i=lib
 # Object files (explicit list for wmake compatibility)
 OBJS = src\main.obj src\engine.obj src\effects.obj src\audio.obj &
        src\menu.obj src\news.obj src\display.obj src\hwdetect.obj &
-       lib\screen.obj
+       src\vga13h.obj src\title.obj lib\screen.obj
 
 # Target
 TARGET = TAKEOVER.EXE
@@ -34,7 +34,7 @@ TARGET = TAKEOVER.EXE
 all: $(TARGET) .SYMBOLIC
 
 # Explicit compilation rules (wmake inference rules are fragile across dirs)
-src\main.obj: src\main.c src\engine.h src\effects.h src\menu.h src\hwdetect.h lib\screen.h
+src\main.obj: src\main.c src\engine.h src\effects.h src\menu.h src\hwdetect.h src\title.h lib\screen.h
 	$(CC) $(CFLAGS) -fo=$^@ src\main.c
 
 src\engine.obj: src\engine.c src\engine.h src\effects.h src\audio.h lib\screen.h
@@ -57,6 +57,12 @@ src\display.obj: src\display.c src\display.h src\hwdetect.h lib\screen.h
 
 src\hwdetect.obj: src\hwdetect.c src\hwdetect.h
 	$(CC) $(CFLAGS) -fo=$^@ src\hwdetect.c
+
+src\vga13h.obj: src\vga13h.c src\vga13h.h src\engine.h
+	$(CC) $(CFLAGS) -fo=$^@ src\vga13h.c
+
+src\title.obj: src\title.c src\title.h src\vga13h.h src\hwdetect.h src\engine.h lib\screen.h
+	$(CC) $(CFLAGS) -fo=$^@ src\title.c
 
 lib\screen.obj: lib\screen.c lib\screen.h
 	$(CC) $(CFLAGS) -fo=$^@ lib\screen.c

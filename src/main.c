@@ -10,6 +10,7 @@
 #include "effects.h"
 #include "menu.h"
 #include "hwdetect.h"
+#include "title.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -116,8 +117,15 @@ int main(int argc, char *argv[])
     {
         takeover_save_t save;
 
-        scr_init();
+        hw_detect_all();
         rng_seed();
+
+        /* VGA title screen (Mode 13h plasma) before menu */
+        if (g_hw.display == HW_DISP_VGA) {
+            title_show();
+        }
+
+        scr_init();
         menu_load_progress(&save);
 
         while (1) {
