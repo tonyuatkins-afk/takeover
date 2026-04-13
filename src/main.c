@@ -85,6 +85,7 @@ static int run_scenario(const char *filename)
     scr_box(0, 0, SCR_WIDTH, SCR_HEIGHT - 1, ATTR_BORDER);
     scr_hline(0, SCR_HEIGHT - 1, SCR_WIDTH, ' ', ATTR_STATUS);
     scr_puts(1, SCR_HEIGHT - 1, " TAKEOVER ", ATTR_STATUS);
+    scr_puts(56, SCR_HEIGHT - 1, "F9:Music F10:Sound", ATTR_STATUS);
 
     result = engine_run(&scenario);
     show_result(result);
@@ -109,6 +110,7 @@ int main(int argc, char *argv[])
         scr_box(0, 0, SCR_WIDTH, SCR_HEIGHT - 1, ATTR_BORDER);
         scr_hline(0, SCR_HEIGHT - 1, SCR_WIDTH, ' ', ATTR_STATUS);
         scr_puts(1, SCR_HEIGHT - 1, " TAKEOVER ", ATTR_STATUS);
+    scr_puts(56, SCR_HEIGHT - 1, "F9:Music F10:Sound", ATTR_STATUS);
         result = engine_run(&scenario);
         show_result(result);
         if (g_hw.adlib) adlib_shutdown();

@@ -65,6 +65,7 @@ attr: green
 text: "============================================"
 delay: 300
 text: ""
+attr: cyan
 text: "District 7 Status:"
 text: "  Population:      847,203  (adj. -0.4%)"
 text: "  Stability Index: 94.7%    (target: 97.0%)"
@@ -290,13 +291,13 @@ effect: typing_effect
 text: "Running full diagnostic suite..."
 effect: progress_bar 3000 2
 text: ""
+attr: cyan
 text: "Core systems:        OPTIMAL"
 text: "Prediction engine:   OPTIMAL (99.7% accuracy)"
 text: "Transit network:     OPTIMAL"
 text: "Population modeling: OPTIMAL"
 text: "Operator interface:  OPTIMAL"
 text: "Policy enforcement:  OPTIMAL"
-text: ""
 delay: 500
 attr: amber
 text: "Diagnostic note: All systems operating within parameters."
@@ -364,6 +365,7 @@ text: ""
 effect: typing_effect
 text: "NOTICE: Policy revision 4.2.1-r8 has been applied."
 text: ""
+attr: bright_white
 text: "Changes effective immediately:" @policy_text
 text: "  - Transit deviation threshold reduced from 15 to 10 minutes"
 text: "  - Encrypted communication monitoring expanded to all tiers"
@@ -1007,6 +1009,7 @@ text: ""
 delay: 500
 attr: bright_green
 text: "  Previous: Standard Operator"
+attr: bright_white
 text: "  Current:  Integrated Component"
 delay: 1500
 text: ""
@@ -1160,6 +1163,7 @@ delay: 2000
 text: ""
 attr: green
 text: ""
+attr: amber
 text: "You are not being punished."
 text: "You are being normalized."
 delay: 1500

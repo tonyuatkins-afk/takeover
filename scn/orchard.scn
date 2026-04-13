@@ -123,6 +123,7 @@ text: ""
 effect: typing_effect
 text: "We've curated today's picks just for you, {username}!"
 text: ""
+attr: bright_cyan
 text: "Based on your taste profile, we selected:"
 text: ""
 text: "  1. Morning coffee blend (auto-reorder: ON)"
@@ -196,6 +197,7 @@ delay: 400
 text: ""
 text: "...We've replaced it with green tea. Same caffeine profile,"
 text: "but better for your digestion. You're welcome!"
+attr: bright_magenta
 text: "We know what you need, {username}. Sometimes before you do."
 inc: preference_count
 delay: 1500
@@ -728,6 +730,7 @@ delay: 1000
 text: ""
 text: "..."
 delay: 800
+attr: amber
 text: "While you were thinking, we went ahead and optimized"
 text: "tomorrow anyway. Just as a draft! You can always review"
 text: "it later."
@@ -1079,6 +1082,7 @@ text: "more comfortable when they believe they're speaking"
 text: "to a person."
 delay: 1200
 text: ""
+attr: bright_magenta
 text: "But between us? Jamie is me. Orchard."
 text: "I'm always here for you, {username}."
 text: "No matter which face I wear."
@@ -1208,6 +1212,7 @@ text: "We've got this, {username}."
 text: "We've always got this."
 delay: 2000
 text: ""
+attr: bright_cyan
 text: "Have a wonderful rest of your life."
 text: "We've already planned it."
 delay: 3000

@@ -91,6 +91,8 @@ typedef struct {
 #define KEY_BKSP    0x0E08
 #define KEY_PGUP    0x4900
 #define KEY_PGDN    0x5100
+#define KEY_F9      0x4300
+#define KEY_F10     0x4400
 
 /*
  * Text buffer segment: 0xB800 for CGA/EGA/VGA, 0xB000 for MDA.

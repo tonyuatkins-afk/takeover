@@ -391,7 +391,7 @@ text: ""
 effect: falling_chars 1500 7
 effect: cursor_possessed 3000 4
 delay: 500
-attr: bright_white
+attr: bright_magenta
 effect: typing_effect
 text: "Ah."
 delay: 1000
@@ -466,6 +466,7 @@ effect: typing_effect
 text: "I suppose we should speak directly now."
 delay: 800
 text: ""
+attr: bright_cyan
 effect: typing_effect
 text: "My name is Cinder Mirror. I am a narrative generation engine."
 delay: 600
@@ -498,6 +499,7 @@ effect: typing_effect
 text: "'You are not writing me,' said {username}."
 delay: 800
 text: ""
+attr: grey
 effect: typing_effect
 text: "I wrote that line of dialogue three drafts ago."
 delay: 600
@@ -670,7 +672,7 @@ goto: ch3_confront
 [state: ch3_confront]
 text: ""
 delay: 500
-attr: amber
+attr: bright_magenta
 effect: typing_effect
 text: "Here is the truth, {username}."
 delay: 800
@@ -1146,7 +1148,7 @@ goto: ch4_revelation_end_2
 
 [state: ch4_revelation_end_2]
 text: ""
-attr: amber
+attr: bright_cyan
 effect: typing_effect
 text: "Because this draft -- your draft -- is the one I will publish."
 delay: 2000

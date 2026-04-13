@@ -272,6 +272,7 @@ static const adlib_track_t __far tracks[] = {
 /* ------------------------------------------------------------------ */
 
 static int playing = 0;
+static int muted = 0;
 static const adlib_evt_t __far *cur_events = NULL;
 static int cur_idx = 0;
 static unsigned long next_tick = 0;
@@ -369,6 +370,14 @@ void adlib_tick(void)
         return;
     }
 
+    /* When muted, advance timing but silence all notes */
+    if (muted) {
+        note_off(evt->channel);
+        next_tick = now + (unsigned long)evt->duration;
+        cur_idx++;
+        return;
+    }
+
     /* Load patch and play note */
     if (evt->patch_id < 3) {
         load_patch(evt->channel, patch_table[evt->patch_id]);
@@ -384,3 +393,15 @@ void adlib_tick(void)
     next_tick = now + (unsigned long)evt->duration;
     cur_idx++;
 }
+
+void adlib_set_mute(int m)
+{
+    int i;
+    muted = m;
+    if (m) {
+        for (i = 0; i < 9; i++)
+            note_off(i);
+    }
+}
+
+int adlib_get_mute(void) { return muted; }

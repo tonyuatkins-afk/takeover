@@ -20,6 +20,11 @@
 #define PIT_CH2     0x42    /* PIT channel 2 data */
 #define PORT_61H    0x61    /* Speaker gate / PIT gate */
 
+static int sfx_muted = 0;
+
+void audio_set_mute(int m) { sfx_muted = m; }
+int  audio_get_mute(void)  { return sfx_muted; }
+
 void audio_tone(int freq_hz, int duration_ms)
 {
     unsigned int divisor;
@@ -27,6 +32,11 @@ void audio_tone(int freq_hz, int duration_ms)
 
     if (freq_hz <= 0 || duration_ms <= 0)
         return;
+
+    if (sfx_muted) {
+        engine_delay(duration_ms);
+        return;
+    }
 
     /* Compute PIT divisor. Clamp to 16-bit range. */
     if (freq_hz < 19)

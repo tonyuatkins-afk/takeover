@@ -29,4 +29,8 @@ void adlib_stop_track(void);
  * Checks BIOS tick counter internally; negligible cost when idle. */
 void adlib_tick(void);
 
+/* Mute/unmute music. Playback state advances silently when muted. */
+void adlib_set_mute(int mute);
+int  adlib_get_mute(void);
+
 #endif /* ADLIB_H */

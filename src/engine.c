@@ -91,6 +91,10 @@ enum {
     ATTR_ID_GREY,
     ATTR_ID_CYAN,
     ATTR_ID_BRIGHT_CYAN,
+    ATTR_ID_MAGENTA,
+    ATTR_ID_BRIGHT_MAGENTA,
+    ATTR_ID_BLUE,
+    ATTR_ID_BRIGHT_BLUE,
     ATTR_ID_INVERSE,
     ATTR_ID_COUNT
 };
@@ -180,6 +184,10 @@ static unsigned char attr_map[ATTR_ID_COUNT] = {
     SCR_ATTR(SCR_DARKGRAY, SCR_BLACK),      /* GREY */
     SCR_ATTR(SCR_CYAN, SCR_BLACK),          /* CYAN */
     SCR_ATTR(SCR_LIGHTCYAN, SCR_BLACK),     /* BRIGHT_CYAN */
+    SCR_ATTR(SCR_MAGENTA, SCR_BLACK),       /* MAGENTA */
+    SCR_ATTR(SCR_LIGHTMAGENTA, SCR_BLACK),  /* BRIGHT_MAGENTA */
+    SCR_ATTR(SCR_BLUE, SCR_BLACK),          /* BLUE */
+    SCR_ATTR(SCR_LIGHTBLUE, SCR_BLACK),     /* BRIGHT_BLUE */
     SCR_ATTR(SCR_BLACK, SCR_LIGHTGRAY)      /* INVERSE */
 };
 
@@ -434,6 +442,10 @@ static int parse_attr_name(const char *name)
     if (strcmp(name, "grey") == 0)         return ATTR_ID_GREY;
     if (strcmp(name, "cyan") == 0)         return ATTR_ID_CYAN;
     if (strcmp(name, "bright_cyan") == 0)  return ATTR_ID_BRIGHT_CYAN;
+    if (strcmp(name, "magenta") == 0)      return ATTR_ID_MAGENTA;
+    if (strcmp(name, "bright_magenta") == 0) return ATTR_ID_BRIGHT_MAGENTA;
+    if (strcmp(name, "blue") == 0)         return ATTR_ID_BLUE;
+    if (strcmp(name, "bright_blue") == 0)  return ATTR_ID_BRIGHT_BLUE;
     if (strcmp(name, "inverse") == 0)      return ATTR_ID_INVERSE;
     return ATTR_ID_GREEN;
 }
@@ -949,6 +961,26 @@ static void flush_keyboard(void)
         scr_getkey();
 }
 
+/* Handle F9/F10 audio toggle keys. Returns 1 if key was consumed. */
+static int handle_audio_key(int key)
+{
+    const char *msg = NULL;
+    if (key == KEY_F9 && g_hw.adlib) {
+        adlib_set_mute(!adlib_get_mute());
+        msg = adlib_get_mute() ? " Music: OFF " : " Music: ON  ";
+    } else if (key == KEY_F10) {
+        audio_set_mute(!audio_get_mute());
+        msg = audio_get_mute() ? " Sound: OFF " : " Sound: ON  ";
+    } else {
+        return 0;
+    }
+    /* Brief status flash */
+    scr_puts(60, STATUS_ROW, msg, ATTR_STATUS);
+    engine_delay(600);
+    scr_puts(60, STATUS_ROW, " TAKEOVER   ", ATTR_STATUS);
+    return 1;
+}
+
 static void read_input(engine_scenario_t *scn, const char *prompt,
                        char *buf, int buf_max)
 {
@@ -966,6 +998,9 @@ static void read_input(engine_scenario_t *scn, const char *prompt,
 
     while (1) {
         key = scr_getkey();
+
+        if (handle_audio_key(key))
+            continue;
 
         if ((key & 0xFF) == 0x0D)
             break;
@@ -1022,6 +1057,9 @@ static int show_choices(engine_scenario_t *scn, cmd_t *choices,
         }
 
         key = scr_getkey();
+
+        if (handle_audio_key(key))
+            continue;
 
         if (key == KEY_UP && sel > 0)
             sel--;

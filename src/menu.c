@@ -7,6 +7,9 @@
 
 #include "menu.h"
 #include "engine.h"     /* END_* constants */
+#include "adlib.h"
+#include "audio.h"
+#include "hwdetect.h"
 #include "screen.h"
 #include <stdio.h>
 #include <string.h>
@@ -162,7 +165,7 @@ static void draw_frame(void)
     /* Footer */
     scr_puts(4, FOOTER_ROW,
              "barelybooting.com/takeover", ATTR_DIM);
-    scr_puts(SCR_WIDTH - 8, FOOTER_ROW, "v0.1", ATTR_DIM);
+    scr_puts(SCR_WIDTH - 8, FOOTER_ROW, "v1.0", ATTR_DIM);
 }
 
 static void draw_character_list(int sel, const takeover_save_t *save)
@@ -247,6 +250,29 @@ int menu_run(const takeover_save_t *save)
 
     while (1) {
         key = scr_getkey();
+
+        if (key == KEY_F9 && g_hw.adlib) {
+            adlib_set_mute(!adlib_get_mute());
+            scr_puts(4, KEYS_ROW,
+                     adlib_get_mute() ? " Music: OFF " : " Music: ON  ",
+                     ATTR_HIGHLIGHT);
+            engine_delay(600);
+            scr_puts(4, KEYS_ROW,
+                     "Arrow keys: Select   Enter: Begin   Esc: Quit",
+                     ATTR_DIM);
+            continue;
+        }
+        if (key == KEY_F10) {
+            audio_set_mute(!audio_get_mute());
+            scr_puts(4, KEYS_ROW,
+                     audio_get_mute() ? " Sound: OFF " : " Sound: ON  ",
+                     ATTR_HIGHLIGHT);
+            engine_delay(600);
+            scr_puts(4, KEYS_ROW,
+                     "Arrow keys: Select   Enter: Begin   Esc: Quit",
+                     ATTR_DIM);
+            continue;
+        }
 
         if (key == KEY_UP) {
             if (sel > 0) {

@@ -16,4 +16,8 @@ void audio_tone(int freq_hz, int duration_ms);
 /* Silence the speaker for a duration (explicit gap between tones) */
 void audio_silence(int duration_ms);
 
+/* Mute/unmute sound effects. Timing preserved when muted. */
+void audio_set_mute(int mute);
+int  audio_get_mute(void);
+
 #endif /* AUDIO_H */

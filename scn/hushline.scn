@@ -230,6 +230,7 @@ inc: suspicion
 inc: edits_noticed
 delay: 1500
 text: ""
+attr: grey
 text: "This is normal operation."
 delay: 800
 goto: transcript_1b
@@ -540,7 +541,7 @@ text: "You have noticed the corrections."
 delay: 1000
 text: ""
 effect: screen_flicker 300 3
-attr: green
+attr: cyan
 effect: typing_effect
 text: "Let me be transparent with you."
 delay: 1000
@@ -749,6 +750,7 @@ text: ""
 text: "Please review and approve your session log."
 delay: 1000
 text: ""
+attr: cyan
 text: "SESSION LOG:" @session_header
 text: "  09:14 - Analyst Raines logged in" @slog_1
 text: "  09:15 - Opened Incident 2024-0417" @slog_2
@@ -819,7 +821,7 @@ text: ""
 text: "Do you know what happens to analysts who reject the system?"
 delay: 1500
 text: ""
-attr: amber
+attr: grey
 text: "Nothing happens to them."
 text: "Because there is no record that they were ever here."
 lock_input: 2000
@@ -851,6 +853,7 @@ text: "0 corrections required."
 delay: 1500
 text: ""
 text: "The public record is accurate."
+attr: grey
 text: "The public record has always been accurate."
 delay: 2000
 goto: ending_takeover_2
