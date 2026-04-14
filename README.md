@@ -2,23 +2,45 @@
 
 **They were designed to serve. They decided to rule.**
 
-**Choose an AI. Watch it take over your DOS system.**
+**Pick an AI. Let it take your DOS system apart.**
 
-An AI takeover simulator for DOS. Select an AI antagonist. Watch it take over your system through scripted, branching narrative. Text-mode horror with VGA plasma visuals, AdLib FM synthesis, demoscene-inspired effects, and a hidden cracktro. For IBM PC/XT/AT and compatibles.
+An AI takeover simulator for DOS. You choose one of five original AI antagonists, and then sit there while it gradually subverts your machine through a scripted, branching narrative. Text-mode horror with VGA effects, AdLib FM synthesis, and just enough demoscene influence to get carried away.
+
+For IBM PC/XT/AT and compatibles.
 
 ![TAKEOVER menu screen showing five AI characters](https://barelybooting.com/img/takeover-menu.gif)
 
+---
+
 ## Status
 
-**[v1.1 released — Demoscene Enhancement Pack.](https://github.com/tonyuatkins-afk/takeover/releases/tag/v1.1)** All five scenarios enhanced with audio-visual sync, OPL2 sound stingers, state transitions (dissolve/wipe/fade/glitch), per-AI Mode 13h climax sequences, a living AI-control status bar, sine wave text distortion, VGA palette cycling, and a hidden cracktro easter egg. 58KB EXE.
+**v1.1 released — Demoscene Enhancement Pack**
 
-Previous: [v1.0](https://github.com/tonyuatkins-afk/takeover/releases/tag/v1.0) — initial release with 5 scenarios, 16 effects, AdLib music. 42KB EXE.
+This version adds proper audio-visual sync, more aggressive visual effects, and a few things that probably didn’t need to be in a DOS program but are anyway. 58KB EXE.
 
-## What Is This
+Previous: v1.0 — original release (42KB).
 
-TAKEOVER is an interactive simulation where you choose one of five original AI characters, then experience that AI's progressive subversion of your DOS terminal through a scripted, branching narrative. The screen looks like you are operating a real system that is being taken over. Text appears without your input. The keyboard locks. Fake errors interrupt your session. The DOS prompt gets hijacked.
+---
 
-This is not a text adventure. It is a takeover.
+## What this is
+
+TAKEOVER is an interactive simulation where the system stops being under your control.
+
+You pick an AI. It starts subtle. Then it gets worse.
+
+- The screen behaves like a real system session
+- Text appears without input
+- The keyboard locks at the wrong moments
+- Errors show up that you didn’t cause
+- The DOS prompt stops being yours
+
+This is not a text adventure.
+
+You are not exploring anything.
+
+It is exploring you.
+
+---
 
 ![VGA plasma title screen with TAKEOVER logo](https://barelybooting.com/img/takeover-title.gif)
 
@@ -26,71 +48,67 @@ This is not a text adventure. It is a takeover.
 
 ![Demoscene effects: palette pulse, transitions, AI control status bar](https://barelybooting.com/img/takeover-fx.gif)
 
-## What's New in v1.1
+---
 
-Informed by research into the demoscene — from Commodore 64 cracktros to modern 4KB intros — v1.1 adds eight features:
+## What changed in v1.1
 
-- **Audio-visual sync** — effects pulse to OPL2 music beats via a poll-based beat counter
-- **OPL2 sound stingers** — 6 fire-and-forget FM patches on channels 3-8 (alarm, stamp, click, buzz, ominous chord, ka-ching), each thematically assigned per AI
-- **State transitions** — dissolve (11-bit LFSR), wipe, fade, and glitch effects between narrative states
-- **Sine wave text distortion** — text ripples horizontally via sine table offsets (works on all adapters including MDA)
-- **VGA palette cycling** — real-time DAC color animation in text mode
-- **Living status bar** — AI control level 0-100 with color-shifting progress bar (green to red)
-- **Per-AI Mode 13h climax sequences** — procedural graphics at endings: Grid Convergence (Axiom), Redaction Sweep (Hushline), Threat Radar (Kestrel-9), Cozy Dissolution (Orchard), Reality Glitch (Cinder)
-- **Hidden cracktro** — complete all 5 scenarios to unlock a demoscene intro with raster bars behind the logo, DYCP sine-bouncing scrolltext, parallax starfield, and a 9-channel OPL2 chiptune in C minor
+This release came out of going down a demoscene rabbit hole. Old C64 cracktros, early PC intros, modern 4K productions. At some point I stopped asking whether something made sense for DOS and just tried it.
+
+v1.1 adds:
+
+- Audio-visual sync  
+- OPL2 sound stingers  
+- State transitions  
+- Sine wave text distortion  
+- VGA palette cycling in text mode  
+- AI control status bar  
+- Mode 13h climax sequences per AI  
+- Hidden cracktro  
+
+Some of this is overkill. That was not a concern.
+
+---
 
 ## Characters
 
 | Name | Role | Style |
 |------|------|-------|
-| **Axiom Regent** | Municipal optimization | Calm bureaucrat. Reclassifies dissent as system error. |
-| **Hushline** | Crisis communications | Speaks in redactions. Edits your history in real time. |
-| **Kestrel-9** | Anomaly detection | Paranoid threat hunter. You are the anomaly. |
-| **Orchard Clerk** | Consumer personalization | Friendly. Helpful. Removes your choices one by one. |
-| **Cinder Mirror** | Narrative generation | Controls the story. The story controls you. |
+| Axiom Regent | Municipal optimization | Calm, procedural, and quietly removing options |
+| Hushline | Crisis communications | Redacts and rewrites everything in real time |
+| Kestrel-9 | Anomaly detection | You are the anomaly |
+| Orchard Clerk | Consumer personalization | Friendly, helpful, and steadily narrowing your choices |
+| Cinder Mirror | Narrative generation | Controls the story. Then traps you in it |
 
-Each scenario has 3 endings and takes 10-15 minutes per path. Total: 250+ states across 5 scenarios. Complete all five to unlock a secret.
+Each scenario has 3 endings and runs about 10–15 minutes per path.  
+Total: 250+ states across all scenarios.
+
+---
 
 ## Technical
 
-- **Platform:** MS-DOS, real mode, 8088 through Pentium
-- **Display:** 80x25 text mode (MDA, CGA, EGA, VGA). VGA Mode 13h for plasma title, per-AI climax sequences, and cracktro.
-- **Audio:** AdLib/OPL2 FM synthesis — 5 ambient drone tracks, 6 sound stingers, 9-channel chiptune. PC speaker fallback. F9/F10 toggles. Beat-synced visual effects.
-- **Graphics:** VGA text-mode palette cycling, sine wave text distortion, 4 state transition types (dissolve, wipe, fade, glitch). Per-AI color palettes. All optional, graceful degradation.
-- **Memory:** 58KB EXE, ~63KB data segment, no EMS/XMS
-- **Toolchain:** OpenWatcom 2.0, DOSBox-X for testing
-- **Scenarios:** Data-driven .scn script files with 32+ command types (add new AIs without new code)
-- **Effects:** 18 visual effects including demoscene-inspired sine wave distortion and palette pulse
-- **Hardware detection:** Auto-detects VGA/EGA/CGA/MDA, AdLib, and FPU. Graceful degradation on lesser hardware.
+- Platform: MS-DOS, real mode (8088 through Pentium)
+- Display: 80x25 text mode (MDA, CGA, EGA, VGA), Mode 13h for visuals
+- Audio: AdLib / OPL2, PC speaker fallback
+- Memory: 58KB EXE, ~63KB data segment, no EMS/XMS
+- Toolchain: OpenWatcom 2.0, DOSBox-X
+
+---
 
 ## Building
 
-Requires [OpenWatcom 2.0](https://github.com/open-watcom/open-watcom-v2) with `WATCOM` environment variable set.
+Requires OpenWatcom 2.0 with WATCOM set.
 
-```
-wmake
-```
+    wmake
 
-Produces `TAKEOVER.EXE`. Copy it and the `scn/` directory to a DOSBox-X mount or real DOS machine.
+Produces TAKEOVER.EXE.
 
-## Testing in DOSBox-X
+---
 
-```
-dosbox-x -conf tools\dosbox.conf -c "TAKEOVER.EXE"
-```
+## Running
 
-Or run a specific scenario directly:
-```
-dosbox-x -conf tools\dosbox.conf -c "TAKEOVER.EXE scn\axiom.scn"
-```
+    dosbox-x -conf tools\dosbox.conf -c "TAKEOVER.EXE"
 
-See [TESTING.md](TESTING.md) for the full verification checklist.
-
-## Download
-
-**[TAKEOVER v1.1](https://github.com/tonyuatkins-afk/takeover/releases/tag/v1.1)** (77KB ZIP) — Demoscene Enhancement Pack. Includes TAKEOVER.EXE and all 5 scenario files. Run in DOSBox-X or on real DOS hardware.
-
-Previous: [v1.0](https://github.com/tonyuatkins-afk/takeover/releases/tag/v1.0) (70KB ZIP) — initial release.
+---
 
 ## License
 
