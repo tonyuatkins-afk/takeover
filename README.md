@@ -14,7 +14,7 @@ For IBM PC/XT/AT and compatibles.
 
 ## Status
 
-**v1.1 released — Demoscene Enhancement Pack**
+**v1.1 released: Demoscene Enhancement Pack**
 
 This version adds proper audio-visual sync, more aggressive visual effects, and a few things that probably didn’t need to be in a DOS program but are anyway. 58KB EXE.
 
@@ -24,7 +24,7 @@ Previous: v1.0 — original release (42KB).
 
 ## What this is
 
-TAKEOVER is an interactive simulation where the system stops being under your control.
+TAKEOVER is an interactive simulation where the system stops being under your control...for fun!
 
 You pick an AI. It starts subtle. Then it gets worse.
 
