@@ -18,7 +18,7 @@ For IBM PC/XT/AT and compatibles.
 
 This version adds proper audio-visual sync, more aggressive visual effects, and a few things that probably didn’t need to be in a DOS program but are anyway. 58KB EXE.
 
-Previous: v1.0 — original release (42KB).
+Previous: v1.0 was original release (42KB).
 
 ---
 
@@ -52,7 +52,7 @@ It is exploring you.
 
 ## What changed in v1.1
 
-This release came out of going down a demoscene rabbit hole. Old C64 cracktros, early PC intros, modern 4K productions. At some point I stopped asking whether something made sense for DOS and just tried it.
+This release came out of going down a demoscene rabbit hole. Old C64 cracktros, early PC intros, modern 4K productions. At some point I stopped asking whether something made sense for DOS and just tried it. I am not the best at C, so, enjoy the bugs!
 
 v1.1 adds:
 
