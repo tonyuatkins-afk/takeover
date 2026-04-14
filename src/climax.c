@@ -330,25 +330,23 @@ void climax_run(const char *ai_name)
 
         /* Palette rotation for Cinder (hypnotic shimmer) */
         if (ai == AI_CINDER && (frame & 1) == 0) {
-            unsigned char first[3];
+            unsigned char tmp[3];
             int i;
-            outp(0x3C7, 1); /* read from index 1 */
-            first[0] = (unsigned char)inp(0x3C9);
-            first[1] = (unsigned char)inp(0x3C9);
-            first[2] = (unsigned char)inp(0x3C9);
-            /* Shift palette entries 1-255 down by 1 */
-            outp(0x3C7, 2);
-            outp(0x3C8, 1);
-            for (i = 2; i < 256; i++) {
-                outp(0x3C9, (unsigned char)inp(0x3C9));
-                outp(0x3C9, (unsigned char)inp(0x3C9));
-                outp(0x3C9, (unsigned char)inp(0x3C9));
+            /* Read full palette into gen_pal buffer */
+            outp(0x3C7, 0);
+            for (i = 0; i < 768; i++)
+                gen_pal[i] = (unsigned char)inp(0x3C9);
+            /* Save entry 1, shift 2-255 down, put old 1 at 255 */
+            tmp[0] = gen_pal[3]; tmp[1] = gen_pal[4]; tmp[2] = gen_pal[5];
+            for (i = 1; i < 255; i++) {
+                gen_pal[i * 3 + 0] = gen_pal[(i + 1) * 3 + 0];
+                gen_pal[i * 3 + 1] = gen_pal[(i + 1) * 3 + 1];
+                gen_pal[i * 3 + 2] = gen_pal[(i + 1) * 3 + 2];
             }
-            /* Put first at end */
-            outp(0x3C8, 255);
-            outp(0x3C9, first[0]);
-            outp(0x3C9, first[1]);
-            outp(0x3C9, first[2]);
+            gen_pal[765] = tmp[0]; gen_pal[766] = tmp[1]; gen_pal[767] = tmp[2];
+            /* Write back after vsync */
+            vga_wait_vsync();
+            vga_set_palette(gen_pal);
         }
 
         /* Advance phases */

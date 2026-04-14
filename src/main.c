@@ -221,6 +221,8 @@ int main(int argc, char *argv[])
                         SCR_ATTR(SCR_LIGHTGREEN, SCR_BLACK));
                     engine_delay(2000);
                     cracktro_run();
+                    /* Reset OPL2 to known state after cracktro */
+                    if (g_hw.adlib) adlib_init();
                 }
             }
         }

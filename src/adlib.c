@@ -489,7 +489,7 @@ void adlib_tick(void)
     tick = (unsigned long far *)MK_FP(0x0040, 0x006C);
     now = *tick;
 
-    if (now < next_tick) return;
+    if ((long)(now - next_tick) < 0) return;
 
     /* Process current event */
     evt = &cur_events[cur_idx];
@@ -501,11 +501,15 @@ void adlib_tick(void)
         return;
     }
 
+    /* Guard: skip events with out-of-range channel */
+    if (evt->channel >= 9) { cur_idx++; return; }
+
     /* When muted, advance timing but silence all notes */
     if (muted) {
         note_off(evt->channel);
         next_tick = now + (unsigned long)evt->duration;
         cur_idx++;
+        if (cur_idx > 32) cur_idx = 0;
         return;
     }
 
@@ -525,6 +529,7 @@ void adlib_tick(void)
     /* Schedule next event */
     next_tick = now + (unsigned long)evt->duration;
     cur_idx++;
+    if (cur_idx > 32) cur_idx = 0;
 }
 
 void adlib_set_mute(int m)
@@ -615,7 +620,7 @@ void adlib_stinger_tick(void)
         int hw_ch = i + 3;
 
         if (!sc->active) continue;
-        if (now < sc->next_tick) continue;
+        if ((long)(now - sc->next_tick) < 0) continue;
 
         sc->note_idx++;
         if (sc->note_idx >= sc->num_notes) {

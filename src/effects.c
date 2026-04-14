@@ -33,6 +33,9 @@
  */
 static unsigned short __far fx_save_buf[SCR_WIDTH * SCR_HEIGHT];
 
+/* Static save buffer for fx_static_burst (keeps 800 bytes off stack) */
+static unsigned short __far fx_burst_save[20 * 20];
+
 /* ------------------------------------------------------------------ */
 /* RNG: LCG seeded from BIOS tick counter                              */
 /* ------------------------------------------------------------------ */
@@ -108,7 +111,6 @@ void fx_screen_flicker(int duration, int intensity)
 
 void fx_static_burst(int duration, int intensity)
 {
-    unsigned short save[20 * 20]; /* max region 20x20 */
     int bw, bh, bx, by;
     int elapsed, tick_ms;
     int r, c;
@@ -126,7 +128,7 @@ void fx_static_burst(int duration, int intensity)
         bx = FX_LEFT + rng_range(FX_COLS - bw);
         by = FX_TOP + rng_range(FX_ROWS - bh);
 
-        scr_save_region(bx, by, bw, bh, save);
+        scr_save_region(bx, by, bw, bh, fx_burst_save);
 
         for (r = 0; r < bh; r++) {
             for (c = 0; c < bw; c++) {
@@ -136,7 +138,7 @@ void fx_static_burst(int duration, int intensity)
             }
         }
         engine_delay(tick_ms);
-        scr_restore_region(bx, by, bw, bh, save);
+        scr_restore_region(bx, by, bw, bh, fx_burst_save);
         engine_delay(tick_ms * 2);
     }
 }

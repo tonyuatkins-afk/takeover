@@ -485,6 +485,15 @@ static int parse_end_type(const char *name)
     return END_TAKEOVER;
 }
 
+static int pool_err_line;
+
+static unsigned short pool_add_chk(const char *s, int line_num)
+{
+    unsigned short r = pool_add(s);
+    if (r == POOL_NONE) pool_err_line = line_num;
+    return r;
+}
+
 /* Parse one command line into a cmd_t. Returns 0 on success. */
 static int parse_command(char *line, cmd_t *cmd, int line_num)
 {
@@ -514,14 +523,14 @@ static int parse_command(char *line, cmd_t *cmd, int line_num)
             printf("Line %d: text requires quoted string\n", line_num);
             return -1;
         }
-        cmd->str1 = pool_add(buf1);
+        cmd->str1 = pool_add_chk(buf1, line_num);
         after = trim_left(after);
         if (*after == '@') {
             cmd->type = CMD_TEXT_TAGGED;
             strncpy(buf2, after + 1, MAX_NAME - 1);
             buf2[MAX_NAME - 1] = '\0';
             trim_right(buf2);
-            cmd->tag = pool_add(buf2);
+            cmd->tag = pool_add_chk(buf2, line_num);
         } else {
             cmd->type = CMD_TEXT;
         }
@@ -546,7 +555,7 @@ static int parse_command(char *line, cmd_t *cmd, int line_num)
             printf("Line %d: input requires quoted prompt\n", line_num);
             return -1;
         }
-        cmd->str1 = pool_add(buf1);
+        cmd->str1 = pool_add_chk(buf1, line_num);
         target = find_arrow(after);
         if (!target) {
             printf("Line %d: input requires -> variable\n", line_num);
@@ -555,7 +564,7 @@ static int parse_command(char *line, cmd_t *cmd, int line_num)
         strncpy(buf2, target, MAX_NAME - 1);
         buf2[MAX_NAME - 1] = '\0';
         trim_right(buf2);
-        cmd->str2 = pool_add(buf2);
+        cmd->str2 = pool_add_chk(buf2, line_num);
     }
     else if (strcmp(keyword, "choice") == 0) {
         char *after, *target;
@@ -565,7 +574,7 @@ static int parse_command(char *line, cmd_t *cmd, int line_num)
             printf("Line %d: choice requires quoted label\n", line_num);
             return -1;
         }
-        cmd->str1 = pool_add(buf1);
+        cmd->str1 = pool_add_chk(buf1, line_num);
         target = find_arrow(after);
         if (!target) {
             printf("Line %d: choice requires -> target_state\n", line_num);
@@ -574,7 +583,7 @@ static int parse_command(char *line, cmd_t *cmd, int line_num)
         strncpy(buf2, target, MAX_NAME - 1);
         buf2[MAX_NAME - 1] = '\0';
         trim_right(buf2);
-        cmd->str2 = pool_add(buf2);
+        cmd->str2 = pool_add_chk(buf2, line_num);
     }
     else if (strcmp(keyword, "goto") == 0) {
         char *sp;
@@ -595,7 +604,7 @@ static int parse_command(char *line, cmd_t *cmd, int line_num)
             else if (strcmp(tname, "glitch") == 0)  cmd->num1 = TRANS_GLITCH;
             /* else TRANS_NONE (0) */
         }
-        cmd->str1 = pool_add(buf1);
+        cmd->str1 = pool_add_chk(buf1, line_num);
     }
     else if (strcmp(keyword, "end") == 0) {
         cmd->type = CMD_END;
@@ -614,13 +623,13 @@ static int parse_command(char *line, cmd_t *cmd, int line_num)
         memcpy(buf2, args, nlen);
         buf2[nlen] = '\0';
         trim_right(buf2);
-        cmd->str2 = pool_add(buf2);
+        cmd->str2 = pool_add_chk(buf2, line_num);
 
         val = trim_left(eq + 1);
         if (*val == '"') {
             cmd->type = CMD_SET_STR;
             extract_quoted(val, buf1, MAX_STRING);
-            cmd->str1 = pool_add(buf1);
+            cmd->str1 = pool_add_chk(buf1, line_num);
         } else {
             cmd->type = CMD_SET_NUM;
             cmd->num1 = atoi(val);
@@ -636,7 +645,7 @@ static int parse_command(char *line, cmd_t *cmd, int line_num)
                && *p != ' ' && vi < MAX_NAME - 1)
             buf2[vi++] = *p++;
         buf2[vi] = '\0';
-        cmd->str2 = pool_add(buf2);
+        cmd->str2 = pool_add_chk(buf2, line_num);
 
         p = trim_left(p);
         if (p[0] == '=' && p[1] == '=') {
@@ -663,13 +672,13 @@ static int parse_command(char *line, cmd_t *cmd, int line_num)
                 printf("Line %d: if requires quoted value\n", line_num);
                 return -1;
             }
-            cmd->str1 = pool_add(buf1);
+            cmd->str1 = pool_add_chk(buf1, line_num);
         } else {
             cmd->num1 = atoi(p);
             if (cmd->type == CMD_IF_EQ || cmd->type == CMD_IF_NEQ) {
                 char nbuf[12];
                 sprintf(nbuf, "%d", cmd->num1);
-                cmd->str1 = pool_add(nbuf);
+                cmd->str1 = pool_add_chk(nbuf, line_num);
             }
             while (*p && *p != ' ' && *p != '\t') {
                 if (*p == '-' && p[1] == '>') break;
@@ -686,15 +695,15 @@ static int parse_command(char *line, cmd_t *cmd, int line_num)
         strncpy(buf1, target, MAX_NAME - 1);
         buf1[MAX_NAME - 1] = '\0';
         trim_right(buf1);
-        cmd->tag = pool_add(buf1);
+        cmd->tag = pool_add_chk(buf1, line_num);
     }
     else if (strcmp(keyword, "inc") == 0) {
         cmd->type = CMD_INC;
-        cmd->str1 = pool_add(args);
+        cmd->str1 = pool_add_chk(args, line_num);
     }
     else if (strcmp(keyword, "dec") == 0) {
         cmd->type = CMD_DEC;
-        cmd->str1 = pool_add(args);
+        cmd->str1 = pool_add_chk(args, line_num);
     }
     else if (strcmp(keyword, "effect") == 0) {
         char *p = args;
@@ -706,7 +715,7 @@ static int parse_command(char *line, cmd_t *cmd, int line_num)
         while (*p && *p != ' ' && *p != '\t' && ni < MAX_NAME - 1)
             buf1[ni++] = *p++;
         buf1[ni] = '\0';
-        cmd->str1 = pool_add(buf1);
+        cmd->str1 = pool_add_chk(buf1, line_num);
 
         p = trim_left(p);
         if (*p) {
@@ -725,10 +734,10 @@ static int parse_command(char *line, cmd_t *cmd, int line_num)
             while (*p && *p != ' ' && *p != '\t' && ti < MAX_NAME - 1)
                 buf2[ti++] = *p++;
             buf2[ti] = '\0';
-            cmd->tag = pool_add(buf2);
+            cmd->tag = pool_add_chk(buf2, line_num);
             p = trim_left(p);
             extract_quoted(p, buf1, MAX_STRING);
-            cmd->str1 = pool_add(buf1);
+            cmd->str1 = pool_add_chk(buf1, line_num);
         } else {
             printf("Line %d: rewrite requires @tag\n", line_num);
             return -1;
@@ -741,12 +750,12 @@ static int parse_command(char *line, cmd_t *cmd, int line_num)
     else if (strcmp(keyword, "fake_error") == 0) {
         cmd->type = CMD_FAKE_ERROR;
         extract_quoted(args, buf1, MAX_STRING);
-        cmd->str1 = pool_add(buf1);
+        cmd->str1 = pool_add_chk(buf1, line_num);
     }
     else if (strcmp(keyword, "hijack_prompt") == 0) {
         cmd->type = CMD_HIJACK_PROMPT;
         extract_quoted(args, buf1, MAX_STRING);
-        cmd->str1 = pool_add(buf1);
+        cmd->str1 = pool_add_chk(buf1, line_num);
     }
     else if (strcmp(keyword, "tone") == 0) {
         cmd->type = CMD_TONE;
@@ -762,18 +771,18 @@ static int parse_command(char *line, cmd_t *cmd, int line_num)
     else if (strcmp(keyword, "news_fallback") == 0) {
         cmd->type = CMD_NEWS_FALLBACK;
         extract_quoted(args, buf1, MAX_STRING);
-        cmd->str1 = pool_add(buf1);
+        cmd->str1 = pool_add_chk(buf1, line_num);
     }
     else if (strcmp(keyword, "news_inject") == 0) {
         cmd->type = CMD_NEWS_INJECT;
         strncpy(buf1, args, MAX_NAME - 1);
         buf1[MAX_NAME - 1] = '\0';
-        cmd->str1 = pool_add(buf1);
+        cmd->str1 = pool_add_chk(buf1, line_num);
     }
     else if (strcmp(keyword, "music") == 0) {
         cmd->type = CMD_MUSIC;
         extract_quoted(args, buf1, MAX_STRING);
-        cmd->str1 = pool_add(buf1);
+        cmd->str1 = pool_add_chk(buf1, line_num);
     }
     else if (strcmp(keyword, "music_stop") == 0) {
         cmd->type = CMD_MUSIC_STOP;
@@ -787,14 +796,14 @@ static int parse_command(char *line, cmd_t *cmd, int line_num)
         strncpy(buf1, args, MAX_NAME - 1);
         buf1[MAX_NAME - 1] = '\0';
         trim_right(buf1);
-        cmd->str1 = pool_add(buf1);
+        cmd->str1 = pool_add_chk(buf1, line_num);
     }
     else if (strcmp(keyword, "climax") == 0) {
         cmd->type = CMD_CLIMAX;
         strncpy(buf1, args, MAX_NAME - 1);
         buf1[MAX_NAME - 1] = '\0';
         trim_right(buf1);
-        cmd->str1 = pool_add(buf1);
+        cmd->str1 = pool_add_chk(buf1, line_num);
     }
     else if (strcmp(keyword, "sync_beat") == 0) {
         cmd->type = CMD_SYNC_BEAT;
@@ -809,10 +818,16 @@ static int parse_command(char *line, cmd_t *cmd, int line_num)
         strncpy(buf1, args, MAX_NAME - 1);
         buf1[MAX_NAME - 1] = '\0';
         trim_right(buf1);
-        cmd->str1 = pool_add(buf1);
+        cmd->str1 = pool_add_chk(buf1, line_num);
     }
     else {
         printf("Line %d: unknown command '%s'\n", line_num, keyword);
+        return -1;
+    }
+
+    if (pool_err_line) {
+        printf("Line %d: string pool full\n", pool_err_line);
+        pool_err_line = 0;
         return -1;
     }
 
@@ -992,6 +1007,13 @@ static int parse_transition_name(const char *name)
 /* Far buffer for transition old-screen save (4000 bytes) */
 static unsigned short __far trans_buf[SCR_WIDTH * SCR_HEIGHT];
 
+/* Far buffer for fake error dialog save (760 bytes) */
+static unsigned short __far fake_err_buf[76 * 5];
+
+/* Transition runs before new state renders. The dissolve/wipe/glitch
+ * effects animate the reveal of the SAME screen content, which creates
+ * a visual "refresh" effect. This is by design — the transition IS the
+ * visual, not a crossfade between old and new content. */
 static void do_transition(int type)
 {
     int i;
@@ -1021,7 +1043,8 @@ static void do_transition(int type)
             trans_buf[i] = new_cell;
         }
         /* Now video=old, trans_buf=new. Dissolve new over old. */
-
+        {
+        int iters = 0;
         while (count < total) {
             unsigned int bit = ((lfsr >> 10) ^ (lfsr >> 8)) & 1u;
             lfsr = ((lfsr << 1) | bit) & 0x7FFu;
@@ -1038,6 +1061,17 @@ static void do_transition(int type)
                     engine_delay(55);
                 }
             }
+            if (++iters > 2100) break;  /* safety: LFSR didn't cover all cells */
+        }
+        /* Fallback: reveal any cells the LFSR missed */
+        if (count < total) {
+            unsigned int p;
+            for (p = 0; p < total; p++) {
+                unsigned short far *vid = (unsigned short far *)
+                    MK_FP(scr_segment, p * 2u);
+                *vid = trans_buf[p];
+            }
+        }
         }
         break;
     }
@@ -1318,6 +1352,7 @@ void engine_reset(engine_scenario_t *scn)
     scn->news_headline[0] = '\0';
 
     g_default_transition = TRANS_NONE;
+    g_ai_control = 0;
 
     for (i = 0; i < MAX_VARS; i++)
         g_vars[i].in_use = 0;
@@ -1377,6 +1412,9 @@ int engine_run(engine_scenario_t *scn)
             case CMD_CLEAR:
                 switch (c->num1) {
                 case CLEAR_SCREEN:
+                    /* Intentionally removes border/status chrome for
+                     * cinematic effect. Scenario authors should redraw
+                     * chrome explicitly if needed after clear:screen. */
                     scr_clear(get_attr(scn));
                     scn->cursor_row = MAIN_TOP;
                     break;
@@ -1398,7 +1436,7 @@ int engine_run(engine_scenario_t *scn)
                 char buf[42];
                 char expanded[MAX_STRING];
                 substitute_vars(scn, pool_str(c->str1), expanded, MAX_STRING);
-                read_input(scn, expanded, buf, 41);
+                read_input(scn, expanded, buf, 40);
                 set_var(pool_str(c->str2), buf, 0, 0);
                 break;
             }
@@ -1560,7 +1598,6 @@ int engine_run(engine_scenario_t *scn)
 
             case CMD_FAKE_ERROR:
             {
-                unsigned short save_buf[76 * 5];
                 char expanded[MAX_STRING];
                 int ew, eh = 5, ex, ey;
 
@@ -1572,7 +1609,7 @@ int engine_run(engine_scenario_t *scn)
                 ex = (SCR_WIDTH - ew) / 2;
                 ey = (SCR_HEIGHT - eh) / 2;
 
-                scr_save_region(ex, ey, ew, eh, save_buf);
+                scr_save_region(ex, ey, ew, eh, fake_err_buf);
                 scr_fill(ex, ey, ew, eh, ' ', ATTR_ERROR);
                 scr_box_single(ex, ey, ew, eh, ATTR_ERROR);
                 scr_puts(ex + 2, ey + 1, expanded, ATTR_ERROR);
@@ -1581,7 +1618,7 @@ int engine_run(engine_scenario_t *scn)
 
                 flush_keyboard();
                 scr_getkey();
-                scr_restore_region(ex, ey, ew, eh, save_buf);
+                scr_restore_region(ex, ey, ew, eh, fake_err_buf);
                 break;
             }
 
@@ -1694,8 +1731,11 @@ int engine_run(engine_scenario_t *scn)
             }
 
             case CMD_CLIMAX:
-                if (g_hw.display == HW_DISP_VGA)
+                if (g_hw.display == HW_DISP_VGA) {
+                    adlib_stop_track();  /* prevent fast-forward during climax */
                     climax_run(pool_str(c->str1));
+                    /* scenario script will restart music if needed */
+                }
                 break;
 
             case CMD_SYNC_BEAT:

@@ -349,7 +349,7 @@ static void setup_palette(void)
 /* Rendering helpers                                                   */
 /* ------------------------------------------------------------------ */
 
-static void render_raster_bars(unsigned char far *fb, int frame)
+static void render_raster_bars(unsigned char far *fb, unsigned int frame)
 {
     int y, x;
     /* Top 30 rows: horizontal color bands */
@@ -357,7 +357,7 @@ static void render_raster_bars(unsigned char far *fb, int frame)
         unsigned int row = (unsigned int)(y * 2) * 320u;
         unsigned int row2 = row + 320u;
         unsigned char color = (unsigned char)(
-            1 + ((y + frame) % 32));
+            1 + (((unsigned int)y + frame) & 31u));
         for (x = 0; x < 160; x++) {
             unsigned int px = (unsigned int)(x << 1);
             fb[row + px] = color;
@@ -427,8 +427,8 @@ static void render_starfield(unsigned char far *fb, int frame)
     }
 }
 
-static void render_dycp(unsigned char far *fb, int frame,
-                        int scroll_offset)
+static void render_dycp(unsigned char far *fb, unsigned int frame,
+                        unsigned int scroll_offset)
 {
     /* DYCP: each visible character gets a sine-displaced Y position */
     int col;
@@ -595,8 +595,8 @@ static void tune_setup_patches(void)
 void cracktro_run(void)
 {
     unsigned char far *fb = (unsigned char far *)MK_FP(0xA000, 0x0000);
-    int frame = 0;
-    int scroll_offset = 0;
+    unsigned int frame = 0;
+    unsigned int scroll_offset = 0;
     unsigned long far *bios_tick;
     unsigned long last_tick, now;
 
